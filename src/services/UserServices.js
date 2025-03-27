@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:8080/karental";
+const BASE_URL = "https://3.0.229.253/karental";
 export const registerUser = async (userData) => {
   try {
     const response = await fetch(`${BASE_URL}/user/register`, {
