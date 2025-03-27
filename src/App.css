@@ -1,0 +1,32 @@
+.flex-container {
+  display: flex;
+  flex-wrap: wrap;
+  /* Cho phép xuống dòng khi thiếu không gian */
+  justify-content: center;
+  /* Căn giữa nếu xuống dòng */
+  gap: 10px;
+  /* Tạo khoảng cách giữa các input */
+}
+
+/* .MuiInputLabel-asterisk {
+    color: red !important;
+  }
+
+  .MuiInputLabel-root {
+    font-weight: bold !important;
+    color: black !important;
+  }
+
+  .flex-container {
+    display: flex;
+    gap: 100px;
+  }
+
+  .css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-active {
+    fill: #05ce80 !important;
+  }
+
+
+  .css-3hpdci-MuiSvgIcon-root-MuiStepIcon-root.Mui-completed {
+    fill: #05ce80 !important;
+  } */
