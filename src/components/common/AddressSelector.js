@@ -62,9 +62,9 @@ export default function AddressSelector({ formData, setFormData, errorMsg, setEr
   // Get addressData from database.json
   useEffect(() => {
     axios
-      .get("/database.json")
-      .then((res) => setAddressData(res.data.Address_list))
-      .catch((err) => console.error("Error loading address data:", err));
+        .get(`${process.env.PUBLIC_URL}/database.json`)
+        .then((res) => setAddressData(res.data.Address_list))
+        .catch((err) => console.error("Error loading address data:", err));
   }, []);
 
   // Get city/Province
