@@ -2,7 +2,7 @@
   "name": "karental",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://nhun231.github.io/karental1",
+  "homepage": "http://karental.okne.site/",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
