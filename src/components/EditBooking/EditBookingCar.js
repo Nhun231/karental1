@@ -16,34 +16,13 @@ import {
   CameraAlt,
   Lock,
   ChildCare,
-  DirectionsCar,
-  Fastfood,
-  Pets,
-  MoreHoriz,
   Dvr,
   Usb,
   WbSunny,
 } from "@mui/icons-material";
-import { useEffect, useState } from "react";
 
 export const EditBookingCar = () => {
   const { carData = {} } = useSelector((state) => state.carFetch);
-  // const [additionalFunctions, setAdditionalFunctions] = useState([]);
-
-  // useEffect(() => {
-  //   if (!carData?.data) return;
-  //   setAdditionalFunctions([
-  //     { label: "Bluetooth", icon: <Bluetooth />, checked: !!carData.additionalFunctions?.Bluetooth },
-  //     { label: "GPS", icon: <GpsFixed />, checked: !!carData.additionalFunctions?.GPS },
-  //     { label: "Camera", icon: <CameraAlt />, checked: !!carData.additionalFunctions?.Camera },
-  //     { label: "Sun roof", icon: <WbSunny />, checked: !!carData.additionalFunctions?.SunRoof },
-  //     { label: "Child lock", icon: <Lock />, checked: !!carData.additionalFunctions?.ChildLock },
-  //     { label: "Child seat", icon: <ChildCare />, checked: !!carData.additionalFunctions?.ChildSeat },
-  //     { label: "DVD", icon: <Dvr />, checked: !!carData.additionalFunctions?.DVD },
-  //     { label: "USB", icon: <Usb />, checked: !!carData.additionalFunctions?.USB },
-  //   ]);
-  //   console.log(carData?.data);
-  // }, [carData?.data]);
 
   const additionalFunctions = [
     {
@@ -270,9 +249,8 @@ export const EditBookingCar = () => {
             <Typography variant="h6" sx={{ fontWeight: "bold" }}>
               Vehicle Registration Documents
             </Typography>
-            <Typography>
-              <DocumentBookingEdit />
-            </Typography>
+
+            <DocumentBookingEdit />
           </Stack>
         </Grid>
       </Grid>

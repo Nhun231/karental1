@@ -27,6 +27,7 @@ import { ModalClose, ModalDialog } from "@mui/joy";
 import axios from "axios"
 import { fetchAllTransactions, fetchResponseFromVNPay, fetchTransactionsByDate, topup, withdrawFunction } from "../services/WalletServices";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import NotificationSnackbar from "../components/common/NotificationSnackbar";
 
 const listBreadcrumbData = [
   {
@@ -94,6 +95,8 @@ const MyWallet = () => {
   // Handle for day
   // const today = dayjs().endOf('day');
   // const yesterday = today.subtract(1, "day").startOf('day');
+    const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
+  
   const [fromDate, setFromDate] = useState(dayjs().subtract(1, 'month').startOf("day"));
   const [toDate, setToDate] = useState(dayjs().endOf("day"));
   const [errorDate, setErrorDate] = useState("");
@@ -155,7 +158,7 @@ const [refresh, setRefresh] = useState(false);
         setTimeout(() => {
           fetchTransactions(); 
       }, 500);
-        alert(`Top-up status: ${response.data.data.status}. Amount: ${response.data.data.amount}`);
+        setAlert({ open: true, message: `Top-up status: ${response.data.data.status}. Amount: ${response.data.data.amount}`, severity: "success" });
         console.log(response)
         console.log("Navigating to /my-wallet..."); // Debugging log
          
@@ -184,7 +187,7 @@ const [refresh, setRefresh] = useState(false);
   }, [fromDate, toDate]);
   const handleSearchDate = async () => {
     if (!fromDate || !toDate) {
-      alert("Please select a valid date range.");
+      setAlert({ open: true, message: "Please select a valid date range.", severity: "error" });
       return;
     }
     const fetchTransactionsDate = async() =>{
@@ -243,6 +246,25 @@ const [refresh, setRefresh] = useState(false);
 
   //Handle topup
   const handleSubmitTopUp = async () => {
+    // Add validation for empty amount or invalid amount
+    if (!amountTopUp || amountTopUp === "") {
+      setAlert({ 
+        open: true, 
+        message: "Please select an amount before proceeding with top-up.", 
+        severity: "error" 
+      });
+      return;
+    }
+
+    if (amountTopUp <= 0) {
+      setAlert({ 
+        open: true, 
+        message: "Please select a valid amount for top-up.", 
+        severity: "error" 
+      });
+      return;
+    }
+
     const formTopUp = {
       type: "TOP_UP",
       bookingNumber: "",
@@ -250,20 +272,34 @@ const [refresh, setRefresh] = useState(false);
       amount: Number(amountTopUp),
       message: "",
     };
-    const topUp = async (formTopUp)=>{
+
+    try {
       const res = await topup(formTopUp);
-    if (!res || !res.data) return;
-        window.open(res.data.payment.vnp_url)
-        handleCloseTopUp();
+      if (!res || !res.data) {
+        setAlert({ 
+          open: true, 
+          message: "Top-up request failed. Please try again.", 
+          severity: "error" 
+        });
+        return;
+      }
+      window.open(res.data.payment.vnp_url);
+      handleCloseTopUp();
+    } catch (error) {
+      console.error("Top-up Error:", error);
+      setAlert({ 
+        open: true, 
+        message: `Top-up failed: ${error.response?.data?.message || 'Please try again'}`, 
+        severity: "error" 
+      });
     }
-    topUp(formTopUp);
-    setRefresh((prev) => !prev); 
+    setRefresh((prev) => !prev);
   };
   const handleSubmitWithdraw = async () => {
     console.log("Withdraw Amount Selected:", amountWithdraw); // Debugging
 
   if (!amountWithdraw || amountWithdraw <= 0) {
-    alert("Please select a valid amount to withdraw.");
+    setAlert({ open: true, message: "Please select a valid amount to withdraw.", severity: "error" });
     return;
   }
     const formWithdraw = {
@@ -278,11 +314,12 @@ const [refresh, setRefresh] = useState(false);
       try{
         const res = await withdrawFunction(formWithdraw);
         if (!res || !res.data) return;
-        alert( `Successfully withdraw ${res.data.data.amount.toLocaleString()} VND`)
+        setAlert({ open: true, message:  `Successfully withdraw ${res.data.data.amount.toLocaleString()} VND`, severity: "success" });
           handleCloseWithdraw();
       }catch(error){
         console.error("Withdraw Error:", error); // Debugging
-         alert("Withdraw error: " + error.message);
+         setAlert({ open: true, message: `Withdraw error: ${error.response.data.message}`, severity: "error" });
+         handleCloseWithdraw();
       }
       
     }
@@ -643,6 +680,7 @@ const [refresh, setRefresh] = useState(false);
           </Box>
         </Container>
       </Layout>
+      <NotificationSnackbar  alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
     </div>
   );
 };

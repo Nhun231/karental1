@@ -10,44 +10,50 @@ import { useNavigate } from "react-router-dom";
 import Filters from "../components/common/Filter";
 import Pagination from "../components/common/Pagination"
 const MyBooking = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const [totalElement, setTotalElement] = useState(0);
-    const [bookingData, setBookingData] = useState(null);
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
-    const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "ALL");
-    const [pageSize, setPageSize] = useState(
-        parseInt(searchParams.get("size")) || 10
-    );
-    const [totalPages, setTotalPages] = useState(1);
-    const sortMapping = {
-        "updatedAt,DESC": "newest",
-        "updatedAt,ASC": "oldest",
-        "basePrice,DESC": "priceHigh",
-        "basePrice,ASC": "priceLow",
-    };
-    const statusOptions = [
-        "ALL",
-        "CANCELLED",
-        "CONFIRMED",
-        "PENDING_PAYMENT",
-        "PENDING_DEPOSIT",
-        "WAITING_CONFIRMED",
-        "IN_PROGRESS",
-        "COMPLETED"
-    ];
-    const validStatuses = new Set(statusOptions.slice(1));
-    const [sortOption, setSortOption] = useState(
-        sortMapping[searchParams.get("sort")] || "newest"
-    );
+  const [totalElement, setTotalElement] = useState(0);
+  const [bookingData, setBookingData] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
 
-    const getSortQuery = (option) =>
+
+  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
+  const [statusFilter, setStatusFilter] = useState(
+    searchParams.get("status") || "ALL"
+  );
+  const [pageSize, setPageSize] = useState(
+    parseInt(searchParams.get("size")) || 10
+  );
+  const [totalPages, setTotalPages] = useState(1);
+
+  const sortMapping = {
+    "updatedAt,DESC": "newest",
+    "updatedAt,ASC": "oldest",
+    "basePrice,DESC": "priceHigh",
+    "basePrice,ASC": "priceLow",
+  };
+  const statusOptions = [
+    "ALL",
+    "CANCELLED",
+    "CONFIRMED",
+    "PENDING_PAYMENT",
+    "PENDING_DEPOSIT",
+    "WAITING_CONFIRMED",
+    "IN_PROGRESS",
+    "COMPLETED",
+    "WAITING_CONFIRMED_RETURN_CAR",
+  ];
+  const validStatuses = new Set(statusOptions.slice(1));
+  const [sortOption, setSortOption] = useState(
+    sortMapping[searchParams.get("sort")] || "newest"
+  );
+
+  const getSortQuery = (option) =>
     ({
-        newest: "updatedAt,DESC",
-        oldest: "updatedAt,ASC",
-        priceHigh: "basePrice,DESC",
-        priceLow: "basePrice,ASC",
+      newest: "updatedAt,DESC",
+      oldest: "updatedAt,ASC",
+      priceHigh: "basePrice,DESC",
+      priceLow: "basePrice,ASC",
     }[option] || "updatedAt,DESC");
     useEffect(() => {
         const params = {
@@ -60,18 +66,20 @@ const MyBooking = () => {
             params.status = statusFilter;
         }
 
-        setSearchParams(params);
-    }, [sortOption, page, pageSize, statusFilter, setSearchParams]);
+
+    setSearchParams(params);
+  }, [sortOption, page, pageSize, statusFilter, setSearchParams]);
 
 
-    useEffect(() => {
-        async function fetchMyBookings() {
-            try {
-                const params = {
-                    page: page - 1,
-                    size: pageSize,
-                    sort: getSortQuery(sortOption),
-                };
+
+  useEffect(() => {
+    async function fetchMyBookings() {
+      try {
+        const params = {
+          page: page - 1,
+          size: pageSize,
+          sort: getSortQuery(sortOption),
+        };
 
                 if (validStatuses.has(statusFilter)) {
                     params.status = statusFilter;
@@ -86,7 +94,9 @@ const MyBooking = () => {
         }
         fetchMyBookings();
     }, [page, pageSize, sortOption, statusFilter]);
-
+    useEffect(() => {
+        document.title = 'My Booking';
+    }, []);
     return (
         <div>
             <Header />
@@ -124,7 +134,7 @@ const MyBooking = () => {
                 my: 2,
                 border: "1px solid #ccc",
                 borderRadius: "6px",
-                boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)"
+                boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)",
             }}>
                 {bookingData && bookingData.map((booking) => (
                     <Grid
@@ -142,7 +152,7 @@ const MyBooking = () => {
                             mt: 4,
                         }}
                     >
-                        <Grid container spacing={10} alignItems="stretch">
+                        <Grid container alignItems="stretch">
                             <Grid item xs={8.5}>
                                 <BookingCard BookingData={booking} />
                             </Grid>
@@ -153,7 +163,7 @@ const MyBooking = () => {
                                 direction="column"
                                 spacing={2}
                                 gap={2}
-                                alignItems="flex-end"
+                                alignItems="flex-start"
                                 sx={{
                                     height: "100%",
                                     justifyContent: "space-between",
@@ -168,7 +178,7 @@ const MyBooking = () => {
                                         color: "white",
                                         "&:hover": { backgroundColor: "#1565c0" },
                                         width: "100%",
-                                        paddingY: 1.2,
+                                        paddingY: 0.5,
                                         paddingX: 2,
                                         height: "auto",
                                     }}

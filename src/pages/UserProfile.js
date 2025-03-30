@@ -17,7 +17,9 @@ export default function UserProfilePage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [selectedTab, setSelectedTab] = useState(0); // Quản lý tab được chọn
-
+  useEffect(() => {
+    document.title = 'User Profile';
+  }, []); 
   useEffect(() => {
     async function getUserData() {
       try {
@@ -28,6 +30,7 @@ export default function UserProfilePage() {
       } finally {
         setLoading(false);
       }
+      document.title = 'My Profile';
     }
     getUserData();
   }, []);

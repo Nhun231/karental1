@@ -2,8 +2,7 @@ import React, { useState } from "react";
 import { Tabs, Tab, Box } from "@mui/material";
 import { EditBookingCar } from "./EditBookingCar";
 import EditBookingInfor from "./EditBookingInfor";
-import EditCarDetail from "../EditCar/EditCarDetail";
-import EditCarPricing from "../EditCar/EditCarPricing";
+import { EditBookingPayment } from "./EditBookingPayment";
 
 const TabEditBooking = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -20,7 +19,7 @@ const TabEditBooking = () => {
         aria-label="Add Car Tabs"
         sx={{
           "& .MuiTabs-indicator": {
-            display: "none", // Ẩn thanh gạch chân
+            display: "none",
           },
           "& .MuiTab-root": {
             border: "1px solid #ccc",
@@ -35,7 +34,7 @@ const TabEditBooking = () => {
         }}
       >
         <Tab label="Booking information" onClick={() => setSelectedTab(0)} />
-        <Tab label="Car Ingormation" onClick={() => setSelectedTab(1)} />
+        <Tab label="Car Information" onClick={() => setSelectedTab(1)} />
         <Tab label="Payment Information" onClick={() => setSelectedTab(2)} />
       </Tabs>
 
@@ -55,7 +54,7 @@ const TabEditBooking = () => {
         id="tab-pricing"
         style={{ display: selectedTab === 2 ? "block" : "none" }}
       >
-        {/* <EditCarPricing /> */}
+        <EditBookingPayment />
       </div>
     </Box>
   );

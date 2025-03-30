@@ -1,37 +1,53 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"; // API gọi đến backend
 import { toast } from "react-toastify";
-// Async Thunk để fetch dữ liệu xe
+import axios from "axios";
+// Async Thunk to fetch data car
 
 import { getFileFromDB, getAllKeysFromDB } from "../Helper/indexedDBHelper";
+
+const BASE_URL = "http://localhost:8080/karental";
 
 export const fetchCarById = createAsyncThunk(
   "cars/fetchCarById",
   async (carId, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/karental/car/car-owner/${carId}`,
-        {
-          method: "GET",
-          credentials: "include", // Để gửi cookie nếu cần
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/car/car-owner/${carId}`, {
+        withCredentials: true, // Để gửi cookie nếu cần
+      });
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        return rejectWithValue(errorMessage || "Fetch car failed.");
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
 
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      // toast.success("🚗 Fetch Car Successful! 🎉", { position: "top-right" });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("🚗 Fetch Car Failed! 🎉", { position: "top-right" });
-      return rejectWithValue(error.message || "Network error");
+      toast.error(`Fetch Car Failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
   }
 );
@@ -41,11 +57,12 @@ export const updateCar = createAsyncThunk(
   async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const carData = state.carFetch.carData.data; // Lấy dữ liệu từ Redux
+      const carData = state.carFetch.carData.data; // pick data from Redux
 
-      // Tạo FormData để gửi dữ liệu
+      // create formData
       const formData = new FormData();
-      // Thêm dữ liệu text vào formData
+
+      // add data to formData
       Object.entries(carData).forEach(([key, value]) => {
         if (
           ![
@@ -53,24 +70,30 @@ export const updateCar = createAsyncThunk(
             "carImageBack",
             "carImageLeft",
             "carImageRight",
+            "registrationPaper",
+            "insurance",
+            "certificateOfInspection",
           ].includes(key)
         ) {
           formData.append(key, value);
         }
       });
 
-      // Lấy danh sách key từ IndexedDB
+      // get list key from IndexedDB
       const existingKeys = await getAllKeysFromDB();
 
-      // Danh sách ảnh cần kiểm tra
+      // list key image
       const imageKeys = [
         "carImageFront",
         "carImageBack",
         "carImageLeft",
         "carImageRight",
+        "registrationPaper",
+        "insurance",
+        "certificateOfInspection",
       ];
 
-      // Lấy file từ IndexedDB và thêm vào formData nếu key tồn tại
+      // get image from IndexedDB
       for (const key of imageKeys) {
         if (existingKeys.includes(key)) {
           const file = await getFileFromDB(key);
@@ -80,69 +103,291 @@ export const updateCar = createAsyncThunk(
         }
       }
 
-      // Hiển thị toàn bộ dữ liệu trong FormData
-      // console.log("📤 FormData contents:");
-      // for (let pair of formData.entries()) {
-      //   console.log(`🔹 ${pair[0]}:`, pair[1]);
-      // }
-
-      const response = await fetch(
-        `http://localhost:8080/karental/car/car-owner/edit-car/${carData.id}`,
+      // send request
+      const response = await axios.put(
+        `${BASE_URL}/car/car-owner/edit-car/${carData.id}`,
+        formData,
         {
-          method: "PUT",
-          credentials: "include", // Để gửi cookie nếu cần
-          body: formData,
+          withCredentials: true, // send cookie
+          headers: {
+            "Content-Type": "multipart/form-data", // set content type
+          },
         }
       );
 
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : null;
+      toast.success(`Update Car Successful!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-      if (!response.ok) {
-        return rejectWithValue(data?.message || "Failed to update car data");
-      }
-
-      toast.success("🚗 Update Car Successful! 🎉", { position: "top-right" });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("🚗 Update Car Failed! 🎉", { position: "top-right" });
-      return rejectWithValue(error.message);
+      toast.error(`Update Car failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to update car data"
+      );
     }
   }
 );
 
 export const getCarDetail = createAsyncThunk(
   "cars/getCarDetail",
-  async ({carId, pickUpTime, dropOffTime}, { rejectWithValue }) => {
+  async ({ carId, pickUpTime, dropOffTime }, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        `http://localhost:8080/karental/car/customer/car-detail?carId=${carId}&pickUpTime=${pickUpTime}&dropOffTime=${dropOffTime}`,
-        {
-          method: "GET",
-          credentials: "include", // Để gửi cookie nếu cần
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/car/customer/car-detail`, {
+        params: { carId, pickUpTime, dropOffTime },
+        withCredentials: true, // send cookie
+      });
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        return rejectWithValue(errorMessage || "Fetch car failed.");
-      }
-
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      // toast.success("🚗 Fetch Car Successful! 🎉", { position: "top-right" });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("🚗 Fetch Car Failed! 🎉", { position: "top-right" });
-      return rejectWithValue(error.message || "Network error");
+      toast.error(`Fetch car failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+      return rejectWithValue(
+        error.response?.data?.message || "Fetch car failed."
+      );
     }
   }
 );
 
+export const getBookingListOperator = createAsyncThunk(
+  "carFetch/getBookingListOperator",
+  async ({ page, size, sort, status }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/booking/operator/all-bookings`,
+        {
+          params: { page, size, sort, status },
+          withCredentials: true, // send cookie
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Fetch car failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+      return rejectWithValue(
+        error.response?.data?.message || "Fetch car failed."
+      );
+    }
+  }
+);
+
+export const confirmDeposit = createAsyncThunk(
+  "carFetch/confirmDeposit",
+  async (bookingNumber, { getState, rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/operator/confirm-deposit/${bookingNumber}`,
+        {},
+        { withCredentials: true }
+      );
+      toast.success(`Canceled Booking successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data || "Cancel booking failed.";
+      toast.error(`Failed to cancel booking. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
+
+export const rejectDeposit = createAsyncThunk(
+  "carFetch/rejectDeposit",
+  async (bookingNumber, { getState, rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/operator/reject-deposit/${bookingNumber}`,
+        {},
+        { withCredentials: true }
+      );
+      toast.success(`Canceled Booking successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data || "Cancel booking failed.";
+      toast.error(`Failed to cancel booking. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(errorMessage);
+    }
+  }
+);
 
 export const carFetchSlice = createSlice({
   name: "carFetch",
@@ -173,7 +418,30 @@ export const carFetchSlice = createSlice({
         (error) => error !== ""
       );
       if (hasError) {
-        toast.error("⚠️ Please fulfill all the fields!");
+        toast.error(`Please fulfill all the fields!`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            fontWeight: "bold",
+            marginTop: "100px",
+            border: "2px solid #05ce80",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#e6f9f2",
+            color: "#0a6847",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "12px 16px",
+            fontSize: "16px",
+          },
+        });
+
         return;
       }
       // Nếu không có lỗi, reset errors để đảm bảo không có lỗi cũ còn lưu lại
@@ -222,7 +490,7 @@ export const carFetchSlice = createSlice({
       })
       .addCase(fetchCarById.fulfilled, (state, action) => {
         state.status = "succeeded";
-        // Lấy danh sách chức năng từ API (nếu có)
+        // get additional function if exist
         const additionalFunctionKeys =
           action.payload?.data?.additionalFunction || "";
         const functionArray = additionalFunctionKeys
@@ -230,7 +498,7 @@ export const carFetchSlice = createSlice({
           .map((item) => item.trim())
           .filter(Boolean);
 
-        // Danh sách mặc định
+        // list default additional function
         const defaultAdditionalFunctions = {
           Bluetooth: false,
           GPS: false,
@@ -242,7 +510,7 @@ export const carFetchSlice = createSlice({
           USB: false,
         };
 
-        // Cập nhật trạng thái của additionalFunctions
+        // update additional function
         const updatedAdditionalFunctions = Object.keys(
           defaultAdditionalFunctions
         ).reduce(
@@ -250,17 +518,17 @@ export const carFetchSlice = createSlice({
             acc[key] = functionArray.includes(key);
             return acc;
           },
-          { ...defaultAdditionalFunctions } // Đảm bảo có đủ key
+          { ...defaultAdditionalFunctions } // sure that enough keys
         );
 
-        // Gán dữ liệu vào Redux state
+        // update data in Redux state
         state.carData = {
           ...action.payload,
           addressCityProvince: "",
           addressDistrict: "",
           addressWard: "",
           addressHouseNumberStreet: "",
-          additionalFunctions: updatedAdditionalFunctions, // Cập nhật giá trị mới
+          additionalFunctions: updatedAdditionalFunctions, // update additional function
           termsOfUses: {
             noSmoking: false,
             noPet: false,
@@ -281,12 +549,115 @@ export const carFetchSlice = createSlice({
       })
       .addCase(getCarDetail.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.carData = action.payload;
+
+        // get additional function if exist
+        const additionalFunctionKeys =
+          action.payload?.data?.additionalFunction || "";
+        const termsOfOthers = action.payload?.data?.termOfUse || "";
+
+        const functionArray = additionalFunctionKeys
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+
+        const termsOfOtherArray = termsOfOthers
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean);
+
+        // list default additional function
+        const defaultAdditionalFunctions = {
+          Bluetooth: false,
+          GPS: false,
+          Camera: false,
+          SunRoof: false,
+          ChildLock: false,
+          ChildSeat: false,
+          DVD: false,
+          USB: false,
+        };
+
+        const defaultTermsOfUses = {
+          noSmoking: false,
+          noPet: false,
+          noFoodInCar: false,
+          other: false,
+        };
+
+        const validKeys = ["noSmoking", "noPet", "noFoodInCar"];
+
+        // update termsOfOther
+        const updatedTermsOfOther = Object.keys(defaultTermsOfUses).reduce(
+          (acc, key) => {
+            acc[key] = termsOfOtherArray.includes(key);
+            return acc;
+          },
+          {
+            ...defaultTermsOfUses, // sure that enough keys
+          }
+        );
+
+        updatedTermsOfOther.other = termsOfOtherArray.some(
+          (key) => !validKeys.includes(key)
+        );
+
+        // update additional function
+        const updatedAdditionalFunctions = Object.keys(
+          defaultAdditionalFunctions
+        ).reduce(
+          (acc, key) => {
+            acc[key] = functionArray.includes(key);
+            return acc;
+          },
+          { ...defaultAdditionalFunctions } // sure that enough keys
+        );
+
+        state.carData = {
+          ...action.payload,
+          additionalFunctions: updatedAdditionalFunctions, // update additional function
+          termsOfUses: updatedTermsOfOther,
+          other:
+            termsOfOtherArray
+              .filter((key) => !validKeys.includes(key))
+              .join(", ") || "",
+        };
       })
       .addCase(getCarDetail.rejected, (state, action) => {
         state.status = "failed";
         state.errors = action.error.message;
       });
+    builder.addCase(getBookingListOperator.pending, (state, action) => {
+      state.status = "loading";
+    });
+    builder.addCase(getBookingListOperator.fulfilled, (state, action) => {
+      state.status = "idle";
+      state.bookings = action.payload;
+    });
+    builder.addCase(getBookingListOperator.rejected, (state, action) => {
+      state.status = "failed";
+      state.errors = action.error.message;
+    });
+
+    builder.addCase(confirmDeposit.pending, (state, action) => {
+      state.status = "loading";
+    });
+    builder.addCase(confirmDeposit.fulfilled, (state, action) => {
+      state.status = "idle";
+    });
+    builder.addCase(confirmDeposit.rejected, (state, action) => {
+      state.status = "failed";
+      state.errors = action.error.message;
+    });
+    builder.addCase(rejectDeposit.pending, (state, action) => {
+      state.status = "loading";
+    });
+    builder.addCase(rejectDeposit.fulfilled, (state, action) => {
+      state.status = "idle";
+    });
+    builder.addCase(rejectDeposit.rejected, (state, action) => {
+      state.status = "failed";
+      state.errors = action.error.message;
+    });
   },
 });
 

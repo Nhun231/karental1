@@ -10,8 +10,8 @@ const steps = [
 ];
 
 export default function CarStepper() {
-  const location = useLocation();
-  const activeStep = steps.findIndex((step) => step.path === location.pathname);
+  const location = useLocation();// Get the current location
+  const activeStep = steps.findIndex((step) => step.path === location.pathname);// Find the index of the current step
 
   return (
     <>
@@ -20,16 +20,6 @@ export default function CarStepper() {
         {steps.map((step, index) => (
           <Step key={step.label}>
             <StepLabel>
-              {/* <Link
-                to={step.path}
-                style={{
-                  textDecoration: "none",
-                  color: activeStep === index ? "#05ce80" : "gray",
-                  fontWeight: activeStep === index ? "bold" : "normal",
-                }}
-              >
-                {`Step ${index + 1}: ${step.label}`}
-              </Link> */}
               <div
                 style={{
                   textDecoration: "none",

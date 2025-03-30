@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { TextField, Button, Box } from "@mui/material";
 
+/**
+ * 
+ * FileUpload Component 
+ * Provide FileUpload Input 
+ */
 export default function FileUpload({ label, onFileChange, preview, disabled }) {
   const [fileName, setFileName] = useState("");
 

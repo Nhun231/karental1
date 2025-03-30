@@ -85,7 +85,7 @@ export default function EditBookingInfor() {
   }, []);
 
   useEffect(() => {
-    const updatedData = infor?.data?.driver
+    const updatedData = infor?.data?.driver === true
       ? {
         ...infor.data,
         driverFullName: infor.data.driverFullName,
@@ -121,7 +121,8 @@ export default function EditBookingInfor() {
     );
   }, [infor?.data?.driver]);
 
-  const [selectedDate, setSelectedDate] = useState(null); // Mặc định là ngày hôm nay
+  const [selectedDate, setSelectedDate] = useState(null); // default value today
+  const [selectedDateReturn, setSelectedDateReturn] = useState(null);
 
   const [address, setAddress] = useState([]);
   const [cityProvince, setCityProvince] = useState([]);
@@ -174,11 +175,13 @@ export default function EditBookingInfor() {
     }));
   }, [address, infor?.data?.driverCityProvince, infor?.data?.driverDistrict]);
 
+  // check file
   const allowedExtensions = [".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png"];
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileError, setFileError] = useState("");
 
+  // handle file
   const handleFileChange = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -308,7 +311,7 @@ export default function EditBookingInfor() {
                       color: "primary.main", // blue color when shrink
                     },
                   }}
-                  value={carData?.data?.phoneNumber}
+                  value={carData?.data?.phoneNumber || ""}
                   size="small"
                   slotProps={{
                     inputLabel: {
@@ -341,7 +344,7 @@ export default function EditBookingInfor() {
                     },
                   }}
                   size="small"
-                  value={carData?.data?.nationalId}
+                  value={carData?.data?.nationalId || ""}
                   slotProps={{
                     inputLabel: {
                       shrink: true,
@@ -374,7 +377,7 @@ export default function EditBookingInfor() {
                         color: "primary.main", // blue color when shrink
                       },
                     }}
-                    value={dayjs(carData?.data?.dob)}
+                    value={dayjs(carData?.data?.dob) || ""}
                     format="DD/MM/YYYY"
                     slotProps={{
                       textField: {
@@ -417,7 +420,7 @@ export default function EditBookingInfor() {
                     },
                   }}
                   size="small"
-                  value={carData?.data?.email}
+                  value={carData?.data?.email || ""}
                   required
                   slotProps={{
                     inputLabel: {
@@ -499,7 +502,7 @@ export default function EditBookingInfor() {
               required
               variant="standard"
               label="City / Province"
-              value={carData?.data?.cityProvince}
+              value={carData?.data?.cityProvince || ""}
               size="small"
               slotProps={{
                 inputLabel: {
@@ -533,7 +536,7 @@ export default function EditBookingInfor() {
               }}
               required
               size="small"
-              value={carData?.data?.district}
+              value={carData?.data?.district || ""}
               slotProps={{
                 inputLabel: {
                   shrink: true,
@@ -565,7 +568,7 @@ export default function EditBookingInfor() {
                 },
               }}
               required
-              value={carData?.data?.ward}
+              value={carData?.data?.ward || ""}
               size="small"
               slotProps={{
                 inputLabel: {
@@ -598,7 +601,7 @@ export default function EditBookingInfor() {
                 },
               }}
               required
-              value={carData?.data?.houseNumberStreet}
+              value={carData?.data?.houseNumberStreet || ""}
               size="small"
               slotProps={{
                 inputLabel: {
@@ -711,7 +714,7 @@ export default function EditBookingInfor() {
                   id="number"
                   type="number"
                   disabled={!infor?.data?.driver}
-                  value={infor?.data?.driverPhoneNumber}
+                  value={infor?.data?.driverPhoneNumber || ""}
                   error={
                     !infor?.data?.driver && !!errorsBooking?.phoneNumber
                       ? false
@@ -784,7 +787,7 @@ export default function EditBookingInfor() {
                       ? false
                       : !!errorsBooking?.nationalId
                   }
-                  value={infor?.data?.driverNationalId}
+                  value={infor?.data?.driverNationalId || ""}
                   InputLabelProps={{
                     shrink: !!infor?.data?.driverNationalId, // shrink label when value is not empty
                   }}
@@ -859,7 +862,7 @@ export default function EditBookingInfor() {
                     value={
                       infor?.data?.driverDob
                         ? dayjs(infor?.data?.driverDob)
-                        : dayjs()
+                        : dayjs() 
                     }
                     error={
                       !infor?.data?.driver && !!errorsBooking?.dob
@@ -937,14 +940,14 @@ export default function EditBookingInfor() {
                   size="small"
                   variant="standard"
                   id="email"
-                  type="email" // Hỗ trợ kiểm tra định dạng email
-                  placeholder="example@gmail.com" // Gợi ý người dùng nhập đúng định dạng
+                  type="email" 
+                  placeholder="example@gmail.com" 
                   error={
                     !infor?.data?.driver && !!errorsBooking?.email
                       ? false
                       : !!errorsBooking?.email
                   }
-                  value={infor?.data?.driverEmail}
+                  value={infor?.data?.driverEmail || ""}
                   sx={{
                     "& .MuiInputLabel-root.Mui-focused": {
                       color: "primary.main", // blue color when focused
@@ -1027,19 +1030,18 @@ export default function EditBookingInfor() {
                           infor?.data?.status !== "WAITING_CONFIRMED")
                       }
                       InputProps={{
-                        endAdornment: (infor?.data?.driver ||
-                          infor?.data?.driverDrivingLicenseUrl) && (
-                            <IconButton
-                              edge="end"
-                              href={infor?.data?.driverDrivingLicenseUrl} // Link to dowload file
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              size="small" // size small
-                              sx={{ p: 0 }} // padding 0
-                            >
-                              <DownloadIcon />
-                            </IconButton>
-                          ),
+                        endAdornment: (infor?.data?.driver || infor?.data?.driverDrivingLicenseUrl) && (
+                          <IconButton
+                            edge="end"
+                            href={infor?.data?.driverDrivingLicenseUrl} // Link to dowload file
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            size="small" // size small
+                            sx={{ p: 0 }} // padding 0
+                          >
+                            <DownloadIcon />
+                          </IconButton>
+                        ),
                       }}
                     />
                   </FormControl>
@@ -1339,7 +1341,7 @@ export default function EditBookingInfor() {
                   ? false
                   : !!errorsBooking?.addressHouseNumberStreet
               }
-              value={infor?.data?.driverHouseNumberStreet}
+              value={infor?.data?.driverHouseNumberStreet || ""}
               InputLabelProps={{
                 shrink: !!infor?.data?.driverHouseNumberStreet,
               }}
@@ -1427,7 +1429,7 @@ export default function EditBookingInfor() {
                 await dispatch(saveBooking());
               }
             } catch (error) {
-              console.error("❌ Error:", error);
+              console.error("Error:", error);
             } finally {
               setLoading(false);
             }

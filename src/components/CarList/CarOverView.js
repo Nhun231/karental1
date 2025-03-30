@@ -1,49 +1,64 @@
-import { Grid } from "@mui/joy";
+import { Button, Box, Typography, Grid } from "@mui/material";
 import CarCard from "../common/CarCard";
-import { Button, Box, Typography } from "@mui/material";
-import RentalDateTimePicker from "../common/RentalDateTimePicker"
+import RentalDateTimePicker from "../common/RentalDateTimePicker";
+import {useNavigate, useParams} from "react-router-dom";
+
+/**
+ * CarOverView Component
+ * Display OverView about Car Detail
+ * View Car Status in a specific time
+ */
 export const CarOverView = ({ CarData, large, onRentalTimeChange }) => {
+    const navigate = useNavigate();
+    const { id } = useParams();
     return (
-        <Box sx={{ p: 1 }} >
-            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2 }}>
+        <Box sx={{ borderRadius: "8px" }}>
+            {/* Title */}
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: "bold", mb: 2, textAlign: "center" }}>
                 Car Details
             </Typography>
-            <Box sx={{ border: "1px solid #d6d6d6", p: 3, borderRadius: 2 }}>
-                <Grid container spacing={2} alignItems="stretch">
-                    <Grid item xs={8.5}>
+
+            {/* Content */}
+            <Box className="border-box" sx={{ p: 2 }}>
+                <Grid container alignItems="stretch">
+                    {/* Display Car Card */}
+                    <Grid item xs={12} sm={8.5}>
                         <CarCard carData={CarData} large={large} />
                     </Grid>
-                    <Grid item xs={3.5} sx={{ border: "1px solid #d6d6d6", p: 4, borderRadius: 8, backgroundColor: "rgb(247, 251, 255)" }}>
-                        <Grid
-                            container
-                            justifyContent="center"
-                            sx={{
-                                marginTop: "15px",
-                            }}
-                        >
+
+                    {/* Display RentalDate Time Picker */}
+                    <Grid
+                        item
+                        xs={12}
+                        sm={3.5}
+                        sx={{ border: "1px solid #d6d6d6", p: 1, borderRadius: 2, backgroundColor: "rgb(247, 251, 255)" }}
+                    >
+                        <Grid container justifyContent="center" sx={{ mt: 2 }}>
                             <RentalDateTimePicker onRentalTimeChange={onRentalTimeChange} available={CarData.available} />
+
+                            {/* Button Trigger Rent A Car */}
                             <Button
                                 variant="contained"
                                 disabled={!CarData.available}
+                                onClick={() => navigate(`/booking-infor/${id}`)}
                                 sx={{
                                     backgroundColor: "#05ce80",
                                     color: "white",
                                     "&:hover": { backgroundColor: "#04b16d" },
                                     width: "50%",
-                                    paddingY: 1,
-                                    paddingX: 2,
+                                    py: 1,
+                                    px: 2,
                                     fontSize: "1rem",
                                     height: "auto",
-                                    margin: 2,
+                                    mt: 2,
                                 }}
                             >
                                 Rent Now
                             </Button>
-
                         </Grid>
                     </Grid>
                 </Grid>
             </Box>
-        </Box >
-    )
-}
+        </Box>
+    );
+};

@@ -29,27 +29,31 @@ import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { useState, useEffect, useMemo } from "react";
 import {
   fetchInforProfile,
-  setStepBooking,
   setInfor,
   setErrorsBooking,
   handleNext,
 } from "../../reducers/rentCarReducer";
 import axios from "axios";
 import { saveFileToDB } from "../../Helper/indexedDBHelper";
+import { useParams } from "react-router-dom";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB max size
 
 export default function BookingInfor() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [open, setOpen] = useState(false); // Quản lý trạng thái mở DatePicker
+  const { carId } = useParams();
+  const [open, setOpen] = useState(false); // manage state DatePicker
 
+  //get data from redux
   const {
     infor = {},
     statusBooking,
     errorsBooking,
   } = useSelector((state) => state.rentCar);
 
+  
+  //function get profile
   useEffect(() => {
     const getProfile = async () => {
       try {
@@ -57,6 +61,7 @@ export default function BookingInfor() {
 
         if (!data?.data) return;
 
+        //if get data success save in temple redux store
         dispatch(
           setInfor({
             ...infor,
@@ -81,11 +86,12 @@ export default function BookingInfor() {
     getProfile();
   }, []);
 
-  const [selectedDate, setSelectedDate] = useState(null); // Mặc định là ngày hôm nay
+  const [selectedDate, setSelectedDate] = useState(null); // default value today
 
   const [address, setAddress] = useState([]);
   const [cityProvince, setCityProvince] = useState([]);
 
+  //function get address
   useEffect(() => {
     axios.get("/database.json").then((res) => {
       const data = res.data.Address_list;
@@ -99,6 +105,7 @@ export default function BookingInfor() {
     });
   }, []);
 
+  //function get district
   const filteredDistrict = useMemo(() => {
     if (!infor.renter.driverCityProvince) return [];
 
@@ -113,6 +120,7 @@ export default function BookingInfor() {
     );
   }, [address, infor.renter.driverCityProvince]);
 
+  //function get ward
   const filteredWard = useMemo(() => {
     const tmp = address.filter(
       (item) => item.City_Province === infor.renter.driverCityProvince
@@ -127,18 +135,24 @@ export default function BookingInfor() {
     }));
   }, [address, infor.renter.driverCityProvince, infor.renter.driverDistrict]);
 
+  //accept file
   const allowedExtensions = [".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png"];
 
   const [selectedFile, setSelectedFile] = useState(null);
   const [fileError, setFileError] = useState("");
+
+  //handle input file
   const handleFileChange = async (event) => {
+    //get file
     const file = event.target.files[0];
     if (!file) return;
 
+    //check file
     const fileExt = file.name
       .substring(file.name.lastIndexOf("."))
       .toLowerCase();
 
+      //check file
     if (!allowedExtensions.includes(fileExt)) {
       dispatch(
         setErrorsBooking({
@@ -160,11 +174,11 @@ export default function BookingInfor() {
       return;
     }
 
-    // Nếu hợp lệ → Lưu vào IndexedDB
+    // if valid file save to IndexedDB
     await saveFileToDB("driverDrivingLicense", file);
-    // Nếu hợp lệ → Lưu vào state
+    // save to state
     setSelectedFile(file);
-    setFileError(""); // Xóa lỗi nếu có
+    setFileError(""); // clear error
     dispatch(
       setInfor({
         ...infor,
@@ -210,8 +224,15 @@ export default function BookingInfor() {
                   required
                   variant="standard"
                   fullWidth
-                  disabled
-                  sx={{ mb: 2 }}
+                  sx={{
+                    mb: 2,
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "primary.main", // blue color when focused
+                    },
+                    "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                      color: "primary.main", // blue color when shrink
+                    },
+                  }}
                   size="small"
                   value={infor?.data?.driverFullName || ""}
                   slotProps={{
@@ -235,8 +256,15 @@ export default function BookingInfor() {
                   required
                   variant="standard"
                   fullWidth
-                  disabled
-                  sx={{ mb: 2 }}
+                  sx={{
+                    mb: 2,
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "primary.main", // blue color when focused
+                    },
+                    "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                      color: "primary.main", // blue color when shrink
+                    },
+                  }}
                   value={infor?.data?.driverPhoneNumber}
                   size="small"
                   slotProps={{
@@ -259,9 +287,16 @@ export default function BookingInfor() {
                   label="National ID No."
                   required
                   variant="standard"
-                  disabled
                   fullWidth
-                  sx={{ mb: 2 }}
+                  sx={{
+                    mb: 2,
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "primary.main", // blue color when focused
+                    },
+                    "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                      color: "primary.main", // blue color when shrink
+                    },
+                  }}
                   size="small"
                   value={infor?.data?.driverNationalId}
                   slotProps={{
@@ -287,8 +322,15 @@ export default function BookingInfor() {
                   <DatePicker
                     label="Date of birth"
                     fullWidth
-                    disabled
-                    sx={{ mb: 2 }}
+                    sx={{
+                      mb: 2,
+                      "& .MuiInputLabel-root.Mui-focused": {
+                        color: "primary.main", // blue color when focused
+                      },
+                      "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                        color: "primary.main", // blue color when shrink
+                      },
+                    }}
                     value={dayjs(infor?.data?.dob)}
                     format="DD/MM/YYYY"
                     slotProps={{
@@ -322,8 +364,15 @@ export default function BookingInfor() {
                   label="Email address"
                   fullWidth
                   variant="standard"
-                  disabled
-                  sx={{ mb: 2 }}
+                  sx={{
+                    mb: 2,
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "primary.main", // blue color when focused
+                    },
+                    "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                      color: "primary.main", // blue color when shrink
+                    },
+                  }}
                   size="small"
                   value={infor?.data?.driverEmail}
                   required
@@ -346,8 +395,15 @@ export default function BookingInfor() {
                   label="Driving License"
                   fullWidth
                   variant="standard"
-                  disabled
-                  sx={{ mb: 2 }}
+                  sx={{
+                    mb: 2,
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "primary.main", // blue color when focused
+                    },
+                    "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                      color: "primary.main", // blue color when shrink
+                    },
+                  }}
                   size="small"
                   value={
                     infor?.data?.drivingLicenseUrl
@@ -388,10 +444,17 @@ export default function BookingInfor() {
           ) : (
             <TextField
               fullWidth
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "primary.main", // blue color when focused
+                },
+                "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                  color: "primary.main", // blue color when shrink
+                },
+              }}
               required
               variant="standard"
-              disabled
               label="City / Province"
               value={infor?.data?.driverCityProvince}
               size="small"
@@ -416,8 +479,15 @@ export default function BookingInfor() {
               label="District"
               fullWidth
               variant="standard"
-              disabled
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "primary.main", // blue color when focused
+                },
+                "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                  color: "primary.main", // blue color when shrink
+                },
+              }}
               required
               size="small"
               value={infor?.data?.driverDistrict}
@@ -442,8 +512,15 @@ export default function BookingInfor() {
               label="Ward"
               fullWidth
               variant="standard"
-              disabled
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "primary.main", // blue color when focused
+                },
+                "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                  color: "primary.main", // blue color when shrink
+                },
+              }}
               required
               value={infor?.data?.driverWard}
               size="small"
@@ -468,8 +545,15 @@ export default function BookingInfor() {
               label="House number, Street"
               fullWidth
               variant="standard"
-              disabled
-              sx={{ mb: 2 }}
+              sx={{
+                mb: 2,
+                "& .MuiInputLabel-root.Mui-focused": {
+                  color: "primary.main", // blue color when focused
+                },
+                "& .MuiInputLabel-root.MuiInputLabel-shrink": {
+                  color: "primary.main", // blue color when shrink
+                },
+              }}
               required
               value={infor?.data?.driverHouseNumberStreet}
               size="small"
@@ -1067,7 +1151,7 @@ export default function BookingInfor() {
               if (
                 Object.keys(store.getState().rentCar.errorsBooking).length === 0
               ) {
-                navigate("/booking-pay");
+                navigate(`/booking-pay/${carId}`);
               }
             }, 0); //wait for redux store to update
           }}

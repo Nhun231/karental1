@@ -5,14 +5,11 @@ import {
   Button,
   Card,
   CardContent,
-  Rating,
-  Select,
   Skeleton,
   ListItem,
   ListItemIcon,
   List,
   CircularProgress,
-  MenuItem,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -22,11 +19,12 @@ import { Navigation, Autoplay } from "swiper/modules";
 import { getCarDetail } from "../../reducers/carFetchReducer";
 import {
   getBookingDetail,
-  setInfor,
   getWallet,
   cancelBooking,
   confirmPickup,
   returnCar,
+  payDepositAgain,
+  payTotalFee,
 } from "../../reducers/rentCarReducer";
 import { useDispatch, useSelector } from "react-redux";
 import TabEditBooking from "./TabEditBooking";
@@ -45,8 +43,7 @@ import ReceiptLongIcon from "@mui/icons-material/ReceiptLong";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import InfoIcon from "@mui/icons-material/Info";
 import { useParams } from "react-router-dom";
-import GiveRating from "../Feedback/GiveRating"
-import ViewFeedback from "../Feedback/ViewFeedback"
+import GiveRating from "../Feedback/GiveRating";
 import { getFeedbackByBookingId } from "../../services/FeedbackServices";
 dayjs.extend(duration);
 
@@ -54,14 +51,11 @@ export default function EditBookingDescription() {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(false);
   // Get id from URL
-  const { id } = useParams();
+  const { bookedId } = useParams();
   // State handle open/close feedback modal
   const [open, setOpen] = useState(false);
-  // State to track whether the user has submitted a feedback 
+  // State to track whether the user has submitted a feedback
   const [hasReviewed, setHasReviewed] = useState(false);
-  const [feedback, setFeedback] = useState(null);
-  //get carId from session
-  //   const carId = sessionStorage.getItem("selectedCarId");
   const {
     carData = {},
     status,
@@ -69,6 +63,10 @@ export default function EditBookingDescription() {
   } = useSelector((state) => state.carFetch);
 
   const { infor = {}, wallet = {} } = useSelector((state) => state.rentCar);
+  const dropOffDate = new Date(infor?.data?.dropOffTime);
+  const pickUpDate = new Date(infor?.data?.pickUpTime);
+
+  const differenceInMs = dropOffDate - pickUpDate;
 
   const [images, setImages] = useState([]);
 
@@ -78,9 +76,10 @@ export default function EditBookingDescription() {
     PENDING_DEPOSIT: "red",
     COMPLETED: "blue",
     CANCELLED: "grey",
-    "PENDING PAYMENT": "red",
-    "WAITTING PAYMENT": "orange",
+    PENDING_PAYMENT: "orange",
+    WAITTING_PAYMENT: "orange",
     WAITING_CONFIRMED: "orange",
+    WAITING_CONFIRMED_RETURN_CAR: "orange",
   };
 
   //function get data car detail
@@ -88,13 +87,28 @@ export default function EditBookingDescription() {
     const fetchAndProcessCarData = async () => {
       try {
         const dataWallet = await dispatch(getWallet()).unwrap();
-        const bookingData = await dispatch(getBookingDetail(id)).unwrap();
+        const bookingData = await dispatch(getBookingDetail(bookedId)).unwrap();
         if (!bookingData?.data) return;
+
+        const pickUpTime = bookingData?.data?.pickUpTime
+          ? new Date(bookingData.data.pickUpTime).toISOString()
+          : null;
+
+        const dropOffTime = bookingData?.data?.dropOffTime
+          ? new Date(bookingData.data.dropOffTime).toISOString()
+          : null;
+
+        if (!pickUpTime || !dropOffTime) {
+          console.warn("Invalid pickUpTime or dropOffTime");
+          setLoading(false);
+          return;
+        }
+
         const data = await dispatch(
           getCarDetail({
             carId: bookingData.data.carId, // get carId from bookingData
-            pickUpTime: "2025-03-30T06:00:00",
-            dropOffTime: "2025-03-31T06:59:00",
+            pickUpTime,
+            dropOffTime,
           })
         ).unwrap();
 
@@ -111,25 +125,23 @@ export default function EditBookingDescription() {
 
         const pickUp = dayjs(bookingData?.data?.pickUpTime);
         const dropOff = dayjs(bookingData?.data?.dropOffTime);
-
-        const minutes = dropOff.diff(pickUp, "minute"); // coutn the munite between
-        const days = Math.ceil(minutes / (24 * 60)); // convert minute to day
-        dispatch(setInfor({ ...infor, days }));
       } catch (err) {
         console.error("Fetch failed:", err);
       }
+      document.title = "My Booking Page";
     };
 
-    fetchAndProcessCarData();
-  }, [dispatch]);
+    if (bookedId) {
+      fetchAndProcessCarData();
+    }
+  }, [bookedId]);
 
   // Get feedback status
   useEffect(() => {
     const getFeedbackStatus = async () => {
       try {
-        const result = await getFeedbackByBookingId(id);
-        setHasReviewed(result.data !== null);
-        setFeedback(result.data)
+        const result = await getFeedbackByBookingId(bookedId);
+        setHasReviewed(result.data.length > 0);
       } catch (error) {
         console.error("Error fetching feedback:", error);
       } finally {
@@ -138,7 +150,7 @@ export default function EditBookingDescription() {
     };
 
     getFeedbackStatus();
-  }, [id, hasReviewed]);
+  }, [bookedId, hasReviewed]);
 
   // If feedback has sent, disable modal
   const handleGivefeedback = (data) => {
@@ -265,7 +277,7 @@ export default function EditBookingDescription() {
                   Number of days:
                 </Typography>
                 <Typography variant="body2" sx={{ flex: 2 }}>
-                  {infor?.days}
+                  {Math.ceil(differenceInMs / (1000 * 60 * 60 * 24))}
                 </Typography>
               </Box>
 
@@ -355,7 +367,7 @@ export default function EditBookingDescription() {
                     color: statusColors[infor?.data?.status] || "black",
                   }}
                 >
-                  {infor?.data?.status?.replace("_", " ").toUpperCase()}
+                  {infor?.data?.status?.replaceAll("_", " ").toUpperCase()}
                 </Typography>
               </Box>
 
@@ -385,30 +397,55 @@ export default function EditBookingDescription() {
                   <Button
                     variant="contained"
                     id="cancelButton"
-                    color="info"
                     disabled={loading}
                     sx={{
                       fontWeight: "bold",
-                      flex: "0.25",
                       minWidth: "100px",
                       fontSize: "12px",
+                      backgroundColor: "#04b16d",
                     }}
                     onClick={(e) => {
-                      Swal.fire({
-                        title: "Are you sure?",
-                        text: "Do you really want to return this car?",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonText: "Yes",
-                        cancelButtonText: "No",
-                      }).then((result) => {
-                        if (result.isConfirmed) {
-                          setLoading(true);
-                          dispatch(returnCar()).finally(() => {
-                            setLoading(false);
-                          });
-                        }
-                      });
+                      if (infor?.data?.totalPrice <= infor?.data?.deposit) {
+                        Swal.fire({
+                          title: "Return car?",
+                          text: `Please confirm to return the car. The remaining amount of ${new Intl.NumberFormat(
+                            "en-US"
+                          ).format(
+                            infor?.data?.deposit - infor?.data?.totalPrice
+                          )} VND will be return to your wallet.The car owner must confirm your early return request. If declined, you must keep the car until the original return time.`,
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonText: "Yes",
+                          cancelButtonText: "No",
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            setLoading(true);
+                            dispatch(confirmPickup()).finally(() => {
+                              setLoading(false);
+                            });
+                          }
+                        });
+                      } else {
+                        Swal.fire({
+                          title: "Return car?",
+                          text: `Please confirm to return the car. The exceeding amount of ${new Intl.NumberFormat(
+                            "en-US"
+                          ).format(
+                            infor?.data?.totalPrice - infor?.data?.deposit
+                          )} VND will be deducted from your wallet.The car owner must confirm your early return request. If declined, you must keep the car until the original return time.`,
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonText: "Yes",
+                          cancelButtonText: "No",
+                        }).then((result) => {
+                          if (result.isConfirmed) {
+                            setLoading(true);
+                            dispatch(returnCar()).finally(() => {
+                              setLoading(false);
+                            });
+                          }
+                        });
+                      }
                     }}
                   >
                     {loading ? (
@@ -418,22 +455,22 @@ export default function EditBookingDescription() {
                     )}
                   </Button>
                 )}
-                <Button
-                  variant="contained"
-                  id="pickupButton"
-                  color="inherit"
-                  disabled={loading}
-                  sx={{
-                    fontWeight: "bold",
-                    flex: "0.25",
-                    minWidth: "100px",
-                    fontSize: "12px",
-                  }}
-                  onClick={(e) => {
-                    if (wallet?.data?.balance < infor?.data?.totalPrice) {
+                {infor?.data?.status === "CONFIRMED" && (
+                  <Button
+                    variant="contained"
+                    id="pickupButton"
+                    color="inherit"
+                    disabled={loading}
+                    sx={{
+                      fontWeight: "bold",
+                      flex: "0.25",
+                      minWidth: "100px",
+                      fontSize: "12px",
+                    }}
+                    onClick={(e) => {
                       Swal.fire({
-                        title: "Return car?",
-                        text: "Please confirm to return the car. The remaining amount of 1,500,000 VND will be deducted from your wallet.",
+                        title: "Pick-up car?",
+                        text: "Please confirm to pick up the car.",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: "Yes",
@@ -446,10 +483,31 @@ export default function EditBookingDescription() {
                           });
                         }
                       });
-                    } else {
+                    }}
+                  >
+                    {loading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Pick-up"
+                    )}
+                  </Button>
+                )}
+                {infor?.data?.status === "PENDING_DEPOSIT" && (
+                  <Button
+                    variant="contained"
+                    id="pickupButton"
+                    color="inherit"
+                    disabled={loading}
+                    sx={{
+                      fontWeight: "bold",
+                      flex: "0.5",
+                      minWidth: "100px",
+                      fontSize: "12px",
+                    }}
+                    onClick={(e) => {
                       Swal.fire({
-                        title: "Return car?",
-                        text: "Please confirm to return the car. The exceeding amount of 1,500,000 VND will be return to your wallet.",
+                        title: "Pay deposit car?",
+                        text: "Please confirm to pay deposit .",
                         icon: "warning",
                         showCancelButton: true,
                         confirmButtonText: "Yes",
@@ -457,20 +515,61 @@ export default function EditBookingDescription() {
                       }).then((result) => {
                         if (result.isConfirmed) {
                           setLoading(true);
-                          dispatch(confirmPickup()).finally(() => {
+                          dispatch(
+                            payDepositAgain(infor?.data?.bookingNumber)
+                          ).finally(() => {
                             setLoading(false);
                           });
                         }
                       });
-                    }
-                  }}
-                >
-                  {loading ? (
-                    <CircularProgress size={20} color="inherit" />
-                  ) : (
-                    "Pick-up"
-                  )}
-                </Button>
+                    }}
+                  >
+                    {loading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Pay Deposit"
+                    )}
+                  </Button>
+                )}
+                {infor?.data?.status === "PENDING_PAYMENT" && (
+                  <Button
+                    variant="contained"
+                    id="pickupButton"
+                    color="success"
+                    disabled={loading}
+                    sx={{
+                      fontWeight: "bold",
+                      flex: "0.5",
+                      minWidth: "100px",
+                      fontSize: "12px",
+                    }}
+                    onClick={(e) => {
+                      Swal.fire({
+                        title: "Pay total fee car?",
+                        text: "Please confirm to pay total fee.",
+                        icon: "warning",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes",
+                        cancelButtonText: "No",
+                      }).then((result) => {
+                        if (result.isConfirmed) {
+                          setLoading(true);
+                          dispatch(
+                            payTotalFee(infor?.data?.bookingNumber)
+                          ).finally(() => {
+                            setLoading(false);
+                          });
+                        }
+                      });
+                    }}
+                  >
+                    {loading ? (
+                      <CircularProgress size={20} color="inherit" />
+                    ) : (
+                      "Complete Payment"
+                    )}
+                  </Button>
+                )}
                 {infor?.data?.status !== "PENDING_PAYMENT" &&
                   infor?.data?.status !== "CANCELLED" &&
                   infor?.data?.status !== "COMPLETED" &&
@@ -512,8 +611,8 @@ export default function EditBookingDescription() {
                     </Button>
                   )}
                 {/* User can feedback after booking completed */}
-                {infor?.data?.status === "COMPLETED" && <div>
-                  {hasReviewed && <>
+                {infor?.data?.status === "COMPLETED" && (
+                  <div>
                     <Button
                       variant="contained"
                       id="feedback-button"
@@ -527,38 +626,20 @@ export default function EditBookingDescription() {
                         fontSize: "12px",
                       }}
                       onClick={() => setOpen(true)}
+                      disabled={hasReviewed} // User can feedback only one time, after send feedback, button will be disable
                     >
-                      View Feedback
+                      Feedback
                     </Button>
-                    <ViewFeedback feedback={feedback} open={open}
-                      onClose={() => setOpen(false)}></ViewFeedback>
-                  </>}
-                  {!hasReviewed && <><Button
-                    variant="contained"
-                    id="feedback-button"
-                    sx={{
-                      backgroundColor: "#555",
-                      color: "white",
-                      "&:hover": { backgroundColor: "#444" },
-                      fontWeight: "bold",
-                      flex: "0.25",
-                      minWidth: "100px",
-                      fontSize: "12px",
-                    }}
-                    onClick={() => setOpen(true)}
-                    disabled={hasReviewed}  // User can feedback only one time, after send feedback, button will be disable
-                  >
-                    Feedback
-                  </Button>
                     <GiveRating
                       open={open}
                       onClose={() => setOpen(false)}
                       onSubmit={handleGivefeedback}
                       bookingDate={infor?.data?.dropOffTime}
                       hasReviewed={hasReviewed}
-                      bookingId={id}
-                    /></>}
-                </div>}
+                      bookingId={bookedId}
+                    />
+                  </div>
+                )}
               </Box>
             </CardContent>
           </Card>

@@ -28,8 +28,8 @@ export default function PersonalInformation({ initialData = {}, onlyView = false
     drivingLicenseFile: initialData.drivingLicenseUrl || initialData.drivingLicenseFile || null,
     drivingLicensePreview: initialData.drivingLicenseUrl || initialData.drivingLicenseFile || null,
   });
-  console.log("pinfor:", initialData)
-  console.log("formdata:", formData)
+  // console.log("pinfor:", initialData)
+  // console.log("formdata:", formData)
   const [errorMsg, setErrorMsg] = useState({});
   const [openConfirm, setOpenConfirm] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);

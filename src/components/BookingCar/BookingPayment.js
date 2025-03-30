@@ -1,47 +1,29 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { store } from "../../redux/store";
-import Header from "../common/Header";
 import Footer from "../common/Footer";
 import { BookingDescript } from "./BookingDescript";
 import {
   Typography,
   Box,
-  TextField,
-  Grid,
-  FormHelperText,
-  Skeleton,
-  Checkbox,
   FormControlLabel,
-  InputAdornment,
   Button,
   FormControl,
-  Autocomplete,
   RadioGroup,
   Radio,
   FormLabel,
 } from "@mui/material";
-import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import { useState, useEffect, useMemo } from "react";
-import {
-  fetchInforProfile,
-  setStepBooking,
-  setInfor,
-  setErrorsBooking,
-  handleNext,
-} from "../../reducers/rentCarReducer";
-import axios from "axios";
+import { useState } from "react";
+import { setInfor } from "../../reducers/rentCarReducer";
 import { createBooking } from "../../reducers/rentCarReducer";
 import { toast } from "react-toastify";
+import { useParams } from "react-router-dom";
 
 export default function BookingPayment() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const [value, setValue] = useState("wallet");
+
+  const { carId } = useParams();
   const [loading, setLoading] = useState(false);
 
   const { wallet = {} } = useSelector((state) => state.rentCar);
@@ -125,13 +107,13 @@ export default function BookingPayment() {
           onClick={async () => {
             try {
               setLoading(true);
-              const result = await dispatch(createBooking()).unwrap();
+              const result = await dispatch(createBooking(carId)).unwrap();
               if (result) {
-                navigate("/booking-finish"); // Chỉ chuyển hướng nếu gửi thành công
+                navigate(`/booking-finish/${carId}`); // Chỉ chuyển hướng nếu gửi thành công
               }
             } catch (error) {
               toast.error(
-                "🚫 Car booking failed! Someone has already booked this car",
+                "Car booking failed! Someone has already booked this car",
                 {
                   position: "top-right",
                 }

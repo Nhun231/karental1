@@ -28,7 +28,7 @@ export const SearchResult = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [sortOption, setSortOption] = useState("newest");
     const address = searchParams.get("address") || "";
-    console.log("s", address)
+    // console.log("s", address)
     const pickUpTime = searchParams.get("pickUpTime") || "";
     const dropOffTime = searchParams.get("dropOffTime") || "";
     const getSortQuery = (option) =>
@@ -42,7 +42,7 @@ export const SearchResult = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                console.log(pickUpTime)
+                // console.log(pickUpTime)
                 const params = {
                     address,
                     pickUpTime: dayjs(pickUpTime).utc().format("YYYY-MM-DDTHH:mm:ss"),
@@ -51,7 +51,7 @@ export const SearchResult = () => {
                     size: pageSize,
                     sort: getSortQuery(sortOption),
                 };
-                console.log(params.pickUpTime)
+                // console.log(params.pickUpTime)
                 const response = await getSearchResult(params);
                 setCars(response.data.content || []);
                 setTotalPages(response.data.totalPages || 1);
@@ -62,10 +62,15 @@ export const SearchResult = () => {
             } finally {
                 setLoading(false);
             }
+            document.title = 'Search Results';
         };
         fetchData();
     }, [address, pickUpTime, dropOffTime, page, pageSize, sortOption]);
+    useEffect(() => {
+        document.title = 'Search Result';
+    }, []);
     if (loading) return <p>Loading...</p>;
+
     return (
         <div>
             {/* Header */}

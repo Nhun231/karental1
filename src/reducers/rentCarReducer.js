@@ -1,36 +1,50 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit"; // API gọi đến backend
 import { toast } from "react-toastify";
 import { getFileFromDB } from "../Helper/indexedDBHelper";
+import axios from "axios";
+
 const BASE_URL = "http://localhost:8080/karental";
 export const fetchInforProfile = createAsyncThunk(
   "rentCar/fetchInforProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BASE_URL}/user/edit-profile`, {
-        method: "GET",
-        credentials: "include", // Để gửi cookie nếu cần
+      const response = await axios.get(`${BASE_URL}/user/edit-profile`, {
+        withCredentials: true, // Để gửi cookie nếu cần
       });
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        return rejectWithValue(errorMessage || "Get profile failed.");
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
 
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      // toast.success(" Get Profile Successful! ", {
-      //   position: "top-right",
-      // });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("\u{274C} Fetch Profile Failed! \u{1F61E}", {
+      toast.error(`Fetch Profile Failed!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return rejectWithValue(error.message || "Network error.");
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error."
+      );
     }
   }
 );
@@ -39,48 +53,60 @@ export const getWallet = createAsyncThunk(
   "rentCar/getWallet",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(`${BASE_URL}/booking/get-wallet`, {
-        method: "GET",
-        credentials: "include", // Để gửi cookie nếu cần
+      const response = await axios.get(`${BASE_URL}/booking/get-wallet`, {
+        withCredentials: true, // Để gửi cookie nếu cần
       });
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        return rejectWithValue(errorMessage || "Get wallet failed.");
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
 
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      // toast.success(" Get Wallet Successful! ", { position: "top-right" });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("\u{274C} Fetch Wallet Failed! \u{1F61E}", {
+      toast.error(`Fetch Wallet Failed!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return rejectWithValue(error.message || "Network error.");
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error."
+      );
     }
   }
 );
 
 export const createBooking = createAsyncThunk(
   "rentCar/createBooking",
-  async (_, { getState, rejectWithValue }) => {
+  async (carId, { getState, rejectWithValue }) => {
     try {
       const formData = new FormData();
       const state = getState();
+
       if (state.rentCar.infor.driver === false) {
         const renter = state.rentCar.infor.data;
         Object.entries(renter).forEach(([key, value]) => {
           formData.append(key, value);
         });
         formData.append("driver", false);
-        // for (let pair of formData.entries()) {
-        //   console.log(`🔹 ${pair[0]}:`, pair[1]);
-        // }
       } else {
         const renter = state.rentCar.infor.renter;
         const file = await getFileFromDB("driverDrivingLicense");
@@ -89,79 +115,116 @@ export const createBooking = createAsyncThunk(
           formData.append(key, value);
         });
         formData.append("driver", true);
-        // for (let pair of formData.entries()) {
-        //   console.log(`🔹 ${pair[0]}:`, pair[1]);
-        // }
       }
+
       formData.append(
         "pickUpLocation",
-        "Tỉnh Hà Giang, Thành phố Hà Giang, Phường Quang Trung,abc"
+        state.rentCar.infor.data.driverCityProvince +
+          ", " +
+          state.rentCar.infor.data.driverDistrict +
+          ", " +
+          state.rentCar.infor.data.driverWard +
+          ", " +
+          state.rentCar.infor.data.driverHouseNumberStreet
       );
-      formData.append("pickUpTime", "2025-03-30T06:00:00");
-      formData.append("dropOffTime", "2025-03-31T06:59:00");
+
+      formData.append("pickUpTime", state.rental.pickUpTime.replace("Z", ""));
+      formData.append("dropOffTime", state.rental.dropOffTime.replace("Z", ""));
       formData.append("paymentType", state.rentCar.infor.paymentType);
-      formData.append("carId  ", "2d91cde8-65ee-4c5d-b600-6cdc52092318");
 
-      // for (let pair of formData.entries()) {
-      //   console.log(`🔹 ${pair[0]}:`, pair[1]);
-      // }
-      const response = await fetch(`${BASE_URL}/booking/customer/create-book`, {
-        method: "POST",
-        credentials: "include", // Để gửi cookie nếu cần
-        body: formData,
-      });
+      formData.append("carId", carId);
+      const response = await axios.post(
+        `${BASE_URL}/booking/customer/create-book`,
+        formData,
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        return rejectWithValue(errorMessage || "Create booking failed.");
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
 
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      toast.success("\u{1F697} Create Booking Successful! \u{1F490}", {
+      toast.success(`Create Booking Successful!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return data;
+
+      return response.data;
     } catch (error) {
-      return rejectWithValue(error.message || "Network error.");
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error."
+      );
     }
   }
 );
 
 export const getBookingDetail = createAsyncThunk(
   "rentCar/getBookingDetail",
-  async (carId, { rejectWithValue }) => {
+  async (bookedId, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        `${BASE_URL}/booking/customer/${carId}`,
+      const response = await axios.get(
+        `${BASE_URL}/booking/customer/${bookedId}`,
         {
-          method: "GET",
-          credentials: "include", // Để gửi cookie nếu cần
+          withCredentials: true, // Để gửi cookie nếu cần
         }
       );
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        return rejectWithValue(errorMessage || "Fetch car failed.");
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
 
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      // toast.success(" Fetch Car Successful! ", { position: "top-right" });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("\u{274C} Fetch Car Failed! \u{1F61E}", {
+      toast.error(`Fetch Car Failed!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return rejectWithValue(error.message || "Network error");
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
   }
 );
@@ -172,13 +235,11 @@ export const saveBooking = createAsyncThunk(
     try {
       const formData = new FormData();
       const state = getState();
-
       const renter = state.rentCar.infor.data;
 
-      if (state.rentCar.infor.data.driver === true) {
+      if (renter.driver === true) {
         const file = await getFileFromDB("driverDrivingLicense");
         if (file) {
-          // Chỉ thêm nếu file không phải null hoặc undefined
           formData.append("driverDrivingLicense", file);
         }
       }
@@ -187,43 +248,74 @@ export const saveBooking = createAsyncThunk(
         formData.append(key, value);
       });
 
-      // console.log(state.rentCar.infor.data.driver);
-      // for (let pair of formData.entries()) {
-      //   console.log(`🔹 ${pair[0]}:`, pair[1]);
-      // }
-
-      const response = await fetch(
+      const response = await axios.put(
         `${BASE_URL}/booking/customer/edit-book/${renter.bookingNumber}`,
+        formData,
         {
-          method: "PUT",
-          credentials: "include",
-          body: formData,
+          withCredentials: true, // Để gửi cookie nếu cần
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
       );
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        toast.error("\u{274C} Save Booking Failed! Cannot save now!\u{1F61E}", {
-          position: "top-right",
-        });
-        return rejectWithValue(errorMessage || "Save booking failed.");
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
 
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      toast.success("🚗 Save Booking Successful! 🎉", {
+      toast.success(`Save Booking Successful!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return data;
+
+      return response.data;
     } catch (error) {
-      toast.error("\u{274C} Save Booking Failed! Cannot save now!\u{1F61E}", {
+      toast.error(`Save Booking Failed! Cannot save now!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return rejectWithValue(error.message || "Network error");
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
   }
 );
@@ -239,32 +331,63 @@ export const cancelBooking = createAsyncThunk(
         throw new Error("Booking number is missing.");
       }
 
-      const response = await fetch(
+      const response = await axios.put(
         `${BASE_URL}/booking/customer/cancel-booking/${bookingNumber}`,
-        {
-          method: "PUT",
-          credentials: "include",
-        }
+        {},
+        { withCredentials: true }
       );
-
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        toast.error("\u{274C} Failed to cancel booking. Cannot cancel now!", {
-          position: "top-right",
-        });
-        return rejectWithValue(errorMessage || "Cancel booking failed.");
-      }
-
-      const data = await response.json();
-      toast.success("\u{1F697} Booking canceled successfully!", {
+      toast.success(`Canceled Booking successfully!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return data;
+
+      return response.data;
     } catch (error) {
-      toast.error("\u{274C} Failed to cancel booking. Please try again!", {
+      const errorMessage = error.response?.data || "Cancel booking failed.";
+      toast.error(`Failed to cancel booking. Please try again!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return rejectWithValue(error.message || "Network error");
+
+      return rejectWithValue(errorMessage);
     }
   }
 );
@@ -280,32 +403,67 @@ export const confirmPickup = createAsyncThunk(
         throw new Error("Booking number is missing.");
       }
 
-      const response = await fetch(
+      const response = await axios.put(
         `${BASE_URL}/booking/customer/confirm-pick-up/${bookingNumber}`,
+        {},
         {
-          method: "PUT",
-          credentials: "include",
+          withCredentials: true, // Để gửi cookie nếu cần
         }
       );
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        toast.error("\u{274C} Failed to cancel booking. Cannot cancel now!", {
-          position: "top-right",
-        });
-        return rejectWithValue(errorMessage || "Cancel booking failed.");
-      }
+      toast.success(`Confirm pickup successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-      const data = await response.json();
-      toast.success("\u{1F697} Confirm pickup successfully!", {
-        position: "top-right",
-      });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("\u{274C} Failed to cancel booking. Please try again!", {
+      toast.error(`Failed to confirm pickup. Please try again!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return rejectWithValue(error.message || "Network error");
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
   }
 );
@@ -320,32 +478,413 @@ export const returnCar = createAsyncThunk(
       if (!bookingNumber) {
         throw new Error("Booking number is missing.");
       }
-      const response = await fetch(
+
+      const response = await axios.put(
         `${BASE_URL}/booking/customer/return-car/${bookingNumber}`,
+        {},
         {
-          method: "PUT",
-          credentials: "include",
+          withCredentials: true, // Để gửi cookie nếu cần
         }
       );
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        toast.error("\u{274C} Failed to cancel booking. Cannot cancel now!", {
-          position: "top-right",
-        });
-        return rejectWithValue(errorMessage || "Cancel booking failed.");
-      }
+      toast.success(`Return car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-      const data = await response.json();
-      toast.success("\u{1F697} Return car successfully!", {
-        position: "top-right",
-      });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("\u{274C} Failed to return car. Please try again!", {
+      toast.error(`Failed to return car. Please try again!`, {
         position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
       });
-      return rejectWithValue(error.message || "Network error");
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
+    }
+  }
+);
+
+export const confirmEarlyReturn = createAsyncThunk(
+  "rentCar/confirmEarlyReturn",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/car-owner/confirm-early-return/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
+
+      toast.success(`Return car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to return car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
+    }
+  }
+);
+
+export const rejectEarlyReturn = createAsyncThunk(
+  "rentCar/rejectEarlyReturn",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/car-owner/reject-early-return/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
+
+      toast.success(`Reject return car early successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to reject return car early. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
+    }
+  }
+);
+
+export const rejectRentCar = createAsyncThunk(
+  "rentCar/rejectRentCar",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/car-owner/reject-booking/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
+
+      toast.success(`Reject return car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to reject return car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
+    }
+  }
+);
+
+export const payDepositAgain = createAsyncThunk(
+  "rentCar/payDepositAgain",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/pay-deposit-again/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
+
+      toast.success(`Pay deposit car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to pay deposit car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
+    }
+  }
+);
+
+export const payTotalFee = createAsyncThunk(
+  "rentCar/payTotalFee",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/pay-total-payment-again/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
+
+      toast.success(`Pay total fee car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to pay total fee car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
   }
 );
@@ -431,11 +970,51 @@ export const rentCarSlice = createSlice({
       state.errorsBooking = newErrors;
 
       if (Object.keys(newErrors).length > 0) {
-        toast.error("⚠️ Please fulfill all the fields!");
+        toast.error(`Please fulfill all the fields!`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            fontWeight: "bold",
+            border: "2px solid #05ce80",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#e6f9f2",
+            color: "#0a6847",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "12px 16px",
+            fontSize: "16px",
+          },
+        });
         return;
       } else {
-        toast.success("🚗 Add Renter information Successful! 🎉", {
+        toast.success(`Add Renter information Successful!`, {
           position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            fontWeight: "bold",
+            border: "2px solid #05ce80",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#e6f9f2",
+            color: "#0a6847",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "12px 16px",
+            fontSize: "16px",
+          },
         });
       }
     },
@@ -611,6 +1190,61 @@ export const rentCarSlice = createSlice({
       state.infor = action.payload;
     });
     builder.addCase(returnCar.rejected, (state, action) => {
+      state.statusBooking = "failed";
+      state.errorsBooking = action.error.message;
+    });
+    builder.addCase(confirmEarlyReturn.pending, (state) => {
+      state.statusBooking = "loading";
+    });
+    builder.addCase(confirmEarlyReturn.fulfilled, (state, action) => {
+      state.statusBooking = "succeeded";
+      state.infor = action.payload;
+    });
+    builder.addCase(confirmEarlyReturn.rejected, (state, action) => {
+      state.statusBooking = "failed";
+      state.errorsBooking = action.error.message;
+    });
+    builder.addCase(rejectEarlyReturn.pending, (state) => {
+      state.statusBooking = "loading";
+    });
+    builder.addCase(rejectEarlyReturn.fulfilled, (state, action) => {
+      state.statusBooking = "succeeded";
+      state.infor = action.payload;
+    });
+    builder.addCase(rejectEarlyReturn.rejected, (state, action) => {
+      state.statusBooking = "failed";
+      state.errorsBooking = action.error.message;
+    });
+    builder.addCase(rejectRentCar.pending, (state) => {
+      state.statusBooking = "loading";
+    });
+    builder.addCase(rejectRentCar.fulfilled, (state, action) => {
+      state.statusBooking = "succeeded";
+      state.infor = action.payload;
+    });
+    builder.addCase(rejectRentCar.rejected, (state, action) => {
+      state.statusBooking = "failed";
+      state.errorsBooking = action.error.message;
+    });
+    builder.addCase(payDepositAgain.pending, (state) => {
+      state.statusBooking = "loading";
+    });
+    builder.addCase(payDepositAgain.fulfilled, (state, action) => {
+      state.statusBooking = "succeeded";
+      state.infor = action.payload;
+    });
+    builder.addCase(payDepositAgain.rejected, (state, action) => {
+      state.statusBooking = "failed";
+      state.errorsBooking = action.error.message;
+    });
+    builder.addCase(payTotalFee.pending, (state) => {
+      state.statusBooking = "loading";
+    });
+    builder.addCase(payTotalFee.fulfilled, (state, action) => {
+      state.statusBooking = "succeeded";
+      state.infor = action.payload;
+    });
+    builder.addCase(payTotalFee.rejected, (state, action) => {
       state.statusBooking = "failed";
       state.errorsBooking = action.error.message;
     });

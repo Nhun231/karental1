@@ -1,5 +1,10 @@
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Box } from "@mui/material";
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Box } from "@mui/material";
 
+/**
+ * 
+ * Documents Component 
+ * Display documents of car like registration paper,..
+ */
 const Documents = ({ CarData }) => {
     const documents = [
         { no: 1, name: "Registration Paper", uri: CarData.registrationPaperUrl, isVerified: CarData.registrationPaperUriIsVerified },
@@ -14,7 +19,9 @@ const Documents = ({ CarData }) => {
                         <TableCell>No</TableCell>
                         <TableCell>Name</TableCell>
                         <TableCell>Note</TableCell>
-                        {localStorage.getItem("role") === "CAR_OWNER" && <TableCell>Link</TableCell>}
+                        {(localStorage.getItem("role") === "CAR_OWNER" || localStorage.getItem("role") === "OPERATOR") && (
+                            <TableCell>Link</TableCell>
+                        )}
                     </TableRow>
                 </TableHead>
                 <TableBody>
@@ -34,16 +41,28 @@ const Documents = ({ CarData }) => {
                                     "Not available"
                                 )}
                             </TableCell>
-                            {localStorage.getItem("role") === "CAR_OWNER" && <TableCell>{doc.isVerified ? <a href={doc.uri} target="_blank" rel="noopener noreferrer" style={{ color: "#007BFF", textDecoration: "underline" }}>
-
-                            </a> : "Not available"}
-                            </TableCell>}
+                            {(localStorage.getItem("role") === "CAR_OWNER" || localStorage.getItem("role") === "OPERATOR") && (
+                                <TableCell>
+                                    {doc.isVerified ? (
+                                        <a
+                                            href={doc.uri}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            style={{ color: "#007BFF", textDecoration: "underline" }}
+                                        >
+                                            View Document
+                                        </a>
+                                    ) : (
+                                        "Not available"
+                                    )}
+                                </TableCell>
+                            )}
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
-            {/* Note */}
-            {CarData.booked !== true && localStorage.getItem("role") !== "CAR_OWNER" && (
+            {/* Note: if user are customer, hidden documents if he/she haven't booked this car */}
+            {CarData.booked !== true && localStorage.getItem("role") !== "CAR_OWNER" && localStorage.getItem("role") !== "OPERATOR" && (
                 <Box sx={{ mt: 2, p: 1, backgroundColor: "#FFF3CD", borderRadius: "8px", color: "#856404", textAlign: "center", fontSize: "10px" }}>
                     Note: Documents will be available for viewing after you've paid the deposit to rent.
                 </Box>

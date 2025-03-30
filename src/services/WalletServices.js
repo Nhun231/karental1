@@ -70,7 +70,6 @@ export const fetchTransactionsByDate = async (fromDate, toDate) => {
       return response;
     }catch (error) {
         console.error("Error withdraw", error);
-        alert('Error withdraw: ', error)
-        return null;
+        throw error;
       }
 }

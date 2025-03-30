@@ -46,6 +46,7 @@ const CarDetail = () => {
     };
     // Fetch CarData from API when component mounts
     // TODO: Separate this API to two section: getCarData, getAvailability
+
     useEffect(() => {
         async function getCarData() {
             if (!id || !pickUpTime || !dropOffTime) return; // Block if lacks of data
@@ -61,6 +62,7 @@ const CarDetail = () => {
             } finally {
                 setLoading(false);
             }
+            document.title = 'Car Detail';
         }
         getCarData();
     }, [id, pickUpTime, dropOffTime]);
@@ -77,6 +79,9 @@ const CarDetail = () => {
         }
         getListFeedback();
     }, [id]);
+    useEffect(() => {
+        document.title = 'Car Detail';
+    }, []);
     if (loading) return <p>Loading...</p>;
 
     return (
@@ -97,7 +102,7 @@ const CarDetail = () => {
 
             <div className="page-content" style={{ marginBottom: "40px" }}>
                 {/* Car Overview */}
-                <Grid container spacing={3} sx={{ maxWidth: "1200px", mx: "auto", mt: 2 }}>
+                <Grid container sx={{ maxWidth: "1200px", mx: "auto", mt: 2 }}>
                     <CarOverView CarData={CarData} large={true} onRentalTimeChange={handleRentalTimeChange} />
                 </Grid>
 
@@ -111,11 +116,9 @@ const CarDetail = () => {
                     </Tabs>
 
                     {/* Tab Content */}
-                    <Box sx={{
-                        border: "1px solid #ccc",
+                    <Box className="border-box" sx={{
                         padding: 2,
                         textAlign: "left",
-                        borderRadius: 1,
                         m: 0
                     }}>
                         {tabIndex === 0 && <BasicInformation CarData={CarData} />}

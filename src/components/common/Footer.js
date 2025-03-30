@@ -1,143 +1,72 @@
-import { Box, Typography, Link, Grid, Container, Divider } from "@mui/material";
+import { Box, Typography, Grid, Container, Divider } from "@mui/material";
+import { NavLink } from "react-router-dom";
 
 const Footer = () => {
+  const role = localStorage.getItem("role");
+
   return (
     <Box
       component="footer"
       sx={{
         backgroundColor: "#ffffff",
-        color: "#333333",
-        py: 6,
+        color: "#333",
+        py: 4,
         borderTop: "1px solid #e0e0e0",
       }}
     >
       <Container maxWidth="lg">
-        <Grid container spacing={5} alignItems="flex-start">
+        <Grid container spacing={4}>
           {/* RENT CAR */}
           <Grid item xs={12} sm={4}>
-            <Typography
-              variant="h6"
-              sx={{
-                mb: 2,
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                textAlign: "left",
-              }}
-            >
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", textTransform: "uppercase" }}>
               Rent Car
             </Typography>
-            <Link
-              href="/public"
-              underline="none"
-              color="inherit"
-              sx={{
-                "&:hover": { color: "#05ce80" },
-                display: "block",
-              }}
-            >
-              Search Cars and Rates
-            </Link>
+            <NavLink to="/" style={linkStyle}>Search Cars and Rates</NavLink>
           </Grid>
 
           {/* CUSTOMER ACCESS */}
           <Grid item xs={12} sm={4}>
-            <Typography
-              variant="h6"
-              sx={{
-                mb: 2,
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                textAlign: "left",
-              }}
-            >
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", textTransform: "uppercase" }}>
               Customer Access
             </Typography>
             <Box>
-              <Link
-                href="/public"
-                underline="none"
-                color="inherit"
-                sx={{
-                  "&:hover": { color: "#05ce80" },
-                  display: "block",
-                }}
-              >
-                Manage My Booking
-              </Link>
-              <Link
-                href="/public"
-                underline="none"
-                color="inherit"
-                sx={{
-                  "&:hover": { color: "#05ce80" },
-                  display: "block",
-                }}
-              >
-                My Wallet
-              </Link>
-              <Link
-                href="/public"
-                underline="none"
-                color="inherit"
-                sx={{
-                  "&:hover": { color: "#05ce80" },
-                  display: "block",
-                }}
-              >
-                My Car
-              </Link>
-              <Link
-                href="/public"
-                underline="none"
-                color="inherit"
-                sx={{
-                  "&:hover": { color: "#05ce80" },
-                  display: "block",
-                }}
-              >
-                Login
-              </Link>
+              {role === "CUSTOMER" && (
+                <>
+                  <NavLink to="/my-bookings" style={linkStyle}>Manage My Booking</NavLink>
+                  <NavLink to="/my-wallet" style={linkStyle}>My Wallet</NavLink>
+                </>
+              )}
+              {role === "CAR_OWNER" && <NavLink to="/my-cars" style={linkStyle}>My Cars</NavLink>}
+              {!role && <NavLink to="/" style={linkStyle}>Login</NavLink>}
             </Box>
           </Grid>
 
           {/* JOIN US */}
           <Grid item xs={12} sm={4}>
-            <Typography
-              variant="h6"
-              sx={{
-                mb: 2,
-                fontWeight: "bold",
-                textTransform: "uppercase",
-                textAlign: "left",
-              }}
-            >
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold", textTransform: "uppercase" }}>
               Join Us
             </Typography>
-            <Link
-              href="/Register"
-              underline="none"
-              color="inherit"
-              sx={{
-                "&:hover": { color: "#05ce80" },
-              }}
-            >
-              New User Sign Up
-            </Link>
+            <NavLink to="/" style={linkStyle}>New User Sign Up</NavLink>
           </Grid>
         </Grid>
 
-        {/* Divider*/}
-        <Divider sx={{ my: 4 }}  />
+        <Divider sx={{ my: 4 }} />
 
-        {/* Footer Bottom */}
-        <Box sx={{ textAlign: "left", fontSize: 14 }}>
-          <Typography variant="body2">
-            © {new Date().getFullYear()} Karental. All rights reserved.
-          </Typography>
-        </Box>
+        <Typography variant="body2" sx={{ textAlign: "left", fontSize: 14 }}>
+          © {new Date().getFullYear()} Karental. All rights reserved.
+        </Typography>
       </Container>
     </Box>
   );
+};
+
+// Link Style
+const linkStyle = {
+  textDecoration: "none",
+  color: "inherit",
+  display: "block",
+  marginBottom: "8px",
+  "&:hover": { color: "#05ce80" },
 };
 
 export default Footer;

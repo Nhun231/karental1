@@ -1,4 +1,9 @@
 import { Pagination, MenuItem, Select, Stack, Typography } from "@mui/material";
+/**
+ * 
+ * Pagination
+ * Display Pagination UI and handle logic change page, size
+ */
 const PaginationComponent = ({
   page,
   totalPages,

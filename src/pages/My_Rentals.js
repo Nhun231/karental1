@@ -5,81 +5,102 @@ import BookingCard from "../components/common/BookingCard";
 import { useEffect, useState } from "react";
 import { Breadcrumbs, Typography, Box, FormControl, MenuItem, Select, TextField } from "@mui/material";
 import { Grid, Divider, Button } from "@mui/joy";
-import { getMyRentals, confirmBooking } from "../services/BookingServices"
-import Pagination from "../components/common/Pagination"
+import { getMyRentals, confirmBooking } from "../services/BookingServices";
+import Pagination from "../components/common/Pagination";
 import ConfirmationDialog from "../components/common/ConfirmationDialog";
 import NotificationSnackbar from "../components/common/NotificationSnackbar";
 import Filters from "../components/common/Filter"
+import {
+  confirmEarlyReturn,
+  rejectEarlyReturn,
+  rejectRentCar,
+} from "../reducers/rentCarReducer";
+import { useDispatch } from "react-redux";
+import Swal from "sweetalert2";
+
 const MyRentals = () => {
-    const [totalElement, setTotalElement] = useState(0);
-    const [bookingData, setBookingData] = useState(null);
-    const [searchParams, setSearchParams] = useSearchParams();
-    const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
-    const [statusFilter, setStatusFilter] = useState(searchParams.get("status") || "ALL");
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [confirmAction, setConfirmAction] = useState(null);
-    const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
-    const [pageSize, setPageSize] = useState(
-        parseInt(searchParams.get("size")) || 10
-    );
-    const [totalPages, setTotalPages] = useState(1);
-    const sortMapping = {
-        "updatedAt,DESC": "newest",
-        "updatedAt,ASC": "oldest",
-        "basePrice,DESC": "priceHigh",
-        "basePrice,ASC": "priceLow",
+  const dispatch = useDispatch();
+  const [totalElement, setTotalElement] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [bookingData, setBookingData] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
+  const [statusFilter, setStatusFilter] = useState(
+    searchParams.get("status") || "ALL"
+  );
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [alert, setAlert] = useState({
+    open: false,
+    message: "",
+    severity: "success",
+  });
+  const [pageSize, setPageSize] = useState(
+    parseInt(searchParams.get("size")) || 10
+  );
+  const [totalPages, setTotalPages] = useState(1);
+  const sortMapping = {
+    "updatedAt,DESC": "newest",
+    "updatedAt,ASC": "oldest",
+    "basePrice,DESC": "priceHigh",
+    "basePrice,ASC": "priceLow",
+  };
+  const statusOptions = [
+    "ALL",
+    "CANCELLED",
+    "CONFIRMED",
+    "PENDING_PAYMENT",
+    "PENDING_DEPOSIT",
+    "WAITING_CONFIRMED",
+    "IN_PROGRESS",
+    "COMPLETED",
+  ];
+  const validStatuses = new Set(statusOptions.slice(1));
+  const [sortOption, setSortOption] = useState(
+    sortMapping[searchParams.get("sort")] || "newest"
+  );
+  useEffect(() => {
+    const params = {
+      page,
+      size: pageSize,
+      sort: getSortQuery(sortOption),
     };
-    const statusOptions = [
-        "ALL",
-        "CANCELLED",
-        "CONFIRMED",
-        "PENDING_PAYMENT",
-        "PENDING_DEPOSIT",
-        "WAITING_CONFIRMED",
-        "IN_PROGRESS",
-        "COMPLETED"
-    ];
-    const validStatuses = new Set(statusOptions.slice(1));
-    const [sortOption, setSortOption] = useState(
-        sortMapping[searchParams.get("sort")] || "newest"
-    );
-    useEffect(() => {
-        const params = {
-            page,
-            size: pageSize,
-            sort: getSortQuery(sortOption),
-        };
 
-        if (validStatuses.has(statusFilter)) {
-            params.status = statusFilter;
-        }
+    if (validStatuses.has(statusFilter)) {
+      params.status = statusFilter;
+    }
 
-        setSearchParams(params);
-    }, [sortOption, page, pageSize, statusFilter, setSearchParams]);
-    const getSortQuery = (option) =>
+    setSearchParams(params);
+  }, [sortOption, page, pageSize, statusFilter, setSearchParams]);
+  const getSortQuery = (option) =>
     ({
-        newest: "updatedAt,DESC",
-        oldest: "updatedAt,ASC",
-        priceHigh: "basePrice,DESC",
-        priceLow: "basePrice,ASC",
+      newest: "updatedAt,DESC",
+      oldest: "updatedAt,ASC",
+      priceHigh: "basePrice,DESC",
+      priceLow: "basePrice,ASC",
     }[option] || "updatedAt,DESC");
 
-    const fetchMyBookings = async () => {
-        try {
-            const params = { page: page - 1, size: pageSize, sort: getSortQuery(sortOption) };
-            if (validStatuses.has(statusFilter)) params.status = statusFilter;
-            const response = await getMyRentals(params);
-            setBookingData(response.data.bookings.content || []);
-            setTotalElement(response.data.totalWaitingConfirmBooking || 0);
-            setTotalPages(response.data.bookings.totalPages);
-        } catch (error) {
-            console.error("Failed to fetch booking data:", error);
-        }
-    };
+  const fetchMyBookings = async () => {
+    try {
+      const params = {
+        page: page - 1,
+        size: pageSize,
+        sort: getSortQuery(sortOption),
+      };
+      if (validStatuses.has(statusFilter)) params.status = statusFilter;
+      const response = await getMyRentals(params);
+      setBookingData(response.data.bookings.content || []);
+      setTotalElement(response.data.totalWaitingConfirmBooking || 0);
+      setTotalPages(response.data.bookings.totalPages);
+    } catch (error) {
+      console.error("Failed to fetch booking data:", error);
+    }
+    document.title = "My Rentals";
+  };
 
-    useEffect(() => {
-        fetchMyBookings();
-    }, [page, pageSize, sortOption, statusFilter]);
+  useEffect(() => {
+    fetchMyBookings();
+  }, [page, pageSize, sortOption, statusFilter]);
 
     const handleConfirm = (id) => {
         setConfirmAction(() => async () => {
@@ -94,6 +115,9 @@ const MyRentals = () => {
         });
         setOpenConfirm(true);
     };
+    useEffect(() => {
+        document.title = 'My Rentals';
+    }, []);
     return (
         <div>
             <Header></Header>

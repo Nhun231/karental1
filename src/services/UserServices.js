@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "https://3.0.229.253/karental";
+const BASE_URL = "http://localhost:8080/karental";
 export const registerUser = async (userData) => {
   try {
     const response = await fetch(`${BASE_URL}/user/register`, {
@@ -47,10 +47,7 @@ export const login = async (userData) => {
       credentials: "include",
     });
     const data = await response.json();
-    if (!response.ok) {
-      alert(data.message);
-      throw new Error("Login failed");
-    }
+   
     return data;
   } catch (error) {
     console.error("Error:", error);
@@ -136,5 +133,18 @@ export const updateUserPassword = async (formData) => {
     throw error;
   }
 };
+export const logoutUser = async () => {
+  try {
+    await axios.get(`${BASE_URL}/auth/logout`, {
+      withCredentials: true,
+    });
 
+    localStorage.removeItem("role");
+    localStorage.removeItem("name");
+    localStorage.removeItem("token");
+  } catch (error) {
+    console.error("Error logging out:", error);
+    throw error;
+  }
+};
 

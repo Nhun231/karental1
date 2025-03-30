@@ -28,11 +28,11 @@ const SearchForm = ({ searchParams, handleRentalTimeChange, errorMsg, setErrorMs
     }, [params, dispatch]);
 
     const address = useSelector((state) => state.rental.address);
-    console.log(address)
+    // console.log(address)
     const pickUpTime = useSelector((state) => state.rental.pickUpTime);
     const dropOffTime = useSelector((state) => state.rental.dropOffTime);
     const handleSearch = () => {
-        if (!address.cityProvince || !address.district || !address.ward) {
+        if (!address.cityProvince) {
             alert("Please select a valid address.");
             return;
         }

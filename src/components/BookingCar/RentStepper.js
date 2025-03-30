@@ -10,7 +10,9 @@ const steps = [
 
 export default function RentStepper() {
   const location = useLocation();
-  const activeStep = steps.findIndex((step) => step.path === location.pathname);
+  const activeStep = steps.findIndex((step) =>
+    location.pathname.includes(step.path)
+  );
 
   return (
     <>
@@ -19,16 +21,6 @@ export default function RentStepper() {
         {steps.map((step, index) => (
           <Step key={step.label}>
             <StepLabel>
-              {/* <Link
-                to={step.path}
-                style={{
-                  textDecoration: "none",
-                  color: activeStep === index ? "#05ce80" : "gray",
-                  fontWeight: activeStep === index ? "bold" : "normal",
-                }}
-              >
-                {`Step ${index + 1}: ${step.label}`}
-              </Link> */}
               <div
                 style={{
                   textDecoration: "none",

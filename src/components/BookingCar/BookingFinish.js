@@ -69,7 +69,7 @@ export default function BookingFinish() {
   useEffect(() => {
     const fetchCarData = async () => {
       try {
-        const data = await dispatch(getCarDetail()).unwrap();
+        const data = await dispatch(getCarDetail()).unwrap();// use unwrap to get directly the data from the action creator else will return object
       } catch (error) {
         console.error("Failed to fetch car data:", error);
       }
@@ -86,7 +86,7 @@ export default function BookingFinish() {
       <RentStepper />
       <Box sx={{ mx: "auto", maxWidth: "1200px", p: 2 }}>
         <Grid container justifyContent="center" mt={4}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={8}>
             <Box sx={{ p: 3, textAlign: "center" }}>
               {status === "PENDING_DEPOSIT" ? (
                 <Alert
@@ -97,7 +97,7 @@ export default function BookingFinish() {
                   The system has recorded your booking. Please complete the
                   payment within <strong>1 hour</strong>.
                 </Alert>
-              ) : status === "WAITING_CONFIRM" ? (
+              ) : status === "WAITING_CONFIRMED" ? (
                 <Card sx={{ p: 3, boxShadow: 3, borderRadius: 3 }}>
                   <CardContent>
                     <Stack spacing={2} alignItems="center">
@@ -106,7 +106,7 @@ export default function BookingFinish() {
                         fontWeight="bold"
                         color="primary"
                       >
-                        ✅ Booking Confirmed!
+                         {"\u2705"} Booking Confirmed!
                       </Typography>
 
                       <Typography variant="body1" align="center">
@@ -162,16 +162,8 @@ export default function BookingFinish() {
         <Button
           variant="contained"
           id="nextButton"
-          // onClick={() => {
-          //   dispatch(handleNext());
-
-          //   setTimeout(() => {
-          //     if (Object.keys(store.getState().cars.errors).length === 0) {
-          //       navigate("/booking-pay");
-          //     }
-          //   }, 0); //wait for redux store to update
-          // }}
-          sx={{ ml: 2 }}
+          onClick={() => navigate("/my-bookings")}
+          sx={{ ml: 2, mb: 4 }}
           style={{ backgroundColor: "#00bfa5" }}
         >
           Next

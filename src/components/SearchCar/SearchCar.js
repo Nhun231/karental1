@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button, Box, Typography } from "@mui/material";
+import { Button, Box, Typography, Modal, } from "@mui/material";
 import { Divider, Grid } from "@mui/joy";
 import { useSelector, useDispatch } from "react-redux";
 import { setRentalTime, setAddress } from "../../reducers/RentalTimeReducer";
@@ -8,8 +8,15 @@ import dayjs from "dayjs";
 import bannerimg from "../../assets/search-img.jpg";
 import AddressSelector from "../common/AddressSelector";
 import RentalDatePicker from "../common/RentalDateTimePicker";
-
+import { ModalClose, ModalDialog } from "@mui/joy";
+import Register from "../User/Register";
 const SearchCar = () => {
+    const isLoggedIn = Boolean(localStorage.getItem("role"));
+    const isCarOwner = "false";
+    console.log(isCarOwner)
+    const [open, setOpen] = useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
     const pickUpTime = useSelector((state) => state.rental.pickUpTime);
     const dropOffTime = useSelector((state) => state.rental.dropOffTime);
     const dispatch = useDispatch();
@@ -25,8 +32,8 @@ const SearchCar = () => {
     const validateField = (name, value) => {
         if (!value || !value.trim()) {
             if (name === "cityProvince") return "Please select a city/province";
-            if (name === "district") return "Please select a district";
-            if (name === "ward") return "Please select a ward";
+            if (name === "district") return "";
+            if (name === "ward") return "";
             if (name === "houseNumberStreet") return "";
             return "This field is required";
         }
@@ -50,7 +57,11 @@ const SearchCar = () => {
         console.log(errorMsg)
         console.log(validate())
         if (!validate()) return;
-        const address = `${reduxAddress.cityProvince}, ${reduxAddress.district}, ${reduxAddress.ward}`;
+        if (new Date(dropOffTime) - new Date(pickUpTime) < 2 * 60 * 60 * 1000) {
+            alert("Drop-off date time must be at least 2 hours later than Pick-up date time, please try again.");
+            return;
+        }
+        const address = Object.values(reduxAddress).filter(Boolean).join(", ");
         const queryParams = new URLSearchParams({
             address: address,
             pickUpTime: pickUpTime,
@@ -145,26 +156,62 @@ const SearchCar = () => {
                                 <RentalDatePicker onRentalTimeChange={handleRentalTimeChange} />
                             </Box>
                         </Grid>
-
-                        {/* Search Button */}
-                        <Box sx={{ textAlign: "center", mt: 2 }}>
-                            <Button
-                                variant="contained"
-                                onClick={handleSubmit}
-                                sx={{
-                                    padding: "10px 20px",
-                                    fontSize: "16px",
-                                    fontWeight: "bold",
-                                    borderRadius: "8px",
-                                    bgcolor: "#05ce80",
-                                    "&:hover": {
-                                        bgcolor: "#048c5a",
-                                    },
-                                }}
-                            >
-                                Search
-                            </Button>
-                        </Box>
+                        {!isLoggedIn ? (
+                            <Box sx={{ textAlign: "center", mt: 2 }}>
+                                <Button
+                                    onClick={handleOpen}
+                                    id="open-register-button"
+                                    sx={{
+                                        mt: 1,
+                                        backgroundColor: "#04b36d",
+                                        color: "white",
+                                        fontWeight: "bold",
+                                        "&:hover": { backgroundColor: "#057347" },
+                                        position: "relative",
+                                        zIndex: 2,
+                                        p: 1.5,
+                                    }}
+                                >
+                                    Join Us To View Search Result
+                                </Button>
+                                {/* Modal Register */}
+                                <Modal open={open} onClose={handleClose}>
+                                    <ModalDialog
+                                        sx={{
+                                            width: "32vw",
+                                            maxWidth: "lg",
+                                            maxHeight: "100vh",
+                                            overflowY: "auto",
+                                        }}
+                                    >
+                                        <ModalClose onClick={handleClose} />
+                                        <Register isCarOwner={isCarOwner} />
+                                    </ModalDialog>
+                                </Modal>
+                            </Box>
+                        ) : (
+                            <Box>
+                                {/* Search Button */}
+                                <Box sx={{ textAlign: "center", mt: 2 }}>
+                                    <Button
+                                        variant="contained"
+                                        onClick={handleSubmit}
+                                        sx={{
+                                            padding: "10px 20px",
+                                            fontSize: "16px",
+                                            fontWeight: "bold",
+                                            borderRadius: "8px",
+                                            bgcolor: "#05ce80",
+                                            "&:hover": {
+                                                bgcolor: "#048c5a",
+                                            },
+                                        }}
+                                    >
+                                        Search
+                                    </Button>
+                                </Box>
+                            </Box>
+                        )}
                     </Box>
                 </Grid>
             </Grid>

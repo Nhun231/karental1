@@ -12,6 +12,7 @@ import {
   Checkbox,
   Link,
   Autocomplete,
+  Breadcrumbs,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useDropzone } from "react-dropzone";
@@ -133,7 +134,7 @@ export default function AddCarDetails() {
 
   // Function to handle file upload
   const handleDrop = (fileType, errorType) => async (acceptedFiles) => {
-    handleError(errorType, ""); // Xóa lỗi cũ
+    handleError(errorType, ""); // Clears any previous error message
 
     const validFile = acceptedFiles.find((file) => {
       const fileExt = file.name
@@ -162,9 +163,9 @@ export default function AddCarDetails() {
         ? "File size must be less than 5MB."
         : "Invalid file type! Only .doc, .docx, .pdf, .jpg, .jpeg, .png are allowed.";
       handleError(errorType, errorMessage);
-      setFiles((prev) => ({ ...prev, [fileType]: null })); // Xóa file trong state
-      setImagePreviews((prev) => ({ ...prev, [fileType]: null })); // Xóa ảnh xem trước nếu lỗi
-      dispatch(setCarData({ [fileType]: "" })); // Xóa tên file trong Redux
+      setFiles((prev) => ({ ...prev, [fileType]: null })); // delete file from state
+      setImagePreviews((prev) => ({ ...prev, [fileType]: null })); // delete preview from state
+      dispatch(setCarData({ [fileType]: "" })); // delete file from Redux
     }
   };
 
@@ -241,6 +242,7 @@ export default function AddCarDetails() {
   // Load files from IndexedDB
   useEffect(() => {
     const loadFiles = async () => {
+      // Retrieve stored files from IndexedDB
       const storedFiles = {
         carImageFront: await getFileFromDB("carImageFront"),
         carImageBack: await getFileFromDB("carImageBack"),
@@ -248,6 +250,7 @@ export default function AddCarDetails() {
         carImageRight: await getFileFromDB("carImageRight"),
       };
 
+      // Update the files state
       setFiles({
         carImageFront: storedFiles.carImageFront || null,
         carImageBack: storedFiles.carImageBack || null,
@@ -255,6 +258,7 @@ export default function AddCarDetails() {
         carImageRight: storedFiles.carImageRight || null,
       });
 
+      // Update the imagePreviews state
       setImagePreviews({
         carImageFront: storedFiles.carImageFront
           ? URL.createObjectURL(storedFiles.carImageFront)
@@ -269,6 +273,7 @@ export default function AddCarDetails() {
           ? URL.createObjectURL(storedFiles.carImageRight)
           : null,
       });
+      document.title = "Add Car Details";
     };
 
     loadFiles();
@@ -277,9 +282,15 @@ export default function AddCarDetails() {
   return (
     <>
       <Header />
-      <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
-        <NavigateBreadcrumb />
-      </Box>
+      <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
+        <Link underline="hover" color="inherit" href="/">
+          Home
+        </Link>
+        <Link underline="hover" color="inherit" href="#/my-cars">
+          My Cars
+        </Link>
+        <Typography color="text.primary">Add Car Details</Typography>
+      </Breadcrumbs>
 
       <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
         <CarStepper />
@@ -308,10 +319,10 @@ export default function AddCarDetails() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", // green color when shrink
                 },
               }}
               error={!!errors.mileage}
@@ -369,10 +380,10 @@ export default function AddCarDetails() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", // green color when shrink
                 },
               }}
               onKeyDown={(e) => {
@@ -422,10 +433,10 @@ export default function AddCarDetails() {
                     fontWeight: "bold",
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "primary.main", // Màu xanh khi focus
+                    color: "primary.main", // green color when focused
                   },
                   "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                    color: "primary.main", // Màu xanh khi có giá trị
+                    color: "primary.main", // green color when shrink
                   },
                 }}
                 getOptionLabel={(option) => option.label} // display name
@@ -489,10 +500,10 @@ export default function AddCarDetails() {
                     fontWeight: "bold",
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "primary.main", // Màu xanh khi focus
+                    color: "primary.main", // green color when focused
                   },
                   "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                    color: "primary.main", // Màu xanh khi có giá trị
+                    color: "primary.main", // green color when shrink
                   },
                 }}
                 getOptionLabel={(option) => option.label} // display name
@@ -554,10 +565,10 @@ export default function AddCarDetails() {
                     fontWeight: "bold",
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "primary.main", // Màu xanh khi focus
+                    color: "primary.main", // green color when focused
                   },
                   "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                    color: "primary.main", // Màu xanh khi có giá trị
+                    color: "primary.main", // green color when shrink
                   },
                 }}
                 getOptionLabel={(option) => option.label} // display name
@@ -624,10 +635,10 @@ export default function AddCarDetails() {
                     fontWeight: "bold",
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "primary.main", // Màu xanh khi focus
+                    color: "primary.main", // green color when focused
                   },
                   "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                    color: "primary.main", // Màu xanh khi có giá trị
+                    color: "primary.main", // green color when shrink
                   },
                 }}
                 onChange={(e) => {
@@ -698,10 +709,10 @@ export default function AddCarDetails() {
                     fontWeight: "bold",
                   },
                   "& .MuiInputLabel-root.Mui-focused": {
-                    color: "primary.main", // Màu xanh khi focus
+                    color: "primary.main", // green color when focused
                   },
                   "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                    color: "primary.main", // Màu xanh khi có giá trị
+                    color: "primary.main", // green color when shrink
                   },
                 }}
                 variant="standard"
@@ -1053,9 +1064,9 @@ export default function AddCarDetails() {
                     src={imagePreviews.carImageLeft}
                     alt="Car Front Preview"
                     style={{
-                      width: "300px", // Đảm bảo ảnh full box
-                      height: "250px", // Đảm bảo ảnh full box
-                      objectFit: "cover", // Cắt ảnh nếu cần để không méo
+                      width: "300px",
+                      height: "250px",
+                      objectFit: "cover", // keep image aspect ratio
                       borderRadius: "8px",
                     }}
                   />

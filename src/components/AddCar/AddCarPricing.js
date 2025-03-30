@@ -9,6 +9,8 @@ import {
   FormGroup,
   FormControlLabel,
   Checkbox,
+  Link,
+  Breadcrumbs,
 } from "@mui/material";
 import {
   setCarData,
@@ -54,7 +56,7 @@ export default function AddCarFinish() {
         ? `${selectedTerm}, ${carData.specify}`
         : carData.specify;
     }
-
+    document.title = "Add Car Pricing";
     dispatch(setCarData({ termOfUse: updatedTerm })); // Update Redux store with the final terms of use
   }, [carData.termsOfUses, carData.specify, carData.termsOfOther, dispatch]);
   // Re-run effect when termsOfUses, specify, termsOfOther, or dispatch changes
@@ -62,9 +64,15 @@ export default function AddCarFinish() {
   return (
     <>
       <Header />
-      <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
-        <NavigateBreadcrumb />
-      </Box>
+      <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
+        <Link underline="hover" color="inherit" href="/">
+          Home
+        </Link>
+        <Link underline="hover" color="inherit" href="#/my-cars">
+          My Cars
+        </Link>
+        <Typography color="text.primary">Add Car Pricing</Typography>
+      </Breadcrumbs>
       <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
         <CarStepper />
         <Box

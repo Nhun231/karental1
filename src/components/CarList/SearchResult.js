@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import {
     Typography,
     IconButton,
@@ -6,15 +6,21 @@ import {
     MenuItem,
     Box,
     Divider,
-    Button,
-    Select
+    Select,
+    Grid
 } from "@mui/material";
 import { GridView, List as ListViewIcon } from "@mui/icons-material";
 import CarCard from "../common/CarCard";
-import { Grid } from "@mui/joy";
 import CarListView from "./CarListView";
 import { useNavigate } from "react-router-dom";
 import emptydata from "../../assets/emptydata.png"
+import { Button } from "@mui/joy";
+/**
+ *
+ * Search Result Component
+ * Display list of result when user search car
+ * User can interactions with UI to choose thumbnail view/ grid view
+ */
 const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPage }) => {
     const navigate = useNavigate();
 
@@ -24,14 +30,16 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
         <Box sx={{
             mt: 4,
         }}>
+            {/* Title */}
             <Typography variant="h4" fontWeight="bold" sx={{ textAlign: "center" }}>Search Result</Typography>
-
+            {/* Content */}
             <Box
                 sx={{
                     maxWidth: "1200px",
                     mx: "auto",
                     mt: 4,
                     display: "flex",
+                    flexDirection: { xs: "column", sm: "row" },
                     alignItems: "center",
                     justifyContent: "space-between",
                 }}
@@ -42,6 +50,7 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
 
                 {/* Icon and Filter */}
                 <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                    {/* List View Icon */}
                     <IconButton
                         onClick={() => setIsListView(true)}
                         sx={{
@@ -50,7 +59,7 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
                     >
                         <ListViewIcon />
                     </IconButton>
-
+                    {/* Grid View Icon */}
                     <IconButton
                         onClick={() => setIsListView(false)}
                         sx={{
@@ -59,7 +68,7 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
                     >
                         <GridView />
                     </IconButton>
-
+                    {/* Filter */}
                     <FormControl sx={{ minWidth: "200px" }}>
                         <Select
                             value={sortOption}
@@ -76,99 +85,89 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
                     </FormControl>
                 </Box>
             </Box>
+            {/* Display Search Result */}
             {isListView ? (
-                <Box sx={{
-                    maxWidth: "1200px",
-                    mx: "auto",
-                    mt: 4,
-                    border: "1px solid #ccc",
-                    borderRadius: "6px",
-                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)"
-                }}>
+                <Box
+                    className="border-box"
+                    sx={{
+                        maxWidth: "1200px",
+                        mx: "auto",
+                        mt: 4,
+                        bgcolor: { xs: "rgb(243, 242, 242)" }
+                    }}>
                     {Array.isArray(CarData) && CarData.length === 0 ? (
                         <img src={emptydata} style={{ display: "block", margin: "32px auto", padding: "0px 24px" }} alt="empty" />
                     ) : (<CarListView ListCar={CarData}></CarListView>)}
 
                 </Box>
             ) : (
-                <Box sx={{
-                    maxWidth: "1200px",
-                    mx: "auto",
-                    mt: 4,
-                    py: 4,
-                    px: 3,
-                    border: "1px solid #ccc",
-                    borderRadius: "6px",
-                    boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.3)"
-
-                }}>
+                <Box
+                    className="border-box"
+                    sx={{
+                        maxWidth: "1200px",
+                        mx: "auto",
+                        mt: 4,
+                        py: 4,
+                    }}>
                     {Array.isArray(CarData) && CarData.length === 0 && (
                         <img src={emptydata} style={{ display: "block", margin: "0 auto" }} alt="empty" />
                     )}
 
-                    <Grid container direction="column" spacing={3} >
+                    <Grid container direction="column" spacing={1}>
                         {CarData.map((car) => (
                             <Grid item xs={12} md={12} key={car.id} id="card-c">
-                                <Grid container spacing={20} >
-                                    {/* Cột chứa CarCard */}
-                                    <Grid item xs={12} md={12}>
+                                <Grid container spacing={1}>
+                                    {/* CarCard */}
+                                    <Grid
+                                        item xs={12} sm={10}
+                                        sx={{
+                                            height: "100%",
+                                            display: "flex",
+                                            justifyContent: "center"
+                                        }}
+                                    >
                                         <CarCard carData={car} />
                                     </Grid>
-
-                                    {/* Cột chứa Buttons */}
+                                    {/* Buttons */}
                                     <Grid
                                         item
-                                        xs={12} md={12}
+                                        xs={12}
+                                        sm={2}
                                         container
-                                        direction="column"
-                                        spacing={2}
-                                        alignItems="flex-end"
-                                        sx={{ height: "100%", justifyContent: "space-between", mt: 4 }}
+                                        direction={{ xs: "row", sm: "column" }}
+                                        spacing={1}
+                                        alignItems="center"
+                                        justifyContent={{ xs: "center", sm: "flex-start" }}
+                                        sx={{ mt: { xs: 0, sm: 2 }, gap: 1 }}
                                     >
-                                        <Button
-                                            variant="contained"
-                                            onClick={() => navigate(`/car-detail/${car.id}`, { replace: true })}
-                                            sx={{
-                                                backgroundColor: "#1976d2",
-                                                color: "white",
-                                                "&:hover": { backgroundColor: "#1565c0" },
-                                                width: "100%",
-                                                paddingY: 1,
-                                                paddingX: 2,
-                                                fontSize: "0.7rem",
-                                                height: "auto",
-                                                mb: 2,
-                                            }}
-                                        >
-                                            View details
-                                        </Button>
-                                        <Button
-                                            variant="contained"
-                                            sx={{
-                                                backgroundColor: "#05ce80",
-                                                color: "white",
-                                                "&:hover": { backgroundColor: "#04b16d" },
-                                                width: "100%",
-                                                paddingY: 1,
-                                                paddingX: 2,
-                                                fontSize: "0.7rem",
-                                                height: "auto",
-                                            }}
-                                        >
-                                            Rent Now
-                                        </Button>
+                                        {["View details", "Rent Now"].map((text, index) => (
+                                            <Button
+                                                key={index}
+                                                variant="contained"
+                                                onClick={index === 0 ? () => navigate(`/car-detail/${car.id}`, { replace: true }) : undefined}
+                                                sx={{
+                                                    backgroundColor: index === 0 ? "#1976d2" : "#05ce80",
+                                                    "&:hover": { backgroundColor: index === 0 ? "#1565c0" : "#04d16b" },
+                                                    width: { xs: "30%", sm: "60%" },
+                                                    height: "auto",
+                                                    color: "white",
+                                                    fontSize: { xs: "0.75rem", md: "1rem" },
+                                                    py: 0.5,
+                                                    px: 2,
+                                                }}
+                                            >
+                                                {text}
+                                            </Button>
+                                        ))}
                                     </Grid>
                                 </Grid>
-                                <Divider sx={{ mt: 2 }} />
+                                <Divider sx={{ mt: 2, width: "100%", boxSizing: "border-box" }} />
                             </Grid>
                         ))}
                     </Grid>
                 </Box>
-            )
-            }
-
+            )}
         </Box >
-
     )
 }
 export default SearchResults;

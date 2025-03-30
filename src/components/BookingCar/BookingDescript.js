@@ -21,6 +21,7 @@ import Header from "../common/Header";
 import NavigateBreadcrumb from "../common/NavigateBreadcrumb";
 import { getCarDetail } from "../../reducers/carFetchReducer";
 import { getWallet } from "../../reducers/rentCarReducer";
+import { useParams } from "react-router-dom";
 
 export const BookingDescript = () => {
   //repository of car
@@ -29,6 +30,10 @@ export const BookingDescript = () => {
     status,
     error,
   } = useSelector((state) => state.carFetch);
+  const { pickUpTime = "", dropOffTime = "" } = useSelector(
+    (state) => state.rental
+  );
+  const { carId } = useParams();
   const [images, setImages] = useState([]);
   const [value, setValue] = useState(0); // default value is 0
   const dispatch = useDispatch();
@@ -37,11 +42,12 @@ export const BookingDescript = () => {
   useEffect(() => {
     const fetchCarData = async () => {
       try {
+        //get car detail
         const data = await dispatch(
           getCarDetail({
-            carId: "2d91cde8-65ee-4c5d-b600-6cdc52092318",
-            pickUpTime: "2025-03-30T06:00:00",
-            dropOffTime: "2025-03-31T06:59:00",
+            carId: carId,
+            pickUpTime: pickUpTime,
+            dropOffTime: dropOffTime,
           })
         ).unwrap();
         const dataWallet = await dispatch(getWallet()).unwrap();
@@ -53,10 +59,10 @@ export const BookingDescript = () => {
         const right = data?.data?.carImageRight;
 
         setImages([front, back, left, right].filter(Boolean));
-        console.log(data.data.carImageBack);
       } catch (error) {
         console.error("Failed to fetch car data:", error);
       }
+      document.title = 'Booking Details';
     };
 
     fetchCarData();
@@ -74,7 +80,7 @@ export const BookingDescript = () => {
           display={"flex"}
           gap={4}
           sx={{
-            flexDirection: { xs: "column", md: "row" }, // Responsive: Dọc trên mobile, ngang trên màn hình lớn
+            flexDirection: { xs: "column", md: "row" }, // Responsive: Column on mobile, Row on desktop
           }}
         >
           <Box

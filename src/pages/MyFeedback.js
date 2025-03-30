@@ -30,7 +30,9 @@ const MyFeedback = () => {
         { label: "1 Star", value: 1, count: 0 },
     ]);
 
-
+    useEffect(() => {
+        document.title = 'My Feedback';
+    }, []);
     useEffect(() => {
         setSearchParams((prevParams) => {
             const newParams = {

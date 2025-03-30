@@ -4,7 +4,9 @@ import React, { useState } from "react";
 import normalForm from "../../styles/FormStyles.js";
 import Checkbox from "@mui/material/Checkbox";
 import { checkUniqueEmail, registerUser } from "../../services/UserServices";
-const Register = () => {
+import NotificationSnackbar from "../common/NotificationSnackbar";
+const Register = ({ isCarOwner }) => {
+  const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
   // Handle form input
   const [formData, setFormData] = useState({
     fullName: "",
@@ -12,9 +14,10 @@ const Register = () => {
     phoneNumber: "",
     password: "",
     confirmPassword: "",
-    isCustomer: "",
+    isCustomer: isCarOwner ? "false" : "",
     terms: "",
   });
+  console.log(formData.isCustomer)
   // List of errors
   const [errors, setErrors] = useState({});
   //handle change in inputs, validate after change
@@ -106,35 +109,40 @@ const Register = () => {
   //Handle submit, contact with BE
   const handleSubmit = async (e) => {
     e.preventDefault();
-    //All field is required
-    Object.keys(formData).forEach((key) => {
+    // Validate all required fields
+    const hasEmptyField = Object.keys(formData).some((key) => {
       if (!formData[key]) {
         setErrors((prevs) => ({
           ...prevs,
           [key]: "This field is required",
         }));
+        setAlert({ open: true, message: "All fields are required.", severity: "error" });
+        return true; // Stops iteration
       }
+      return false;
     });
-    // Validate Terms & Conditions checkbox
-  if (!formData.terms) {
-    alert("You must accept terms and conditions");
-    return;
-  }
+
+    if (hasEmptyField) return; // Prevent further execution
+  //   // Validate Terms & Conditions checkbox
+  // if (!formData.terms) {
+  //   setAlert({ open: true, message: "You must accept terms and conditions", severity: "error" });
+  //   return;
+  // }
     //If there's still error of wrong confirm password(which is not handle in backend"), display alert
     if(formData.password!==formData.confirmPassword){
-      alert("Password not match")
+      setAlert({ open: true, message: "Password not match", severity: "error" });
       return;
     }
     try {
       const response = await registerUser(formData);
-      alert(response.message)
-      // Handle email confirmation promptif (response) {
+      setAlert({ open: true, message: response.message, severity: "error" });
+      // Handle email confirmation prompt if (response) {
       //   if (window.confirm(`${response.message}. Do you want us to resend the email?`)) {
       //     // Call resend email function here
       //     console.log("Resend email triggered");
       //   }
     } catch (error) {
-      alert(`${error.message || "Registration failed"}`);
+      setAlert({ open: true, message:`${error.message || "Registration failed"}`, severity: "error" });
     }
   };
   return (
@@ -263,13 +271,13 @@ const Register = () => {
               onChange={handleChange}
             >
               <Mui.FormControlLabel
-              id="register-isCustomer-true"
+                id="register-isCustomer-true"
                 value="true"
                 label="I want to rent a car"
                 control={<Mui.Radio />}
               />
               <Mui.FormControlLabel
-              id="register-isCustomer-false"
+                id="register-isCustomer-false"
                 value="false"
                 label="I am a car owner"
                 control={<Mui.Radio />}
@@ -326,6 +334,7 @@ const Register = () => {
           </Mui.Box>
         </Mui.Box>
       </Mui.Box>
+      <NotificationSnackbar  alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
     </>
   );
 };

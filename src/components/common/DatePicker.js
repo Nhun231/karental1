@@ -1,6 +1,9 @@
-import { TextField } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-
+/**
+ * 
+ * Date Picker Component
+ * Provide input date for 'User Profile' page 
+ */
 export default function DatePickerInput({ label, value, onChange, disabled }) {
   return (
     <DatePicker

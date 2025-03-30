@@ -4,6 +4,7 @@ import { EditCarBasic } from "./EditCarBasic";
 import EditCarDetail from "./EditCarDetail";
 import EditCarPricing from "./EditCarPricing";
 
+
 const TabEditCar = () => {
   const [selectedTab, setSelectedTab] = useState(0);
 
@@ -19,7 +20,7 @@ const TabEditCar = () => {
         aria-label="Add Car Tabs"
         sx={{
           "& .MuiTabs-indicator": {
-            display: "none", // Ẩn thanh gạch chân
+            display: "none", // 
           },
           "& .MuiTab-root": {
             border: "1px solid #ccc",

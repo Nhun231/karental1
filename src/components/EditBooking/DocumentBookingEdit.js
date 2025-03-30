@@ -7,12 +7,10 @@ import {
   TableRow,
   Paper,
   Typography,
-  Box,
 } from "@mui/material";
 import { useSelector } from "react-redux";
 
 const DocumentBookingEdit = () => {
-  // const dispatch = useDispatch();
   const { carData = {} } = useSelector((state) => state.carFetch);
 
   const documents = [
@@ -40,7 +38,10 @@ const DocumentBookingEdit = () => {
   ];
 
   return (
-    <TableContainer component={Paper} sx={{ mt: 2, width: "100%", p: 2, boxShadow: 3 }}>
+    <TableContainer
+      component={Paper}
+      sx={{ mt: 2, width: "100%", p: 2, boxShadow: 3 }}
+    >
       <Table>
         <TableHead>
           <TableRow>
@@ -60,18 +61,19 @@ const DocumentBookingEdit = () => {
               <TableCell sx={{ fontWeight: "bold" }}>{doc.name}</TableCell>
               <TableCell>
                 {doc.isVerified ? (
-                  <Typography component={"span"} sx={{ color: "green", fontSize: "16px" }}>Verified</Typography>
-                ) : (
-                  <Box
-                    component="span"
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "8px",
-                    }}
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "green", fontSize: "16px" }}
                   >
-                    <Typography component={"span"} sx={{ color: "red", fontSize: "16px" }}>Not Verified</Typography>
-                  </Box>
+                    Verified
+                  </Typography>
+                ) : (
+                  <Typography
+                    variant="body1"
+                    sx={{ color: "red", fontSize: "16px" }}
+                  >
+                    Not Verified
+                  </Typography>
                 )}
               </TableCell>
               <TableCell>

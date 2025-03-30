@@ -129,6 +129,10 @@ const RentalDatePicker = ({ available }) => {
         dispatch(setRentalTime({ pickUpTime, dropOffTime }));
     };
     const handleConfirm = () => {
+        if (new Date(dropOffTime) - new Date(pickUpTime) < 2 * 60 * 60 * 1000) {
+            alert("Drop-off date time must be at least 2 hours later than Pick-up date time, please try again.");
+            return;
+        }
         setOpenPicker(false);
 
         const formattedPickUp = tempPickUpDate.format("YYYY-MM-DDTHH:mm:ss[Z]");
@@ -211,23 +215,42 @@ const RentalDatePicker = ({ available }) => {
                 ) : null}
             </Stack>
             <Dialog open={openPicker} onClose={() => setOpenPicker(false)} maxWidth="md" fullWidth>
-                <Stack spacing={2} p={3}>
+                <Stack spacing={1} sx={{ p: { xs: 2, sm: 2 } }}>
                     <Typography variant="h5" align="center">Rental Time</Typography>
-                    <Grid container spacing={3}>
+                    <Typography sx={{ px: 3, color: "gray", fontSize: "0.9rem", textAlign: "center" }}>
+                        Note: Drop-off date time must be at least 2 hours later than Pick-up date time
+                    </Typography>
+                    <Grid container sx={(theme) => ({
+                        display: "flex",
+                        flexWrap: "nowrap",
+                        justifyContent: "space-between",
+                        gap: 2,
+                        px: 3,
+                        [theme.breakpoints.down("sm")]: {
+                            flexWrap: "wrap",
+                            px: 1
+                        }
+                    })}>
                         {[['Pick-up', tempPickUpDate, handlePickUpChange, pickUpHour, handlePickUpHourChange],
                         ['Drop-off', tempDropOffDate, handleDropOffChange, dropOffHour, handleDropOffHourChange]]
                             .map(([label, date, onDateChange, hour, onHourChange], idx) => (
-                                <Grid key={idx} item xs={6} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                                <Grid key={idx} item xs={12} sm={6} sx={{
+                                    flex: { xs: "1 1 100%", sm: "1 1 48%" },
+                                    minWidth: { xs: "100%", sm: "48%" },
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    gap: 2
+                                }}>
                                     <Typography fontWeight="bold">{label} Date</Typography>
                                     <DateCalendar
                                         value={date}
                                         onChange={onDateChange}
                                         minDate={label === 'Pick-up' ? getMinPickUpTime() : tempPickUpDate}
                                         maxDate={label === 'Pick-up' ? today.add(60, "day").hour(22) : tempPickUpDate.add(1, "month").hour(22)}
-                                        sx={{ border: "1px solid #05ce80", borderRadius: "8px", width: "90%", mx: 0 }}
+                                        sx={{ border: "1px solid #05ce80", borderRadius: "8px", width: { xs: "100%" }, mx: 0 }}
                                     />
                                     <Typography fontWeight="bold">{label} Time</Typography>
-                                    <Select value={hour} onChange={onHourChange} sx={{ width: "90%" }}>
+                                    <Select value={hour} onChange={onHourChange} sx={{ width: { xs: "100%" } }}>
                                         {Array.from({ length: MAX_DROPOFF_HOUR - MIN_DROPOFF_HOUR + 1 }, (_, i) => MIN_DROPOFF_HOUR + i)
                                             .filter((h) => {
                                                 if (label === 'Pick-up') {
@@ -259,13 +282,13 @@ const RentalDatePicker = ({ available }) => {
                     <Button
                         variant="contained"
                         onClick={handleConfirm}
-                        sx={{ width: "25%", fontSize: "1.1rem", alignSelf: "center", backgroundColor: "#05ce80" }}
+                        sx={{ width: { xs: "80%", sm: "25%" }, fontSize: "1.1rem", alignSelf: "center", backgroundColor: "#05ce80" }}
                     >
                         Confirm
                     </Button>
                 </Stack>
             </Dialog>
-        </LocalizationProvider>
+        </LocalizationProvider >
     );
 };
 

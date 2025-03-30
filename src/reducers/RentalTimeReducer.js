@@ -36,7 +36,7 @@ const getValidDropOffTime = (pickUpTime) => {
 
 const initialPickUpTime = getMinPickUpTime();
 const initialDropOffTime = getValidDropOffTime(initialPickUpTime);
-console.log(dayjs(initialPickUpTime).format("YYYY-MM-DDTHH:mm:ss[Z]"))
+// console.log(dayjs(initialPickUpTime).format("YYYY-MM-DDTHH:mm:ss[Z]"))
 const rentalSlice = createSlice({
     name: "rental",
     initialState: {

@@ -2,7 +2,12 @@ import React from "react";
 import { TextField, IconButton } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
-
+/**
+ * 
+ * Password Input Component
+ * Display Input for passward
+ * User can choose to visible or hidden their password
+ */
 const PasswordInput = ({ label, name, value, onChange, showPassword, onTogglePassword, error, helperText }) => (
     <TextField
         fullWidth

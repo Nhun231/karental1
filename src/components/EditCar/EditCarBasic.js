@@ -1,7 +1,15 @@
-import { Grid } from "@mui/joy";
-import { Box, Typography, Stack, Divider } from "@mui/material";
+import { Grid } from "@mui/material";
+import { Box, Typography, Stack, Divider, Button } from "@mui/material";
 import DocumentEdit from "./DocumentEdit";
 import { useDispatch, useSelector } from "react-redux";
+import { useState } from "react";
+import {
+  updateCar,
+  checkErrors,
+  fetchCarById,
+} from "../../reducers/carFetchReducer";
+import { store } from "../../redux/store";
+import { useParams } from "react-router-dom";
 
 const InfoItem = ({ icon, title, value }) => (
   <Grid item xs={4}>
@@ -13,15 +21,8 @@ const InfoItem = ({ icon, title, value }) => (
         >
           {title}
         </Typography>
-        <Typography
-          sx={{
-            fontSize: "24px",
-            fontWeight: "bold",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-          }}
-        >
+
+        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
           {value}
         </Typography>
       </Stack>
@@ -31,6 +32,8 @@ const InfoItem = ({ icon, title, value }) => (
 
 export const EditCarBasic = () => {
   const dispatch = useDispatch();
+  const { carId } = useParams();
+  const [loading, setLoading] = useState(false);
   const { carData = {} } = useSelector((state) => state.carFetch);
 
   const infoItems = [
@@ -88,28 +91,74 @@ export const EditCarBasic = () => {
 
   return (
     <Box>
-      <Grid container spacing={10} sx={{ p: 4 }}>
-        {infoItems.map((item) => (
-          <InfoItem key={item.title} {...item} />
-        ))}
-      </Grid>
-
-      <Divider sx={{ p: 2 }} />
-
-      <Grid container item xs={12} sx={{ p: 4 }}>
-        <Grid item xs={8}>
-          <Stack direction="column" alignItems="left">
-            <Typography
-              sx={{ color: "#767676", fontSize: "16px", fontWeight: "bold" }}
-            >
-              Vehicle Registration Documents
-            </Typography>
-            <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>
-              <DocumentEdit />
-            </Typography>
-          </Stack>
+      <Box
+        sx={{
+          maxWidth: "1200px",
+          margin: "auto",
+          p: 3,
+          mt: 2,
+          width: "100%",
+          mb: 3,
+          border: "1px solid #ddd",
+          borderRadius: 2,
+          boxShadow: 2,
+          bgcolor: "white",
+        }}
+      >
+        <Grid container spacing={10} sx={{ p: 4 }}>
+          {infoItems.map((item) => (
+            <InfoItem key={item.title} {...item} />
+          ))}
         </Grid>
-      </Grid>
+
+        <Divider sx={{ p: 2 }} />
+
+        {/* Sửa lỗi `container item xs={12}` */}
+        <Grid container sx={{ p: 4 }}>
+          <Grid item xs={10}>
+            <Stack direction="column" alignItems="flex-start">
+              {" "}
+              {/* Sửa "left" thành "flex-start" */}
+              <Typography
+                sx={{ color: "#767676", fontSize: "16px", fontWeight: "bold" }}
+              >
+                Vehicle Registration Documents
+              </Typography>
+              <DocumentEdit />
+            </Stack>
+          </Grid>
+        </Grid>
+
+        {(carData?.data?.status === "NOT_VERIFIED" ||
+          carData?.data?.status === "STOPPED") && (
+          <Button
+            variant="contained"
+            id="nextButton"
+            sx={{ marginLeft: "46%" }}
+            style={{ backgroundColor: "#00bfa5" }}
+            onClick={async () => {
+              dispatch(checkErrors());
+              setTimeout(async () => {
+                if (
+                  Object.keys(store.getState().carFetch.errors).length === 0
+                ) {
+                  setLoading(true); // turn loading on
+
+                  try {
+                    await dispatch(updateCar()).unwrap(); // wait for the updateCar action to complete
+                    await dispatch(fetchCarById(carId)).unwrap();
+                  } finally {
+                    setLoading(false); // turn loading off
+                  }
+                }
+              }, 0);
+            }}
+          >
+            {loading ? "Saving..." : "Save"}
+            {/* change the button text */}
+          </Button>
+        )}
+      </Box>
     </Box>
   );
 };

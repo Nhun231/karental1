@@ -1,33 +1,63 @@
 import { useEffect, useState, useMemo } from "react";
 import axios from "axios";
 import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Grid,
   TextField,
   Typography,
+  Autocomplete
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { setAddress } from "../../reducers/RentalTimeReducer";
+/**
+ * 
+ * Address Selector Component
+ * Provided an UI for choose address
+ */
+
+
+// Remove Tones
+const removeVietnameseTones = (str) => {
+  return str
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D");
+};
+// Dropdow display address infomation for user choose
 const Dropdown = ({ label, name, value, onChange, options, disabled, error }) => (
   <div>
-    <FormControl fullWidth error={!!error} sx={{ bgcolor: "white", borderRadius: "4px", }}>
-      <InputLabel sx={{ color: "black" }}>{label}</InputLabel>
-      <Select name={name} value={value || ""} onChange={onChange} disabled={disabled}>
-        {options.map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-    {error && (
-      <Typography variant="caption" color="error" sx={{ bgcolor: "transparent", display: "block" }}>
-        {error}
-      </Typography>
-    )}
+    <Autocomplete
+      options={options}
+      value={value || null}
+      onChange={(event, newValue) => {
+        onChange({ target: { name, value: newValue || "" } });
+      }}
+      disableClearable
+      disabled={disabled}
+      filterOptions={(options, { inputValue }) => {
+        const normalizedInput = removeVietnameseTones(inputValue.toLowerCase().trim());
+        const hasTone = inputValue !== normalizedInput; // Check if input has tones
+
+        return options.filter((option) => {
+          const normalizedOption = removeVietnameseTones(option.toLowerCase());
+
+          if (hasTone) {
+            return option.toLowerCase().includes(inputValue.toLowerCase()); // Search with tones
+          }
+          return normalizedOption.includes(normalizedInput); // Search with no tones, result include text has tones
+        });
+      }}
+      renderInput={(params) => (
+        <TextField
+          {...params}
+          label={label}
+          error={!!error}
+          helperText={error}
+          fullWidth
+          sx={{ bgcolor: "white", borderRadius: "4px" }}
+        />
+      )}
+    />
   </div>
 );
 
@@ -62,10 +92,11 @@ export default function AddressSelector({ formData, setFormData, errorMsg, setEr
   // Get addressData from database.json
   useEffect(() => {
     axios
-        .get(`${process.env.PUBLIC_URL}/database.json`)
-        .then((res) => setAddressData(res.data.Address_list))
-        .catch((err) => console.error("Error loading address data:", err));
+      .get(`${process.env.PUBLIC_URL}/database.json`)
+      .then((res) => setAddressData(res.data.Address_list))
+      .catch((err) => console.error("Error loading address data:", err));
   }, []);
+
 
   // Get city/Province
   const cities = useMemo(
@@ -95,8 +126,8 @@ export default function AddressSelector({ formData, setFormData, errorMsg, setEr
   const validateField = (name, value) => {
     if (!value || !value.trim()) {
       if (name === "cityProvince") return "Please select a city/province";
-      if (name === "district") return "Please select a district";
-      if (name === "ward") return "Please select a ward";
+      if (name === "district") return "";
+      if (name === "ward") return "";
       if (name === "houseNumberStreet") return "";
       return "";
     }
@@ -107,7 +138,7 @@ export default function AddressSelector({ formData, setFormData, errorMsg, setEr
   const handleLocalChange = (e) => {
     const { name, value } = e.target;
 
-    // If parent component use redux, update the address to redux store
+    // If parent component use redux, update the address to redux store, else, update to formData
     if (useRedux) {
       let updatedAddress = { ...reduxAddress, [name]: value };
 
@@ -118,7 +149,6 @@ export default function AddressSelector({ formData, setFormData, errorMsg, setEr
       } else if (name === "ward") {
         updatedAddress = { ...updatedAddress, houseNumberStreet: "" };
       }
-
       dispatch(setAddress(updatedAddress));
     } else {
       handleChange(e);
@@ -150,7 +180,6 @@ export default function AddressSelector({ formData, setFormData, errorMsg, setEr
     })
 
   };
-
   return (
     <Grid container spacing={2}>
       {isSearch ? <></> : (<Grid item xs={12}>

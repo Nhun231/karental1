@@ -3,12 +3,12 @@ import { Menu, MenuItem, IconButton, Typography, Divider } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
-
+import { logoutUser } from "../../services/UserServices";
 const UserMenu = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const username = localStorage.getItem("username") || "User";
+  const username = localStorage.getItem("name");
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -20,25 +20,17 @@ const UserMenu = () => {
 
   const handleLogout = async () => {
     try {
-      await fetch("http://localhost:8080/karental/auth/logout", {
-        method: "GET",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-      });
-
-      localStorage.removeItem("role");
-      localStorage.removeItem("username");
-      localStorage.removeItem("token");
-
-      navigate("/");
+      await logoutUser();
+      navigate("/"); // Navigate to home
     } catch (error) {
-      console.error("Error logging out:", error);
+      console.error("Logout failed:", error);
     }
   };
 
   return (
     <>
       <IconButton
+        id="user-button"
         onClick={handleClick}
         sx={{ display: "flex", alignItems: "center", gap: 1 }}
       >
@@ -48,6 +40,7 @@ const UserMenu = () => {
       </IconButton>
 
       <Menu
+        id="user-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClose}
@@ -57,6 +50,14 @@ const UserMenu = () => {
         <MenuItem onClick={() => navigate("/user/profile")}>
           My Profile
         </MenuItem>
+        {localStorage.getItem("role") === "OPERATOR" && (
+          <>
+            <MenuItem onClick={() => navigate("/booking-list")}>
+              Booking List
+            </MenuItem>
+            <MenuItem onClick={() => navigate("/my-cars")}>My Cars</MenuItem>
+          </>
+        )}
         {localStorage.getItem("role") === "CAR_OWNER" && (
           <>
             <MenuItem onClick={() => navigate("/my-cars")}>My Cars</MenuItem>

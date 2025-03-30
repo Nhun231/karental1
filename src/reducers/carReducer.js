@@ -1,45 +1,21 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { getFileFromDB } from "../Helper/indexedDBHelper";
 import { toast } from "react-toastify";
-// import axios from "axios";
+import axios from "axios";
 
-const BASE_URL = "http://localhost:3000/karental/cars";
-// Fetch danh sách xe từ API môi trường giả lập
-export const fetchCars = createAsyncThunk("cars/fetchCars", async () => {
-  const response = await fetch("/api/cars");
-  const data = await response.json();
-  return data.cars || [];
-});
+const BASE_URL = "http://localhost:8080/karental";
 
 export const addNewCar = createAsyncThunk(
   "cars/addNewCar",
-  async (_, { getState }) => {
+  async (_, { getState, rejectWithValue }) => {
     try {
       const state = getState();
-      const carData = state.cars.carData; // Lấy dữ liệu từ Redux
+      const carData = state.cars.carData;
 
-      // Tạo FormData để gửi dữ liệu
       const formData = new FormData();
 
-      // Thêm dữ liệu text vào formData
-      Object.entries(carData).forEach(([key, value]) => {
-        if (
-          ![
-            "carImageFront",
-            "carImageBack",
-            "carImageLeft",
-            "carImageRight",
-            "registrationPaper",
-            "insurance",
-            "certificateOfInspection",
-          ].includes(key)
-        ) {
-          formData.append(key, value);
-        }
-      });
-
-      // Danh sách file cần lấy từ IndexedDB
-      const imageKeys = [
+      // list key to pick from carData
+      const fileKeys = [
         "carImageFront",
         "carImageBack",
         "carImageLeft",
@@ -49,37 +25,81 @@ export const addNewCar = createAsyncThunk(
         "certificateOfInspection",
       ];
 
-      // Lấy file từ IndexedDB và thêm vào formData
-      for (const key of imageKeys) {
+      Object.entries(carData).forEach(([key, value]) => {
+        if (!fileKeys.includes(key)) {
+          formData.append(key, value);
+        }
+      });
+
+      // get file from IndexedDB and append
+      for (const key of fileKeys) {
         const file = await getFileFromDB(key);
         if (file) {
           formData.append(key, file);
         }
       }
 
-      // Gửi request lên server (cookie sẽ tự động được gửi kèm)
-      const response = await fetch(
-        "http://localhost:8080/karental/car/car-owner/add-car",
+      // Gửi request
+      const response = await axios.post(
+        `${BASE_URL}/car/car-owner/add-car`,
+        formData,
         {
-          method: "POST",
-          body: formData,
-          credentials: "include", // 🔥 Quan trọng: Để gửi cookie
+          withCredentials: true,
         }
       );
+      toast.success(`Add Car Successful!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-      const text = await response.text();
-      const data = text ? JSON.parse(text) : null;
-
-      if (!response.ok) {
-        alert(data?.message || "Registration failed");
-        throw new Error(data?.message || "Registration failed");
-      }
-
-      toast.success("🚗 Add Car Successful! 🎉", { position: "top-right" });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("🚗 Add Car Failed! 🎉", { position: "top-right" });
-      throw error;
+      toast.error(`Add Car Failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data?.message || "Add car failed."
+      );
     }
   }
 );
@@ -88,36 +108,42 @@ export const fetchInforProfile = createAsyncThunk(
   "cars/fetchInforProfile",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await fetch(
-        "http://localhost:8080/karental/user/edit-profile",
-        {
-          method: "GET",
-          credentials: "include", // Để gửi cookie nếu cần
-        }
-      );
+      const response = await axios.get(`${BASE_URL}/user/edit-profile`, {
+        withCredentials: true, // Đảm bảo gửi cookie
+      });
 
-      if (!response.ok) {
-        const errorMessage = await response.text();
-        return rejectWithValue(errorMessage || "Get profile failed.");
-      }
-
-      const text = await response.text();
-      if (!text) return rejectWithValue("No data received.");
-
-      const data = JSON.parse(text);
-      if (!data) return rejectWithValue("Invalid car data.");
-
-      // toast.success("🚗 Get Profile Successful! 🎉", {
-      //   position: "top-right",
-      // });
-      return data;
+      return response.data;
     } catch (error) {
-      toast.error("🚗 Fetch Profile Failed! 🎉", { position: "top-right" });
-      return rejectWithValue(error.message || "Network error.");
+      toast.error(`Fetch Profile Failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data?.message || "Failed to fetch profile."
+      );
     }
   }
 );
-
 
 const toggleBoolean = (state, key) => {
   if (state.hasOwnProperty(key)) {
@@ -324,7 +350,28 @@ export const carsSlice = createSlice({
 
       // Kiểm tra nếu có lỗi thì dừng lại
       if (Object.keys(newErrors).length > 0) {
-        toast.error("⚠️ Please fulfill all the fields!");
+        toast.error(`Please fulfill all the fields!`, {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            fontWeight: "bold",
+            border: "2px solid #05ce80",
+            borderRadius: "8px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#e6f9f2",
+            color: "#0a6847",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "12px 16px",
+            fontSize: "16px",
+          },
+        });
         return;
       }
 
@@ -332,18 +379,75 @@ export const carsSlice = createSlice({
       if (state.step < 4) {
         state.step += 1;
         if (state.step === 2) {
-          toast.success("🚗 Next Step! Basic was filled! 🎉", {
+          toast.success(`Next Step! Basic was filled!`, {
             position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: {
+              fontWeight: "bold",
+              border: "2px solid #05ce80",
+              borderRadius: "8px",
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#e6f9f2",
+              color: "#0a6847",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "12px 16px",
+              fontSize: "16px",
+            },
           });
         }
         if (state.step === 3) {
-          toast.success("🚗 Next Step! Details was filled! 🎉", {
+          toast.success(`Next Step! Details was filled!`, {
             position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: {
+              fontWeight: "bold",
+              border: "2px solid #05ce80",
+              borderRadius: "8px",
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#e6f9f2",
+              color: "#0a6847",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "12px 16px",
+              fontSize: "16px",
+            },
           });
         }
         if (state.step === 4) {
-          toast.success("🚗 Next Step! Pricing was filled! 🎉", {
+          toast.success(`Next Step! Pricing was filled!`, {
             position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: true,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            style: {
+              fontWeight: "bold",
+              border: "2px solid #05ce80",
+              borderRadius: "8px",
+              boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+              backgroundColor: "#e6f9f2",
+              color: "#0a6847",
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              padding: "12px 16px",
+              fontSize: "16px",
+            },
           });
         }
       } else {

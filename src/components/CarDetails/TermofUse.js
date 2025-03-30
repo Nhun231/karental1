@@ -1,17 +1,35 @@
 import { Grid } from "@mui/joy";
-import { Button, Box, Typography, Stack, Divider } from "@mui/material";
+import { Box, Typography, Stack, Divider } from "@mui/material";
 import FeatureItem from "./FeatureItem"
+/**
+ * InfoItem Component
+ * Displays information of mileage and fuel consumption.
+ */
 const InfoItem = ({ icon, title, value }) => (
     <Grid item xs={6}>
-        <Stack direction="row" alignItems="center" spacing={2} sx={{ display: "flex", justifyContent: "center" }}>
-            <img width="80" height="80" src={icon} alt={title} />
+        <Stack
+            direction={{ xs: "column", md: "row" }}
+            alignItems="center"
+            spacing={2}
+            sx={{ display: "flex", justifyContent: "center", textAlign: "center" }}
+        >
+            {/* Icon */}
+            <img
+                width="60"
+                height="auto"
+                src={icon}
+                alt={title}
+                style={{ maxWidth: "100%" }}
+            />
+            {/* Title and information */}
             <Stack direction="column" alignItems="center">
-                <Typography sx={{ color: "#767676", fontSize: "16px", fontWeight: "bold" }}>{title}</Typography>
-                <Typography sx={{ fontSize: "24px", fontWeight: "bold" }}>{new Intl.NumberFormat("vi-VN").format(value)}VNĐ</Typography>
+                <Typography variant="body2" color="text.secondary" fontWeight="bold" sx={{ minHeight: "40px", display: "flex", alignItems: "center" }} >{title}</Typography>
+                <Typography variant="body1" fontWeight="bold">{value || "-"}</Typography>
             </Stack>
         </Stack>
     </Grid>
 );
+
 
 export const TermofUse = ({ CarData }) => {
     const features = [
@@ -21,13 +39,13 @@ export const TermofUse = ({ CarData }) => {
         { title: "Other", icon: "https://img.icons8.com/?size=100&id=33934&format=png&color=40C057" },
     ];
     return (
-        <div>
-            <Grid container spacing={10} item xs={12} sx={{ p: 4 }}>
+        <Box sx={{ px: { xs: 2, md: 4 } }}>
+            <Grid container spacing={4} sx={{ p: 2 }}>
                 <InfoItem icon="https://img.icons8.com/?size=100&id=7163&format=png&color=40C057" title="Base Price" value={`${CarData.basePrice}`} />
                 <InfoItem icon="https://img.icons8.com/?size=100&id=35072&format=png&color=40C057" title="Required deposit" value={`${CarData.deposit}`} />
             </Grid>
-            <Divider></Divider>
-            <Box sx={{ p: 4 }}>
+            <Divider sx={{ my: 3 }}></Divider>
+            <Box>
                 <Typography sx={{ color: "#767676", fontSize: "24px", fontWeight: "bold" }}>Term of Use</Typography>
                 <Grid container spacing={5} sx={{ p: 4 }}>
                     {features.map(({ title, icon }) => (
@@ -35,6 +53,6 @@ export const TermofUse = ({ CarData }) => {
                     ))}
                 </Grid>
             </Box>
-        </div>
+        </Box>
     )
 }

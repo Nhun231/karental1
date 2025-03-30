@@ -11,6 +11,7 @@ import {
   Button,
   Link,
   Autocomplete,
+  Breadcrumbs,
 } from "@mui/material";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { useDropzone } from "react-dropzone";
@@ -29,8 +30,9 @@ import axios from "axios";
 import Header from "../common/Header";
 import NavigateBreadcrumb from "../common/NavigateBreadcrumb";
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB max to store in IndexedDB
 export default function AddCarBasic() {
+  //style for dropzone
   const styles = {
     border: "2px dashed #999",
     borderRadius: "8px",
@@ -182,6 +184,7 @@ export default function AddCarBasic() {
         certificateOfInspection: storedFiles.certificateOfInspection || null,
         insurance: storedFiles.insurance || null,
       });
+      document.title = "Add Car Basic";
     };
     loadFiles(); // Call the async function to load files
   }, []); // Runs only once when the component mounts
@@ -189,9 +192,15 @@ export default function AddCarBasic() {
   return (
     <>
       <Header></Header>
-      <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
-        <NavigateBreadcrumb />
-      </Box>
+      <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
+        <Link underline="hover" color="inherit" href="/">
+          Home
+        </Link>
+        <Link underline="hover" color="inherit" href="#/my-cars">
+          My Cars
+        </Link>
+        <Typography color="text.primary">Add Car Basic</Typography>
+      </Breadcrumbs>
       <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
         <CarStepper />
         <p style={{ color: "red", p: 4, textAlign: "center" }}>
@@ -222,10 +231,10 @@ export default function AddCarBasic() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", // green color when shrink
                 },
                 width: "100%",
               }}
@@ -235,7 +244,7 @@ export default function AddCarBasic() {
                 "Please enter your license plate EX: 49F-123.56"
               }
               id="licensePlate"
-              label="Liscense Plate: "
+              label="License Plate: "
               variant="standard"
               name="licensePlate"
               value={carData.licensePlate}
@@ -249,7 +258,7 @@ export default function AddCarBasic() {
                 // Delete the previous timeout
                 if (timeoutId) clearTimeout(timeoutId);
 
-                // Tạo timeout mới để kiểm tra sau 500ms
+                // create a new timeout to check after 500ms
                 const newTimeoutId = setTimeout(() => {
                   if (value === "") {
                     handleError(e.target.name, "");
@@ -278,10 +287,10 @@ export default function AddCarBasic() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", // green color when shrink
                 },
               }}
               getOptionLabel={(option) => option.label} // Display label
@@ -326,10 +335,10 @@ export default function AddCarBasic() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", //  green color when shrink
                 },
               }}
               getOptionLabel={(option) => option.label}
@@ -355,7 +364,7 @@ export default function AddCarBasic() {
                       ...carData,
                       brand: selectedBrand,
                       selectedBrand: selectedBrand,
-                      model: "", // Reset model khi đổi brand
+                      model: "", // Reset model when brand changes
                     })
                   );
                 }
@@ -375,10 +384,10 @@ export default function AddCarBasic() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", // green color when shrink
                 },
               }}
               getOptionLabel={(option) => option.label} // Display label
@@ -427,10 +436,10 @@ export default function AddCarBasic() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", // green color when shrink
                 },
               }}
               error={!!errors.productionYear}
@@ -450,11 +459,11 @@ export default function AddCarBasic() {
                 }
               }}
               onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9]/g, ""); // Chỉ lấy số
-                const number = parseInt(value, 10); // Chuyển thành số nguyên
+                const value = e.target.value.replace(/[^0-9]/g, ""); // just numbers
+                const number = parseInt(value, 10); // convert to number
 
                 if (value === "") {
-                  handleError(e.target.name, ""); // Nếu rỗng thì xóa lỗi
+                  handleError(e.target.name, ""); //
                 } else if (!isNaN(number) && (number < 1990 || number > 2030)) {
                   handleError(e.target.name, "Please input from 1990 to 2030");
                 } else {
@@ -478,10 +487,10 @@ export default function AddCarBasic() {
                   fontWeight: "bold",
                 },
                 "& .MuiInputLabel-root.Mui-focused": {
-                  color: "primary.main", // Màu xanh khi focus
+                  color: "primary.main", // green color when focused
                 },
                 "& .MuiInputLabel-root.MuiInputLabel-shrink": {
-                  color: "primary.main", // Màu xanh khi có giá trị
+                  color: "primary.main", // green color when shrink
                 },
               }}
               error={!!errors.numberOfSeats}
@@ -500,13 +509,13 @@ export default function AddCarBasic() {
                 }
               }}
               onChange={(e) => {
-                const value = e.target.value.replace(/[^0-9]/g, ""); // Chỉ lấy số
-                const number = parseInt(value, 10); // Chuyển thành số nguyên
+                const value = e.target.value.replace(/[^0-9]/g, ""); // just numbers
+                const number = parseInt(value, 10); // convert to number
 
                 if (value === "") {
-                  handleError(e.target.name, ""); // Nếu rỗng thì xóa lỗi
+                  handleError(e.target.name, ""); // clear error
                 } else if (!isNaN(number) && [4, 5, 7].includes(number)) {
-                  handleError(e.target.name, ""); // Xóa lỗi nếu số ghế hợp lệ
+                  handleError(e.target.name, ""); // clear error
                 } else {
                   handleError(
                     e.target.name,
@@ -750,7 +759,7 @@ export default function AddCarBasic() {
                 if (Object.keys(store.getState().cars.errors).length === 0) {
                   navigate("/add-car-details");
                 }
-              }, 0); // Chờ Redux cập nhật state
+              }, 0); // wait for the dispatch to finish
             }}
             sx={{ ml: 2, mt: 5, mb: 2 }}
             style={{ backgroundColor: "#00bfa5" }}
