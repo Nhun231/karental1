@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = BASE;
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 export const registerUser = async (userData) => {
   try {
     const response = await fetch(`${BASE_URL}/user/register`, {
