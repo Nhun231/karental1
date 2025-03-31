@@ -1,5 +1,5 @@
 import axios from "axios";
-const CAR_URL = "http://localhost:8080/karental/car";
+const CAR_URL = `${process.env.REACT_APP_BASE_URL}/car`;
 export const getCarDetail = async (formData) => {
     try {
         const requestUrl = `${CAR_URL}/customer/car-detail`;

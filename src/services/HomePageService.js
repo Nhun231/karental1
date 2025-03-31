@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:8080/karental/homepage";
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}/homepage`;
 export const getFeedback = async () => {
     try {
         const response = await axios.get(`${BASE_URL}/feedbacks`, {

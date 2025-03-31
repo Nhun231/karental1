@@ -1,5 +1,5 @@
 import axios from "axios";
-const BOOK_URL = "http://localhost:8080/karental/booking";
+const BOOK_URL = `${process.env.REACT_APP_BASE_URL}/booking`;
 export const getMyBookings = async (searchParams) => {
     try {
         const response = await axios.get(`${BOOK_URL}/customer/my-bookings`, {

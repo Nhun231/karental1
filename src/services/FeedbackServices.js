@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:8080/karental/feedback";
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}/feedback`;
 export const getFeedbackByBookingId = async (bookingId) => {
     try {
         const response = await axios.get(`${BASE_URL}/customer/view-ratings/${bookingId}`, {

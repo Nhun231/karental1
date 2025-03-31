@@ -3,7 +3,7 @@ import { getFileFromDB } from "../Helper/indexedDBHelper";
 import { toast } from "react-toastify";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/karental";
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const addNewCar = createAsyncThunk(
   "cars/addNewCar",

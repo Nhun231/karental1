@@ -5,7 +5,7 @@ import axios from "axios";
 
 import { getFileFromDB, getAllKeysFromDB } from "../Helper/indexedDBHelper";
 
-const BASE_URL = "http://localhost:8080/karental";
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const fetchCarById = createAsyncThunk(
   "cars/fetchCarById",

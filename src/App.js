@@ -53,7 +53,6 @@ function App() {
                 <Routes>
                     {/* Route cho trang login-register
         <Route path="/login-register" element={<Login_RegisterPage />} /> */}
-
           {/* Route cho trang my-cars, chỉ cho phép người dùng có role 'CAR_OWNER' */}
           <Route
             path="my-cars"
@@ -185,6 +184,7 @@ function App() {
                         path="/operator-car-list"
                         element={<PrivateRouter element={<ViewListAllCar />} allowedRoles={['OPERATOR']} />}
                     />
+                    <Route path={"/not-found"} element={<NotFound />} />
                 </Routes>
 
             </AuthProvider>

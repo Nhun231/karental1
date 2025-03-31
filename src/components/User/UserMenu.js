@@ -4,6 +4,8 @@ import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import ArrowDropDownIcon from "@mui/icons-material/ArrowDropDown";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../../services/UserServices";
+import ConfirmationDialog from "../common/ConfirmationDialog";
+import NotificationSnackbar from "../common/NotificationSnackbar";
 const UserMenu = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -18,15 +20,23 @@ const UserMenu = () => {
     setAnchorEl(null);
   };
 
-  const handleLogout = async () => {
+  const handleLogoutClick = () => {
+    setOpenConfirm(true); // Show confirmation dialog
+  };
+
+  const handleLogoutConfirm = async () => {
+    setOpenConfirm(false); // Close confirmation dialog
     try {
       await logoutUser();
+      setAlert({ open: true, message: "You're logged out", severity: "success" });
       navigate("/"); // Navigate to home
     } catch (error) {
       console.error("Logout failed:", error);
+      setAlert({ open: true, message: "Logout failed", severity: "error" });
     }
   };
-
+  const [openConfirm, setOpenConfirm] = useState(false);
+  const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
   return (
     <>
       <IconButton
@@ -86,8 +96,19 @@ const UserMenu = () => {
           </>
         )}
         <Divider />
-        <MenuItem onClick={handleLogout}>Logout</MenuItem>
+        <MenuItem onClick={handleLogoutClick}>Logout</MenuItem>
       </Menu>
+      <ConfirmationDialog
+        open={openConfirm}
+        onClose={() => setOpenConfirm(false)}
+        onConfirm={handleLogoutConfirm}
+        title="Confirm Logout"
+        content="Are you sure you want to logout?"
+      />
+
+      {/* Notification Snackbar */}
+      <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
+  
     </>
   );
 };

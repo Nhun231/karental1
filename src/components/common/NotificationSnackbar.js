@@ -22,7 +22,6 @@ export default function NotificationSnackbar({ alert, onClose }) {
     >
       <Alert
           id="notification-message"
-        severity={alert.severity}
         severity={alert.severity || "info"}
         onClose={onClose}
         sx={{

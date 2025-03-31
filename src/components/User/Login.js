@@ -33,7 +33,6 @@ const Login = () => {
     if(response.code===1000){
       localStorage.setItem("role", response.data.userRole);
         localStorage.setItem("name", response.data.fullName);
-
         setAlert({ open: true, message: "Welcome to Our Community", severity: "success" });
     setTimeout(() => {
       nav("/", { replace: true });
@@ -178,6 +177,7 @@ const handleForgotPassword = async() => {
           </Mui.Box>
         </Mui.Box>
       </Mui.Box>
+       <NotificationSnackbar  alert={alert} onClose={() => setAlert({ ...alert, open: false })} />        
     </>
   );
 };

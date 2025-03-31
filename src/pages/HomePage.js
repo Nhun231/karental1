@@ -19,7 +19,7 @@ const HomePage = () => {
   const [openLogin, setOpenLogin] = useState(false);
   const handleOpenLogin = () => setOpenLogin(true);
   const handleCloseLogin = () => setOpenLogin(false);
-
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const nav = useNavigate()
   useEffect(() => {
     const verifyEmail = async () => {
@@ -28,7 +28,7 @@ const HomePage = () => {
       }
       try {
         const res = await axios.get(
-          `http://localhost:8080/karental/user/verify-email?t=${token}`
+          `${BASE_URL}/user/verify-email?t=${token}`
         );
         alert(res.message); // Show success message from backend
         setTimeout(() => {

@@ -1,7 +1,7 @@
 import axios from "axios";
 import dayjs from "dayjs";
 
-const BASE_URL = "http://localhost:8080/karental/transaction";
+const BASE_URL = `${process.env.REACT_APP_BASE_URL}/trasanction`;
 export const fetchAllTransactions = async () => {
    try{
     const response= await axios.get(`${BASE_URL}/transaction-list?all=true`,

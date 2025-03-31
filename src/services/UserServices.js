@@ -1,5 +1,5 @@
 import axios from "axios";
-const BASE_URL = "http://localhost:8080/karental";
+const BASE_URL = BASE;
 export const registerUser = async (userData) => {
   try {
     const response = await fetch(`${BASE_URL}/user/register`, {
@@ -135,7 +135,7 @@ export const updateUserPassword = async (formData) => {
 };
 export const logoutUser = async () => {
   try {
-    await axios.get(`${BASE_URL}/auth/logout`, {
+    await fetch (`${BASE_URL}/auth/logout`, {
       withCredentials: true,
     });
 

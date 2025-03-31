@@ -53,6 +53,7 @@ const AuthProvider = ({children}) =>{
     const nav = useNavigate();
     const [isRefreshing, setIsRefreshing] = useState(false);
     const alertShownRef = useRef(false);
+    const BASE_URL = process.env.REACT_APP_BASE_URL;
     useLayoutEffect(()=>{
         
         const refreshInterceptor = axios.interceptors.response.use(
@@ -74,7 +75,7 @@ const AuthProvider = ({children}) =>{
                 originalRequest._retry=true;
                     try{
                         // call to refresh Refresh token
-                         await axios.get('http://localhost:8080/karental/auth/refresh-token',{
+                         await axios.get(`${process.env.REACT_APP_BASE_URL}/auth/refresh-token`,{
                             withCredentials: true,
                         });
                         console.log('Through cookie refresh')
