@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.802dbc89.css",
-    "main.js": "/static/js/main.9058fa59.js",
+    "main.js": "/static/js/main.c8f7048b.js",
     "static/js/488.44d995c9.chunk.js": "/static/js/488.44d995c9.chunk.js",
     "static/media/car_owner_banner.jpg": "/static/media/car_owner_banner.5db511b60459e13d93c5.jpg",
     "static/media/city03.jpg": "/static/media/city03.636c7968b90b3f964642.jpg",
@@ -20,11 +20,11 @@
     "static/media/slick.woff": "/static/media/slick.295183786cd8a1389865.woff",
     "index.html": "/index.html",
     "main.802dbc89.css.map": "/static/css/main.802dbc89.css.map",
-    "main.9058fa59.js.map": "/static/js/main.9058fa59.js.map",
+    "main.c8f7048b.js.map": "/static/js/main.c8f7048b.js.map",
     "488.44d995c9.chunk.js.map": "/static/js/488.44d995c9.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.802dbc89.css",
-    "static/js/main.9058fa59.js"
+    "static/js/main.c8f7048b.js"
   ]
 }
