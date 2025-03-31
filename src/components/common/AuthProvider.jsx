@@ -8,11 +8,11 @@ import { useNavigate } from "react-router-dom";
 const AuthContext = createContext(undefined);
 
 export const useAuth = () => {
-  const authContext = useContext(AuthContext);
-  if (!authContext) {
-    throw new Error("useAuth must be used within a AuthProvider");
-  }
-  return authContext;
+    const authContext = useContext(AuthContext);
+    if (!authContext) {
+        throw new Error("useAuth must be used within a AuthProvider");
+    }
+    return authContext;
 };
 
 
@@ -54,8 +54,23 @@ const AuthProvider = ({children}) =>{
     const [isRefreshing, setIsRefreshing] = useState(false);
     const alertShownRef = useRef(false);
     const BASE_URL = process.env.REACT_APP_BASE_URL;
+    // Get CSRF token from cookies
+    const [cookies] = useCookies(["karental-jwt-csrf"]);
+    // Attach CSRF token to all requests
+    useLayoutEffect(() => {
+        const csrfInterceptor = axios.interceptors.request.use((config) => {
+            const csrfToken = cookies["karental-jwt-csrf"];
+            if (csrfToken) {
+                config.headers["X-CSRF-TOKEN"] = csrfToken;
+            }
+            return config;
+        });
+
+        return () => {
+            axios.interceptors.request.eject(csrfInterceptor);
+        };
+    }, [cookies]);
     useLayoutEffect(()=>{
-        
         const refreshInterceptor = axios.interceptors.response.use(
             (response) => response,
             async(error)=>{
@@ -64,25 +79,22 @@ const AuthProvider = ({children}) =>{
                 if (originalRequest._retry) {
                     return Promise.reject(error);
                 }
-            if(error.response?.status === 401 // unauthorize
-                || 
-                error.response?.status === 403//forbidden(wrong role or inactive)
-            ){
-                if(isRefreshing){
-                    return Promise.reject(error)
-                }
-                setIsRefreshing(true);
-                originalRequest._retry=true;
+                if(error.response?.status === 401 && error.response?.message===4003){
+                    if(isRefreshing){
+                        return Promise.reject(error)
+                    }
+                    setIsRefreshing(true);
+                    originalRequest._retry=true;
                     try{
                         // call to refresh Refresh token
-                         await axios.get(`${process.env.REACT_APP_BASE_URL}/auth/refresh-token`,{
+                        await axios.get(`${process.env.REACT_APP_BASE_URL}/auth/refresh-token`,{
                             withCredentials: true,
                         });
                         console.log('Through cookie refresh')
-                         //marked as retried
+                        //marked as retried
                         setIsRefreshing(false);
                         //retry failed request
-                    return axios(originalRequest);
+                        return axios(originalRequest);
                     }catch(refreshError){
                         setIsRefreshing(false);
                         console.log("Request refresh token failed: ",refreshError);
@@ -97,10 +109,10 @@ const AuthProvider = ({children}) =>{
                         return Promise.reject(refreshError)
                     }
 
+                }
+                // if not 401, reject error
+                return Promise.reject(error)
             }
-            // if not 401 or 403, reject error
-            return Promise.reject(error)
-        }
         )
         return ()=>{
             axios.interceptors.response.eject(refreshInterceptor);
