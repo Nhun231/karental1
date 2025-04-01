@@ -24,7 +24,7 @@ const AuthProvider = ({children}) =>{
     //const [cookiesRefresh, setCookieRefresh, removeCookiesRefresh] = useCookies(['karental-jwt-refresh']);
     // useEffect (()=>{
     //     const fetchMe = async ()=>{
-    //         try{  
+    //         try{
     //             const response = axios.get('')
     //         }catch{
     //             setToken(null);
@@ -38,7 +38,7 @@ const AuthProvider = ({children}) =>{
     //     const authInterceptor = axios.interceptors.request.use((config)=>{
     //         console.log('run through this to check if there is token')
     //         config.headers.Authorization =
-    //             !config._retry && token 
+    //             !config._retry && token
     //             // if header does not contain token
     //             ?  `Bearer ${token}`
     //             // if it does, just return that before token
@@ -54,9 +54,10 @@ const AuthProvider = ({children}) =>{
     const [isRefreshing, setIsRefreshing] = useState(false);
     const alertShownRef = useRef(false);
     // Get CSRF token from cookies
-    const [cookies] = useCookies(["karental-jwt-csrf"]);
+    const [cookies] = useCookies(); // Get all cookies
+    console.log("All Cookies:", cookies);
+    console.log("CSRF Token:", cookies["karental-jwt-csrf"]);
     const csrfToken = cookies["karental-jwt-csrf"];
-
     // Ensure Axios sends cookies for authentication
     axios.defaults.withCredentials = true;
 
@@ -124,7 +125,7 @@ const AuthProvider = ({children}) =>{
         }
     },[nav, isRefreshing]);
     return (
-        <AuthContext.Provider >
+        <AuthContext.Provider>
             {children}
         </AuthContext.Provider>
     )
