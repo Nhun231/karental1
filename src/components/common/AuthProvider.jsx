@@ -4,6 +4,7 @@ import { useContext } from "react";
 import { createContext } from "react";
 import { useCookies } from "react-cookie";
 import { useNavigate } from "react-router-dom";
+import {logoutUser} from "../../services/UserServices";
 
 const AuthContext = createContext(undefined);
 
@@ -111,6 +112,7 @@ const AuthProvider = ({children}) =>{
                         if (!alertShownRef.current) { // Show alert only once
                             alertShownRef.current = true;
                             alert("This account is offline too long! Please try to login again.");
+                            await logoutUser();
                             setTimeout(() => {
                                 alertShownRef.current = false; // Reset after navigation
                                 nav("/");
