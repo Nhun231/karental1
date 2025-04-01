@@ -60,8 +60,11 @@ const AuthProvider = ({children}) =>{
     useLayoutEffect(() => {
         const csrfInterceptor = axios.interceptors.request.use((config) => {
             const csrfToken = cookies["karental-jwt-csrf"];
+            console.log("Setting CSRF Token:", csrfToken);
             if (csrfToken) {
                 config.headers["X-CSRF-TOKEN"] = csrfToken;
+            } else {
+                console.warn("No CSRF token found in cookies!");
             }
             return config;
         });
