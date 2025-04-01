@@ -53,13 +53,15 @@ const AuthProvider = ({children}) =>{
     const nav = useNavigate();
     const [isRefreshing, setIsRefreshing] = useState(false);
     const alertShownRef = useRef(false);
-    const BASE_URL = process.env.REACT_APP_BASE_URL;
     // Get CSRF token from cookies
     const [cookies] = useCookies(["karental-jwt-csrf"]);
-    // Attach CSRF token to all requests
+    const csrfToken = cookies["karental-jwt-csrf"];
+
+    // Ensure Axios sends cookies for authentication
+    axios.defaults.withCredentials = true;
+
     useLayoutEffect(() => {
         const csrfInterceptor = axios.interceptors.request.use((config) => {
-            const csrfToken = cookies["karental-jwt-csrf"];
             console.log("Setting CSRF Token:", csrfToken);
             if (csrfToken) {
                 config.headers["X-CSRF-TOKEN"] = csrfToken;
@@ -72,7 +74,7 @@ const AuthProvider = ({children}) =>{
         return () => {
             axios.interceptors.request.eject(csrfInterceptor);
         };
-    }, [cookies]);
+    }, [csrfToken]);
     useLayoutEffect(()=>{
         const refreshInterceptor = axios.interceptors.response.use(
             (response) => response,
