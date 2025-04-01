@@ -54,20 +54,22 @@ const AuthProvider = ({children}) =>{
     const [isRefreshing, setIsRefreshing] = useState(false);
     const alertShownRef = useRef(false);
     // Get CSRF token from cookies
-    const [cookies] = useCookies(); // Get all cookies
-    console.log("All Cookies:", cookies);
-    console.log("CSRF Token:", cookies["karental-jwt-csrf"]);
-    const csrfToken = cookies["karental-jwt-csrf"];
+    // const [cookies] = useCookies(); // Get all cookies
+    // console.log("All Cookies:", cookies);
+    // console.log("CSRF Token:", cookies["karental-jwt-csrf"]);
+    // const csrfToken = cookies["karental-jwt-csrf"];
     // Ensure Axios sends cookies for authentication
     axios.defaults.withCredentials = true;
-
+    let csrfToken = localStorage.getItem("csrfToken");
     useLayoutEffect(() => {
         const csrfInterceptor = axios.interceptors.request.use((config) => {
+            csrfToken = localStorage.getItem("csrfToken");
+            console.log(document.cookie);
             console.log("Setting CSRF Token:", csrfToken);
             if (csrfToken) {
                 config.headers["X-CSRF-TOKEN"] = csrfToken;
             } else {
-                console.warn("No CSRF token found in cookies!");
+                console.warn("No CSRF token found in local storage!");
             }
             return config;
         });
@@ -85,7 +87,7 @@ const AuthProvider = ({children}) =>{
                 if (originalRequest._retry) {
                     return Promise.reject(error);
                 }
-                if(error.response?.status === 401 && error.response?.message===4003){
+                if(error.response?.status === 401 && error.response?.data.code===4003){
                     if(isRefreshing){
                         return Promise.reject(error)
                     }
@@ -93,10 +95,12 @@ const AuthProvider = ({children}) =>{
                     originalRequest._retry=true;
                     try{
                         // call to refresh Refresh token
-                        await axios.get(`${process.env.REACT_APP_BASE_URL}/auth/refresh-token`,{
+                        const response = await axios.get(`${process.env.REACT_APP_BASE_URL}/auth/refresh-token`,{
                             withCredentials: true,
                         });
                         console.log('Through cookie refresh')
+                        console.log("csrf response",response);
+                        localStorage.setItem("csrfToken",response.data.data);
                         //marked as retried
                         setIsRefreshing(false);
                         //retry failed request
