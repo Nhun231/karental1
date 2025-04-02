@@ -94,7 +94,7 @@ function App() {
                     />
                     <Route path="/my-wallet" element={<PrivateRouter element={<MyWallet />} allowedRoles={['CAR_OWNER', 'CUSTOMER']} />} />
                     <Route path="/user/verify-email" element={<HomePage />} />
-                    <Route path="/auth/forgot-password/verify" element={<PrivateRouter element={<SetNewPassword />} />} />
+                    <Route path="/auth/forgot-password/verify"  element={<SetNewPassword />} />
                     <Route
                         path="/add-car-basic"
                         element={
