@@ -37,10 +37,10 @@ function App() {
         const location = useLocation();
 
         useEffect(() => {
-          if (!location.hash) {
-            const newPath = `#${location.pathname}${location.search}`;
-            window.location.replace(newPath);
-          }
+            if (!location.hash) {
+                const newPath = `#${location.pathname}${location.search}`;
+                window.location.replace(newPath);
+            }
         }, [location]);
 
         return null;
@@ -53,19 +53,19 @@ function App() {
                 <Routes>
                     {/* Route cho trang login-register
         <Route path="/login-register" element={<Login_RegisterPage />} /> */}
-          {/* Route cho trang my-cars, chỉ cho phép người dùng có role 'CAR_OWNER' */}
-          <Route
-            path="my-cars"
-            element={
-              <PrivateRouter
-                element={<MyCars />}
-                allowedRoles={["CAR_OWNER", "OPERATOR"]}
-              />
-            }
-          />
+                    {/* Route cho trang my-cars, chỉ cho phép người dùng có role 'CAR_OWNER' */}
+                    <Route
+                        path="my-cars"
+                        element={
+                            <PrivateRouter
+                                element={<MyCars />}
+                                allowedRoles={["CAR_OWNER", "OPERATOR"]}
+                            />
+                        }
+                    />
 
-          {/* Route cho trang change-password */}
-          <Route path="" element={<HomePage />} />
+                    {/* Route cho trang change-password */}
+                    <Route path="" element={<HomePage />} />
 
                     {/* Route cho trang user-profile, chấp nhận cả role 'CAR_OWNER' và 'CUSTOMER' */}
                     <Route
@@ -94,7 +94,7 @@ function App() {
                     />
                     <Route path="/my-wallet" element={<PrivateRouter element={<MyWallet />} allowedRoles={['CAR_OWNER', 'CUSTOMER']} />} />
                     <Route path="/user/verify-email" element={<HomePage />} />
-                    <Route path="/auth/forgot-password/verify"  element={<SetNewPassword />} />
+                    <Route path="/auth/forgot-password/verify" element={<SetNewPassword />} />
                     <Route
                         path="/add-car-basic"
                         element={
@@ -132,7 +132,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/edit-details"
+                        path="/edit-details/:carId"
                         element={
                             <PrivateRouter
                                 element={<EditDetails />}
@@ -141,7 +141,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/booking-infor"
+                        path="/booking-infor/:carId"
                         element={
                             <PrivateRouter
                                 element={<BookingInfor />}
@@ -150,7 +150,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/booking-pay"
+                        path="/booking-pay/:carId"
                         element={
                             <PrivateRouter
                                 element={<BookingPayment />}
@@ -159,7 +159,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/booking-finish"
+                        path="/booking-finish/:carId"
                         element={
                             <PrivateRouter
                                 element={<BookingFinish />}
@@ -168,7 +168,7 @@ function App() {
                         }
                     />
                     <Route
-                        path="/edit-booking/:id"
+                        path="/edit-booking/:bookedId"
                         element={
                             <PrivateRouter
                                 element={<EditBookingDescript />}
@@ -185,6 +185,16 @@ function App() {
                         element={<PrivateRouter element={<ViewListAllCar />} allowedRoles={['OPERATOR']} />}
                     />
                     <Route path={"/not-found"} element={<NotFound />} />
+                    <Route
+                        path="booking-list"
+                        element={
+                            <PrivateRouter
+                                element={<BookingList />}
+                                allowedRoles={["OPERATOR"]}
+                            />
+                        }
+                    />
+
                 </Routes>
 
             </AuthProvider>
