@@ -454,7 +454,7 @@ export default function EditCarDetail() {
                         selectedCityProvince: newValue?.label || "",
                         addressDistrict: "",
                         addressWard: "",
-                        addressHouseNumberStreet: "",
+                        // addressHouseNumberStreet: "",
                         data: {
                           ...carData.data,
                           address: newValue?.value || "",
@@ -463,7 +463,13 @@ export default function EditCarDetail() {
                     );
                     if (newValue) {
                       dispatch(
-                        setErrors({ ...errors, addressCityProvince: "" })
+                        setErrors({
+                          ...errors,
+                          addressDistrict: "Please select your District",
+                          addressWard: "Please select your Ward",
+                          // addressHouseNumberStreet:
+                          //   "Please enter your house number",
+                        })
                       ); // Xóa lỗi
                     } else {
                       dispatch(
@@ -473,8 +479,8 @@ export default function EditCarDetail() {
                             "Please select your City/Province",
                           addressDistrict: "Please select your District",
                           addressWard: "Please select your Ward",
-                          addressHouseNumberStreet:
-                            "Please enter your house number",
+                          // addressHouseNumberStreet:
+                          //   "Please enter your house number",
                         })
                       );
                     }
@@ -526,7 +532,7 @@ export default function EditCarDetail() {
                         addressDistrict: newValue?.value || "",
                         selectedDistrict: newValue?.label || "",
                         addressWard: "",
-                        addressHouseNumberStreet: "",
+                        // addressHouseNumberStreet: "",
                         data: {
                           ...carData.data,
                           address:
@@ -544,8 +550,8 @@ export default function EditCarDetail() {
                           ...errors,
                           addressDistrict: "Please select your District",
                           addressWard: "Please select your Ward",
-                          addressHouseNumberStreet:
-                            "Please enter your house number",
+                          // addressHouseNumberStreet:
+                          //   "Please enter your house number",
                         })
                       );
                     }
@@ -596,7 +602,7 @@ export default function EditCarDetail() {
                         ...carData,
                         addressWard: newValue?.value || "",
 
-                        addressHouseNumberStreet: "",
+                        // addressHouseNumberStreet: "",
                         data: {
                           ...carData.data,
                           address:
@@ -613,8 +619,8 @@ export default function EditCarDetail() {
                         setErrors({
                           ...errors,
                           addressWard: "Please select your Ward",
-                          addressHouseNumberStreet:
-                            "Please enter your house number",
+                          // addressHouseNumberStreet:
+                          //   "Please enter your house number",
                         })
                       );
                     }
@@ -685,11 +691,6 @@ export default function EditCarDetail() {
                       );
                     }
                   }}
-                  slotProps={{
-                    input: {
-                      style: { color: "gray" }, // Màu xám nhạt cho giá trị mặc định
-                    },
-                  }}
                 />
               </div>
 
@@ -740,7 +741,10 @@ export default function EditCarDetail() {
               </div>
             </div>
 
-            <Typography variant="h6" sx={{ marginLeft: "10%", marginTop: "20px" }}>
+            <Typography
+              variant="h6"
+              sx={{ marginLeft: "10%", marginTop: "20px" }}
+            >
               Additional functions:
             </Typography>
 
@@ -760,10 +764,12 @@ export default function EditCarDetail() {
                       name="Bluetooth"
                     />
                   }
+                  id="bluetooth"
                   label={
-                    <>
-                      <Bluetooth /> Bluetooth
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <Bluetooth />
+                      <Typography>Bluetooth</Typography>
+                    </Box>
                   }
                 />
                 <FormControlLabel
@@ -774,10 +780,12 @@ export default function EditCarDetail() {
                       name="GPS"
                     />
                   }
+                  id="gps"
                   label={
-                    <>
-                      <GpsFixed /> GPS
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <GpsFixed />
+                      <Typography>GPS</Typography>
+                    </Box>
                   }
                 />
                 <FormControlLabel
@@ -788,10 +796,12 @@ export default function EditCarDetail() {
                       name="Camera"
                     />
                   }
+                  id="camera"
                   label={
-                    <>
-                      <CameraAlt /> Camera
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <CameraAlt />
+                      <Typography>Camera</Typography>
+                    </Box>
                   }
                 />
               </FormGroup>
@@ -811,10 +821,12 @@ export default function EditCarDetail() {
                       name="SunRoof"
                     />
                   }
+                  id="sunroof"
                   label={
-                    <>
-                      <WbSunny /> Sun roof
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <WbSunny />
+                      <Typography>Sun roof</Typography>
+                    </Box>
                   }
                 />
                 <FormControlLabel
@@ -825,10 +837,12 @@ export default function EditCarDetail() {
                       name="ChildLock"
                     />
                   }
+                  id="childlock"
                   label={
-                    <>
-                      <Lock /> Child lock
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <Lock />
+                      <Typography>Child lock</Typography>
+                    </Box>
                   }
                 />
                 <FormControlLabel
@@ -839,10 +853,12 @@ export default function EditCarDetail() {
                       name="ChildSeat"
                     />
                   }
+                  id="childseat"
                   label={
-                    <>
-                      <ChildCare /> Child seat
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <ChildCare />
+                      <Typography>Child lock</Typography>
+                    </Box>
                   }
                 />
               </FormGroup>
@@ -862,10 +878,12 @@ export default function EditCarDetail() {
                       name="DVD"
                     />
                   }
+                  id="dvd"
                   label={
-                    <>
-                      <Dvr /> DVD
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <Dvr />
+                      <Typography>DVD</Typography>
+                    </Box>
                   }
                 />
                 <FormControlLabel
@@ -876,10 +894,12 @@ export default function EditCarDetail() {
                       name="USB"
                     />
                   }
+                  id="usb"
                   label={
-                    <>
-                      <Usb /> USB
-                    </>
+                    <Box display={"flex"} gap={1}>
+                      <Usb />
+                      <Typography>USB</Typography>
+                    </Box>
                   }
                 />
               </FormGroup>
@@ -892,7 +912,12 @@ export default function EditCarDetail() {
             </div>
 
             <div
-              style={{ display: "flex", gap: "100px", marginBottom: "30px", marginLeft: "20%" }}
+              style={{
+                display: "flex",
+                gap: "100px",
+                marginBottom: "30px",
+                marginLeft: "20%",
+              }}
             >
               <div>
                 <Box sx={{ display: "flex", alignItems: "center" }}>
@@ -1230,14 +1255,16 @@ export default function EditCarDetail() {
               </div>
             </div>
 
-
-            <Typography variant="body1" sx={{ marginLeft: "10%", marginTop: "20px" }}>
-            Please include full 4 images of your vehicle <br></br>
-            File type: .jpg, .jpeg, .png, .gif
+            <Typography
+              variant="body1"
+              sx={{ marginLeft: "10%", marginTop: "20px" }}
+            >
+              Please include full 4 images of your vehicle <br></br>
+              File type: .jpg, .jpeg, .png, .gif
             </Typography>
             <Button
               variant="contained"
-              id="nextButton"
+              id="save"
               sx={{ marginLeft: "46%" }}
               style={{ backgroundColor: "#00bfa5" }}
               onClick={async () => {

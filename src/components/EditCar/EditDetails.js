@@ -423,7 +423,7 @@ export default function EditDetails({ selectedCarId }) {
                             status === "NOT_VERIFIED");
 
                         return isAllowed ? (
-                          <MenuItem key={status} value={status}>
+                          <MenuItem key={status} value={status} id={`${status.toLowerCase()}`}>
                             <Typography
                               sx={{
                                 color:

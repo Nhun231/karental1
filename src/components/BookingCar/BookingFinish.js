@@ -1,54 +1,33 @@
 import * as React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { store } from "../../redux/store";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
-import { BookingDescript } from "./BookingDescript";
 import {
   Typography,
   Box,
-  TextField,
   Grid,
-  FormHelperText,
-  Skeleton,
-  Checkbox,
-  FormControlLabel,
-  InputAdornment,
   Button,
-  FormControl,
-  Autocomplete,
-  RadioGroup,
-  Radio,
   CardContent,
   Card,
+  Link,
+  Breadcrumbs,
   Divider,
-  FormLabel,
 } from "@mui/material";
 import dayjs from "dayjs";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { DatePicker, LocalizationProvider } from "@mui/x-date-pickers";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
-import { useState, useEffect, useMemo } from "react";
-import {
-  fetchInforProfile,
-  setStepBooking,
-  setInfor,
-  setErrorsBooking,
-  handleNext,
-} from "../../reducers/rentCarReducer";
-import axios from "axios";
-import NavigateBreadcrumb from "../common/NavigateBreadcrumb";
+import { useState, useEffect } from "react";
+
 import RentStepper from "./RentStepper";
 import { getCarDetail } from "../../reducers/carFetchReducer";
 import { Alert, Stack } from "@mui/material";
 import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import PhoneIcon from "@mui/icons-material/Phone";
+import { setStepBooking } from "../../reducers/rentCarReducer";
 
 export default function BookingFinish() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [value, setValue] = useState("wallet");
 
   const { carData = {} } = useSelector((state) => state.carFetch);
   const { wallet = {} } = useSelector((state) => state.rentCar);
@@ -69,7 +48,7 @@ export default function BookingFinish() {
   useEffect(() => {
     const fetchCarData = async () => {
       try {
-        const data = await dispatch(getCarDetail()).unwrap();// use unwrap to get directly the data from the action creator else will return object
+        const data = await dispatch(getCarDetail()).unwrap(); // use unwrap to get directly the data from the action creator else will return object
       } catch (error) {
         console.error("Failed to fetch car data:", error);
       }
@@ -80,9 +59,13 @@ export default function BookingFinish() {
   return (
     <>
       <Header />
-      <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
-        <NavigateBreadcrumb />
-      </Box>
+      <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
+        <Link underline="hover" color="inherit" href="/">
+          Home
+        </Link>
+
+        <Typography color="text.primary">Booking Finsh</Typography>
+      </Breadcrumbs>
       <RentStepper />
       <Box sx={{ mx: "auto", maxWidth: "1200px", p: 2 }}>
         <Grid container justifyContent="center" mt={4}>
@@ -106,7 +89,7 @@ export default function BookingFinish() {
                         fontWeight="bold"
                         color="primary"
                       >
-                         {"\u2705"} Booking Confirmed!
+                        {"\u2705"} Booking Confirmed!
                       </Typography>
 
                       <Typography variant="body1" align="center">
@@ -162,7 +145,9 @@ export default function BookingFinish() {
         <Button
           variant="contained"
           id="nextButton"
-          onClick={() => navigate("/my-bookings")}
+          onClick={() => {
+            navigate("/my-bookings");
+          }}
           sx={{ ml: 2, mb: 4 }}
           style={{ backgroundColor: "#00bfa5" }}
         >

@@ -14,9 +14,8 @@ import {
   FormLabel,
 } from "@mui/material";
 import { useState } from "react";
-import { setInfor } from "../../reducers/rentCarReducer";
+import { setInfor, setStepBooking } from "../../reducers/rentCarReducer";
 import { createBooking } from "../../reducers/rentCarReducer";
-import { toast } from "react-toastify";
 import { useParams } from "react-router-dom";
 
 export default function BookingPayment() {
@@ -28,7 +27,7 @@ export default function BookingPayment() {
 
   const { wallet = {} } = useSelector((state) => state.rentCar);
   const { carData = {} } = useSelector((state) => state.carFetch);
-  const { infor = {} } = useSelector((state) => state.rentCar);
+  const { infor = {}, step } = useSelector((state) => state.rentCar);
   return (
     <>
       <BookingDescript />
@@ -79,16 +78,12 @@ export default function BookingPayment() {
                   wallet?.data?.balance}{" "}
                 VND
               </Typography>
-              <FormControlLabel
-                value="option2"
-                control={<Radio />}
-                label="Cash"
-              />
+              <FormControlLabel value="CASH" control={<Radio />} label="Cash" />
               <Typography sx={{ pl: 4, fontSize: 14, color: "gray" }}>
                 Our operator will contact you for further instruction
               </Typography>
               <FormControlLabel
-                value="option3"
+                value="BANK_TRANSFER"
                 control={<Radio />}
                 label="Bank transfer"
               />
@@ -99,33 +94,41 @@ export default function BookingPayment() {
           </FormControl>
         </Box>
       </Box>
+
       <Box m={2} style={{ textAlign: "center" }}>
         <Button
           variant="contained"
           id="nextButton"
-          disabled={infor.paymentType === "" || loading === true}
-          onClick={async () => {
-            try {
+          onClick={() => {
+            dispatch(setStepBooking(1));
+            navigate(`/booking-infor/${carId}`);
+          }}
+          sx={{ ml: 2 }}
+          style={{ backgroundColor: "#05ce80" }}
+        >
+          Back
+        </Button>
+        {step === 2 && (
+          <Button
+            variant="contained"
+            id="nextButton"
+            disabled={infor.paymentType === "" || loading === true}
+            onClick={async () => {
               setLoading(true);
               const result = await dispatch(createBooking(carId)).unwrap();
               if (result) {
-                navigate(`/booking-finish/${carId}`); // Chỉ chuyển hướng nếu gửi thành công
+                dispatch(setStepBooking(1));
+                navigate(`/booking-finish/${carId}`); // just navigate when success
               }
-            } catch (error) {
-              toast.error(
-                "Car booking failed! Someone has already booked this car",
-                {
-                  position: "top-right",
-                }
-              );
-            }
-          }}
-          sx={{ ml: 2 }}
-          style={{ backgroundColor: "#00bfa5" }}
-        >
-          {loading ? "Booking..." : "Confirm payment"}
-        </Button>
+            }}
+            sx={{ ml: 2 }}
+            style={{ backgroundColor: "#00bfa5" }}
+          >
+            {loading ? "Booking..." : "Confirm payment"}
+          </Button>
+        )}
       </Box>
+
       <Footer />
     </>
   );

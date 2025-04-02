@@ -8,6 +8,8 @@ import {
   TableBody,
   TableCell,
   TableContainer,
+  Link,
+  Breadcrumbs,
   TableRow,
 } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
@@ -18,10 +20,10 @@ import "swiper/css/navigation";
 import { Navigation, Autoplay } from "swiper/modules";
 import RentStepper from "./RentStepper";
 import Header from "../common/Header";
-import NavigateBreadcrumb from "../common/NavigateBreadcrumb";
 import { getCarDetail } from "../../reducers/carFetchReducer";
 import { getWallet } from "../../reducers/rentCarReducer";
 import { useParams } from "react-router-dom";
+import dayjs from "dayjs";
 
 export const BookingDescript = () => {
   //repository of car
@@ -30,9 +32,17 @@ export const BookingDescript = () => {
     status,
     error,
   } = useSelector((state) => state.carFetch);
+
   const { pickUpTime = "", dropOffTime = "" } = useSelector(
     (state) => state.rental
   );
+
+  const pickUpDate = new Date(pickUpTime);
+  const dropOffDate = new Date(dropOffTime);
+  const diffInMs = dropOffDate - pickUpDate;
+  const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+  const days = Math.ceil(diffInDays);
+
   const { carId } = useParams();
   const [images, setImages] = useState([]);
   const [value, setValue] = useState(0); // default value is 0
@@ -62,7 +72,7 @@ export const BookingDescript = () => {
       } catch (error) {
         console.error("Failed to fetch car data:", error);
       }
-      document.title = 'Booking Details';
+      document.title = "Booking Details";
     };
 
     fetchCarData();
@@ -71,9 +81,13 @@ export const BookingDescript = () => {
   return (
     <>
       <Header />
-      <Box sx={{ mx: "auto", maxWidth: "1200px" }}>
-        <NavigateBreadcrumb />
-      </Box>
+      <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
+        <Link underline="hover" color="inherit" href="/">
+          Home
+        </Link>
+
+        <Typography color="text.primary">Booking details</Typography>
+      </Breadcrumbs>
       <RentStepper />
       <Box sx={{ mx: "auto", maxWidth: "1200px", p: 4 }}>
         <Box
@@ -246,7 +260,6 @@ export const BookingDescript = () => {
             </Typography>
             <Box
               sx={{
-                textAlign: "right",
                 my: 2,
                 backgroundColor: "white",
                 border: "1px solid #ddd",
@@ -258,18 +271,50 @@ export const BookingDescript = () => {
                 zIndex: 1000,
               }}
             >
-              <Typography variant="body1" fontWeight="bold">
-                Number of days: 15
-              </Typography>
-              <Typography variant="body1" fontWeight="bold">
-                Price per day:{" "}
-                <span style={{ color: "red" }}>
-                  {new Intl.NumberFormat("en-US").format(
-                    carData?.data?.basePrice
-                  )}{" "}
-                  VND
-                </span>
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                >
+                  Number of days:
+                </Typography>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                  style={{ color: "#05ce80" }}
+                >
+                  {days}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                >
+                  Price per day:
+                </Typography>
+
+                <Typography sx={{ flex: "1", fontWeight: "bold" }}>
+                  <span style={{ color: "red" }}>
+                    {new Intl.NumberFormat("en-US").format(
+                      carData?.data?.basePrice
+                    )}{" "}
+                    VND
+                  </span>
+                </Typography>
+              </Box>
             </Box>
             <Divider
               sx={{
@@ -278,10 +323,9 @@ export const BookingDescript = () => {
                 top: "300px",
                 zIndex: 1000,
               }}
-            />{" "}
+            />
             <Box
               sx={{
-                textAlign: "right",
                 backgroundColor: "white",
                 border: "1px solid #ddd",
                 borderRadius: 2,
@@ -292,24 +336,90 @@ export const BookingDescript = () => {
                 zIndex: 1000,
               }}
             >
-              <Typography variant="body1" fontWeight="bold">
-                Total:{" "}
-                <span style={{ color: "red" }}>
-                  {new Intl.NumberFormat("en-US").format(
-                    carData?.data?.basePrice * 15
-                  )}{" "}
-                  VND
-                </span>
-              </Typography>
-              <Typography variant="body1" fontWeight="bold">
-                Deposit:{" "}
-                <span style={{ color: "red" }}>
-                  {new Intl.NumberFormat("en-US").format(
-                    carData?.data?.deposit
-                  )}{" "}
-                  VND
-                </span>
-              </Typography>
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                >
+                  Total:
+                </Typography>
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                >
+                  <span style={{ color: "red" }}>
+                    {new Intl.NumberFormat("en-US").format(
+                      carData?.data?.basePrice * days
+                    )}{" "}
+                    VND
+                  </span>
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                >
+                  Deposit:
+                </Typography>
+
+                <Typography sx={{ flex: "1", fontWeight: "bold" }}>
+                  <span style={{ color: "red" }}>
+                    {new Intl.NumberFormat("en-US").format(
+                      carData?.data?.deposit
+                    )}{" "}
+                    VND
+                  </span>
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                >
+                  Pick up Time:
+                </Typography>
+
+                <Typography sx={{ flex: "1", fontWeight: "bold" }}>
+                  {dayjs(pickUpTime).format("DD/MM/YYYY - hh:mm A")}
+                </Typography>
+              </Box>
+
+              <Box
+                sx={{
+                  display: "flex",
+                }}
+              >
+                <Typography
+                  variant="body1"
+                  fontWeight="bold"
+                  sx={{ flex: "1" }}
+                >
+                  Drop of Time:
+                </Typography>
+
+                <Typography sx={{ flex: "1", fontWeight: "bold" }}>
+                  {dayjs(dropOffTime).format("DD/MM/YYYY - hh:mm A")}
+                </Typography>
+              </Box>
             </Box>
           </Box>
         </Box>

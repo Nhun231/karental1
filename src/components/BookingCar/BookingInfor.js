@@ -32,6 +32,7 @@ import {
   setInfor,
   setErrorsBooking,
   handleNext,
+  setStepBooking,
 } from "../../reducers/rentCarReducer";
 import axios from "axios";
 import { saveFileToDB } from "../../Helper/indexedDBHelper";
@@ -50,9 +51,9 @@ export default function BookingInfor() {
     infor = {},
     statusBooking,
     errorsBooking,
+    step = 1,
   } = useSelector((state) => state.rentCar);
 
-  
   //function get profile
   useEffect(() => {
     const getProfile = async () => {
@@ -64,7 +65,7 @@ export default function BookingInfor() {
         //if get data success save in temple redux store
         dispatch(
           setInfor({
-            ...infor,
+            ...(infor || {}),
             data: {
               ...data?.data,
               driverFullName: data?.data?.fullName,
@@ -72,7 +73,7 @@ export default function BookingInfor() {
               driverEmail: data?.data?.email,
               driverPhoneNumber: data?.data?.phoneNumber,
               driverNationalId: data?.data?.nationalId,
-              driverCityProvince: data?.data?.cityProvince,
+              driverCityProvince: data?.data?.cityProvince || "",
               driverDistrict: data?.data?.district,
               driverWard: data?.data?.ward,
               driverHouseNumberStreet: data?.data?.houseNumberStreet,
@@ -107,10 +108,10 @@ export default function BookingInfor() {
 
   //function get district
   const filteredDistrict = useMemo(() => {
-    if (!infor.renter.driverCityProvince) return [];
+    if (!infor?.renter?.driverCityProvince) return [];
 
     const tmp = address.filter(
-      (item) => item.City_Province === infor.renter.driverCityProvince
+      (item) => item.City_Province === infor?.renter?.driverCityProvince
     );
     return Array.from(new Set(tmp.map((item) => item.Disctrict))).map(
       (dsc) => ({
@@ -118,12 +119,15 @@ export default function BookingInfor() {
         value: dsc,
       })
     );
-  }, [address, infor.renter.driverCityProvince]);
+  }, [address, infor?.renter?.driverCityProvince]);
 
   //function get ward
   const filteredWard = useMemo(() => {
+    if (!infor?.renter?.driverCityProvince || !infor?.renter?.driverDistrict)
+      return [];
+
     const tmp = address.filter(
-      (item) => item.City_Province === infor.renter.driverCityProvince
+      (item) => item.City_Province === infor?.renter?.driverCityProvince
     );
 
     const tmp2 = tmp.filter(
@@ -133,7 +137,11 @@ export default function BookingInfor() {
       label: dsc,
       value: dsc,
     }));
-  }, [address, infor.renter.driverCityProvince, infor.renter.driverDistrict]);
+  }, [
+    address,
+    infor?.renter?.driverCityProvince,
+    infor?.renter?.driverDistrict,
+  ]);
 
   //accept file
   const allowedExtensions = [".doc", ".docx", ".pdf", ".jpg", ".jpeg", ".png"];
@@ -152,7 +160,7 @@ export default function BookingInfor() {
       .substring(file.name.lastIndexOf("."))
       .toLowerCase();
 
-      //check file
+    //check file
     if (!allowedExtensions.includes(fileExt)) {
       dispatch(
         setErrorsBooking({
@@ -942,10 +950,10 @@ export default function BookingInfor() {
                 />
               )}
               value={
-                cityProvince.length > 0 && infor.renter.driverCityProvince
+                cityProvince.length > 0 && infor?.renter?.driverCityProvince
                   ? cityProvince.find(
                       (option) =>
-                        option.value === infor.renter.driverCityProvince
+                        option.value === infor?.renter?.driverCityProvince
                     ) || null
                   : null
               }
@@ -1035,7 +1043,7 @@ export default function BookingInfor() {
                   ); // Xóa lỗi
                 }
               }}
-              disabled={!infor?.renter.driverCityProvince || !infor?.driver}
+              disabled={!infor?.renter?.driverCityProvince || !infor?.driver}
             />
           </FormControl>
 
@@ -1074,7 +1082,7 @@ export default function BookingInfor() {
                 />
               )}
               value={
-                filteredWard.find((c) => c.value === infor.renter.driverWard) ||
+                filteredWard.find((c) => c.value === infor?.renter?.driverWard) ||
                 null
               } // Liên kết với state
               onChange={(event, newValue) => {
@@ -1094,7 +1102,7 @@ export default function BookingInfor() {
                   ); // Xóa lỗi
                 }
               }}
-              disabled={!infor.renter.driverDistrict || !infor?.driver}
+              disabled={!infor?.renter?.driverDistrict || !infor?.driver}
             />
           </FormControl>
 
@@ -1151,6 +1159,7 @@ export default function BookingInfor() {
               if (
                 Object.keys(store.getState().rentCar.errorsBooking).length === 0
               ) {
+                dispatch(setStepBooking(step + 1));
                 navigate(`/booking-pay/${carId}`);
               }
             }, 0); //wait for redux store to update

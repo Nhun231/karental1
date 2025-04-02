@@ -137,24 +137,24 @@ export default function EditBookingDescription() {
   }, [bookedId]);
 
   // Get feedback status
-  useEffect(() => {
-    const getFeedbackStatus = async () => {
-      try {
-        const result = await getFeedbackByBookingId(bookedId);
-        setHasReviewed(result.data.length > 0);
-      } catch (error) {
-        console.error("Error fetching feedback:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const getFeedbackStatus = async () => {
+  //     try {
+  //       const result = await getFeedbackByBookingId(bookedId);
+  //       setHasReviewed(result.data.length > 0);
+  //     } catch (error) {
+  //       console.error("Error fetching feedback:", error);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    getFeedbackStatus();
-  }, [bookedId, hasReviewed]);
+  //   getFeedbackStatus();
+  // }, [bookedId]);
 
   // If feedback has sent, disable modal
   const handleGivefeedback = (data) => {
-    console.log("Review Submitted:", data);
+    // console.log("Review Submitted:", data);
     setHasReviewed(true);
   };
   return (
@@ -380,23 +380,10 @@ export default function EditBookingDescription() {
                   gap: 1,
                 }}
               >
-                <Button
-                  variant="contained"
-                  id="detailButton"
-                  color="info"
-                  sx={{
-                    fontWeight: "bold",
-                    flex: "0.25",
-                    minWidth: "100px",
-                    fontSize: "12px",
-                  }}
-                >
-                  Details
-                </Button>
                 {infor?.data?.status === "IN_PROGRESS" && (
                   <Button
                     variant="contained"
-                    id="cancelButton"
+                    id="return-car-button"
                     disabled={loading}
                     sx={{
                       fontWeight: "bold",
@@ -420,7 +407,9 @@ export default function EditBookingDescription() {
                         }).then((result) => {
                           if (result.isConfirmed) {
                             setLoading(true);
-                            dispatch(confirmPickup()).finally(() => {
+                            dispatch(
+                              confirmPickup(infor?.data?.bookingNumber)
+                            ).finally(() => {
                               setLoading(false);
                             });
                           }
@@ -440,7 +429,9 @@ export default function EditBookingDescription() {
                         }).then((result) => {
                           if (result.isConfirmed) {
                             setLoading(true);
-                            dispatch(returnCar()).finally(() => {
+                            dispatch(
+                              returnCar(infor?.data?.bookingNumber)
+                            ).finally(() => {
                               setLoading(false);
                             });
                           }
@@ -478,7 +469,9 @@ export default function EditBookingDescription() {
                       }).then((result) => {
                         if (result.isConfirmed) {
                           setLoading(true);
-                          dispatch(confirmPickup()).finally(() => {
+                          dispatch(
+                            confirmPickup(infor?.data?.bookingNumber)
+                          ).finally(() => {
                             setLoading(false);
                           });
                         }
@@ -495,12 +488,12 @@ export default function EditBookingDescription() {
                 {infor?.data?.status === "PENDING_DEPOSIT" && (
                   <Button
                     variant="contained"
-                    id="pickupButton"
+                    id="payDepositButton"
                     color="inherit"
                     disabled={loading}
                     sx={{
                       fontWeight: "bold",
-                      flex: "0.5",
+                      flex: "0.25",
                       minWidth: "100px",
                       fontSize: "12px",
                     }}
@@ -596,7 +589,9 @@ export default function EditBookingDescription() {
                         }).then((result) => {
                           if (result.isConfirmed) {
                             setLoading(true);
-                            dispatch(cancelBooking()).finally(() => {
+                            dispatch(
+                              cancelBooking(infor?.data?.bookingNumber)
+                            ).finally(() => {
                               setLoading(false);
                             });
                           }

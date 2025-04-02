@@ -163,6 +163,7 @@ const DocumentEdit = () => {
                 <TableCell>
                   <input
                     type="file"
+                    id={doc.action}
                     multiple
                     onChange={handleFile(doc.action, doc.action)}
                   />

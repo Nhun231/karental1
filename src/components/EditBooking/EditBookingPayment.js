@@ -7,8 +7,10 @@ import {
   RadioGroup,
   Radio,
   FormLabel,
+  Link,
 } from "@mui/material";
 import { useSelector } from "react-redux";
+
 
 export const EditBookingPayment = () => {
   //   const [loading, setLoading] = useState(false);
@@ -32,10 +34,6 @@ export const EditBookingPayment = () => {
             bgcolor: "white",
           }}
         >
-          <Typography variant="h6" fontWeight="bold" sx={{ mb: 2 }}>
-            Please select your payment method
-          </Typography>
-
           <FormControl>
             <FormLabel>Payment method</FormLabel>
             <RadioGroup sx={{ ml: 2 }} value={infor?.data?.paymentType || ""}>
@@ -75,6 +73,14 @@ export const EditBookingPayment = () => {
               />
               <Typography sx={{ pl: 4, fontSize: 14, color: "gray" }}>
                 Our operator will contact you for further instruction
+              </Typography>
+
+              <Typography variant="body1" fontWeight="bold" sx={{ mb: 2 }}>
+                Please make sure to have sufficient balance when you return the
+                car.
+              </Typography>
+              <Typography variant="body1" fontWeight="bold" sx={{ mb: 2 }}>
+                Go to <Link href="#/my-wallet">My wallet</Link>
               </Typography>
             </RadioGroup>
           </FormControl>
