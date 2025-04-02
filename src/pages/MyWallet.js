@@ -283,8 +283,10 @@ const [refresh, setRefresh] = useState(false);
         });
         return;
       }
+            console.log(res);
+            handleCloseTopUp();
       window.open(res.data.payment.vnp_url);
-      handleCloseTopUp();
+
     } catch (error) {
       console.error("Top-up Error:", error);
       setAlert({ 
@@ -315,11 +317,16 @@ const [refresh, setRefresh] = useState(false);
         const res = await withdrawFunction(formWithdraw);
         if (!res || !res.data) return;
         setAlert({ open: true, message:  `Successfully withdraw ${res.data.data.amount.toLocaleString()} VND`, severity: "success" });
-          handleCloseWithdraw();
+
       }catch(error){
         console.error("Withdraw Error:", error); // Debugging
          setAlert({ open: true, message: `Withdraw error: ${error.response.data.message}`, severity: "error" });
+
+            }finally {
+                // Chờ alert đóng rồi mới đóng modal
+                setTimeout(() => {
          handleCloseWithdraw();
+                }, 2000);
       }
       
     }
@@ -665,7 +672,6 @@ const [refresh, setRefresh] = useState(false);
                 </Button>
               </Box>
             )}
-
             <Paper>
               <DataGrid
                 paginationModel={paginationModel}
@@ -680,7 +686,7 @@ const [refresh, setRefresh] = useState(false);
           </Box>
         </Container>
       </Layout>
-      <NotificationSnackbar  alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
+
     </div>
   );
 };
