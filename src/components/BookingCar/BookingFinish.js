@@ -71,14 +71,20 @@ export default function BookingFinish() {
           <Grid container justifyContent="center" mt={4}>
             <Grid item xs={12} md={8}>
               <Box sx={{ p: 3, textAlign: "center" }}>
-                {status === "PENDING_DEPOSIT" ? (
+              {status === "PENDING_DEPOSIT" &&
+              wallet?.data?.paymentType !== "WALLET" ? (
                     <Alert
                         severity="warning"
                         icon={<CalendarMonthIcon />}
                         sx={{ fontWeight: "bold", mb: 2 }}
                     >
-                      The system has recorded your booking. Please complete the
-                      payment within <strong>1 hour</strong>.
+                  <Typography
+                    variant="body1"
+                    fontWeight="bold"
+                    textAlign="center"
+                  >
+                    Our operator will confirm your booking soon
+                  </Typography>
                     </Alert>
                 ) : status === "WAITING_CONFIRMED" ? (
                     <Card sx={{ p: 3, boxShadow: 3, borderRadius: 3 }}>
@@ -132,6 +138,21 @@ export default function BookingFinish() {
                             </Stack>
                         </CardContent>
                     </Card>
+              ) : status === "PENDING_DEPOSIT" ? (
+                <Alert
+                  severity="warning"
+                  icon={<CalendarMonthIcon />}
+                  sx={{ fontWeight: "bold", mb: 2 }}
+                >
+                  <Typography
+                    variant="body1"
+                    fontWeight="bold"
+                    textAlign="center"
+                  >
+                    Your booking has been recorded. Please top up your wallet
+                    and complete the payment within 1 hour.
+                  </Typography>
+                </Alert>
                 ) : (
                     <Alert severity="info" sx={{ fontWeight: "bold", mb: 2 }}>
                       Booking status is unknown. Please check again.
@@ -142,6 +163,20 @@ export default function BookingFinish() {
           </Grid>
         </Box>
         <Box m={2} style={{ textAlign: "center" }}>
+        {status === "PENDING_DEPOSIT" &&
+        wallet?.data?.paymentType === "WALLET" ? (
+          <Button
+            variant="contained"
+            id="nextButton"
+            onClick={() => {
+              navigate("/my-wallet");
+            }}
+            sx={{ ml: 2, mb: 4 }}
+            style={{ backgroundColor: "#00bfa5" }}
+          >
+            My Wallet
+          </Button>
+        ) : (
           <Button
               variant="contained"
               id="nextButton"
@@ -151,8 +186,9 @@ export default function BookingFinish() {
               sx={{ ml: 2, mb: 4 }}
               style={{ backgroundColor: "#00bfa5" }}
           >
-            Next
+            My Bookings
           </Button>
+        )}
         </Box>
         <Footer />
       </>
