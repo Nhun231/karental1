@@ -268,7 +268,7 @@ export const confirmDeposit = createAsyncThunk(
         {},
         { withCredentials: true }
       );
-      toast.success(`Canceled Booking successfully!`, {
+      toast.success(`Confirm Booking successfully!`, {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -295,7 +295,7 @@ export const confirmDeposit = createAsyncThunk(
       return response.data;
     } catch (error) {
       const errorMessage = error.response?.data || "Cancel booking failed.";
-      toast.error(`Failed to cancel booking. Please try again!`, {
+      toast.error(`Failed to confirm booking. Please try again!`, {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,

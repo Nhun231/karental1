@@ -34,7 +34,7 @@ const ViewListAllCar = () => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedCar, setSelectedCar] = useState(null);
     const [alert, setAlert] = useState({ open: false, message: "", severity: "info" });
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [openModal, setOpenModal] = useState(false);
     const getSortQuery = (option) =>
     ({
@@ -84,10 +84,13 @@ const ViewListAllCar = () => {
             setTotalPages(response.data.totalPages);
         } catch (error) {
             console.error("Failed to fetch car data:", error);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
+        setLoading(true)
         fetchAllCars();
     }, [page, pageSize, sortOption, statusFilter]);
 
@@ -108,16 +111,26 @@ const ViewListAllCar = () => {
 
     const handleViewDetails = async (car) => {
         try {
+            setLoading(true)
             const documents = await getCarDocuments(car.id);
             setDocuments(documents.data);
             setOpenModal(true);
         } catch (error) {
             console.error("Failed to fetch car documents:", error);
+        } finally {
+            setLoading(false)
         }
     };
     useEffect(() => {
         document.title = 'View List All Cars';
       }, []); 
+    if (loading) {
+        return (
+            <div className="loader-container">
+                <div className="loader"></div>
+            </div>
+        );
+    }
     return (
         <>
             <Box sx={{ maxWidth: "1200px", mx: "auto", mt: 2 }}>
@@ -155,6 +168,9 @@ const ViewListAllCar = () => {
                                     item
                                     xs={12}
                                     key={car.id}
+                                    className="car-item"
+                                    data-car-id={car.id || ""}
+                                    data-status={car.status || ""}
                                 >
                                     <Grid container spacing={2} alignItems="stretch">
                                         <Grid item xs={10} >
@@ -203,7 +219,6 @@ const ViewListAllCar = () => {
                                 content="Are you sure you want to update status for this car?"
                                 loading={loading}
                             />
-
                             <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
                         </Grid>
                     )}

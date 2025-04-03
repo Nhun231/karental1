@@ -5,8 +5,7 @@ import normalForm from "../../styles/FormStyles.js";
 import Checkbox from "@mui/material/Checkbox";
 import { checkUniqueEmail, registerUser } from "../../services/UserServices";
 import NotificationSnackbar from "../common/NotificationSnackbar";
-const Register = ({ isCarOwner }) => {
-  const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
+const Register = ({ isCarOwner, onRegisterSucess, setAlert }) => {
   // Handle form input
   const [formData, setFormData] = useState({
     fullName: "",
@@ -129,20 +128,21 @@ const Register = ({ isCarOwner }) => {
   //   return;
   // }
     //If there's still error of wrong confirm password(which is not handle in backend"), display alert
-    if(formData.password!==formData.confirmPassword){
+    if (formData.password !== formData.confirmPassword) {
       setAlert({ open: true, message: "Password not match", severity: "error" });
       return;
     }
     try {
       const response = await registerUser(formData);
-      setAlert({ open: true, message: response.message, severity: "error" });
+      setAlert({ open: true, message: response.message, severity: "success" });
+      onRegisterSucess();
       // Handle email confirmation prompt if (response) {
       //   if (window.confirm(`${response.message}. Do you want us to resend the email?`)) {
       //     // Call resend email function here
       //     console.log("Resend email triggered");
       //   }
     } catch (error) {
-      setAlert({ open: true, message:`${error.message || "Registration failed"}`, severity: "error" });
+      setAlert({ open: true, message: `${error.message || "Registration failed"}`, severity: "error" });
     }
   };
   return (
@@ -334,7 +334,6 @@ const Register = ({ isCarOwner }) => {
           </Mui.Box>
         </Mui.Box>
       </Mui.Box>
-      <NotificationSnackbar  alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
     </>
   );
 };

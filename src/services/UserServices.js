@@ -109,11 +109,10 @@ export const updateUserProfile = async (formData) => {
       },
       withCredentials: true,
     });
-
     return response.data;
   } catch (error) {
     console.error("Error updating profile:", error);
-    alert(error.response?.data?.message || "Update failed");
+    //alert(error.response?.data?.message || "Update failed");
     throw error;
   }
 };
@@ -129,13 +128,13 @@ export const updateUserPassword = async (formData) => {
     return response.data;
   } catch (error) {
     console.error("Error updating password:", error);
-    alert(error.response?.data?.message || "Password update failed");
+    //alert(error.response?.data?.message || "Password update failed");
     throw error;
   }
 };
 export const logoutUser = async () => {
   try {
-    await fetch (`${BASE_URL}/auth/logout`, {
+    await fetch(`${BASE_URL}/auth/logout`, {
       withCredentials: true,
     });
 

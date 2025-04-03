@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, Typography, Button, Grid } from "@mui/material";
+import { Box, Card, CardContent, Typography, Button, Grid, Modal } from "@mui/material";
 import { Link } from "react-router-dom";
 import rentcarimg from "../../assets/rentcar.jpg";
 import {
@@ -9,6 +9,12 @@ import {
     HowToReg as HowToRegIcon,
     AccountBalanceWallet as AccountBalanceWalletIcon,
 } from "@mui/icons-material";
+import React from "react";
+import { ModalClose, ModalDialog } from "@mui/joy";
+import Register from "../User/Register";
+import { useState } from "react";
+import NotificationSnackbar from "./NotificationSnackbar";
+
 /**
  * BenefitSection Component
  * Provide UI for 'Home Page'
@@ -24,7 +30,14 @@ const benefits = [
     { title: "Set payment:", description: "We pay you once a month and you can always view how much your car has earned under your user profile.", icon: <AccountBalanceWalletIcon sx={ICON_STYLE} /> },
 ];
 
-const BenefitsSection = () => (
+const BenefitsSection = () => {
+    const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
+    const isLoggedIn = Boolean(localStorage.getItem("role"));
+    const isCarOwner = "true";
+    const [open, setOpen] = React.useState(false);
+    const handleOpen = () => setOpen(true);
+    const handleClose = () => setOpen(false);
+    return (
     <Box sx={{ px: { xs: 2, md: 4 } }}>
         {/* Title */}
         <Typography variant="h4" fontWeight="bold" color="black" sx={{ textAlign: "center", p: 2, my: 5, fontSize: { xs: "1.8rem", md: "2.5rem" }, }}>
@@ -105,7 +118,7 @@ const BenefitsSection = () => (
             </Typography>
 
             {/* Button Trigger Add A Car*/}
-            <Button
+                {isLoggedIn ? <Button
                 component={Link}
                 to="/add-car-basic"
                 sx={{
@@ -121,10 +134,47 @@ const BenefitsSection = () => (
                     py: 1.5,
                 }}
             >
-                List Your Car
+                    List Your Car Today
+                </Button> : (
+                    <Button
+                        onClick={handleOpen}
+                        id="open-register-button"
+                        sx={{
+                            mt: 4,
+                            backgroundColor: "#04b36d",
+                            color: "white",
+                            fontWeight: "bold",
+                            fontSize: { xs: "0.9rem", sm: "1rem" },
+                            "&:hover": { backgroundColor: "#057347" },
+                            position: "relative",
+                            zIndex: 2,
+                            px: 3,
+                            py: 1.5,
+                        }}
+                    >
+                        List Your Car Today
             </Button>
+                )}
         </Box>
+            {/* Modal Register */}
+            <Modal open={open} onClose={handleClose}>
+                <ModalDialog
+                    sx={{
+                        width: { xs: "90vw", sm: "60vw", md: "32vw" }, // Responsive modal width
+                        maxWidth: "lg",
+                        maxHeight: "100vh",
+                        overflowY: "auto",
+                        padding: { xs: "20px", sm: "40px" }, // Responsive padding
+                    }}
+                >
+                    <ModalClose onClick={handleClose} />
+                    <Register isCarOwner={isCarOwner} onRegisterSucess={handleClose} />
+                </ModalDialog>
+            </Modal>
+            {/* Notification Snackbar */}
+            <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
     </Box>
-);
+    )
+};
 
 export default BenefitsSection;

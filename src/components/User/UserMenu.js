@@ -29,7 +29,10 @@ const UserMenu = () => {
     try {
       await logoutUser();
       setAlert({ open: true, message: "You're logged out", severity: "success" });
-      navigate("/"); // Navigate to home
+      handleClose()
+      setTimeout(() => {
+        navigate("/");
+      }, 1500);
     } catch (error) {
       console.error("Logout failed:", error);
       setAlert({ open: true, message: "Logout failed", severity: "error" });

@@ -36,15 +36,14 @@ const SearchForm = ({ searchParams, handleRentalTimeChange, errorMsg, setErrorMs
             alert("Please select a valid address.");
             return;
         }
-
         dispatch(setAddress(address));
         dispatch(setRentalTime({ pickUpTime, dropOffTime }));
-        console.log("time in form", pickUpTime)
+        const addresses = Object.values(address).filter(Boolean).join(", ");
         navigate(
-            `/search-result?address=${address.cityProvince}, ${address.district}, ${address.ward}&pickUpTime=${pickUpTime}&dropOffTime=${dropOffTime}`
+            `/search-result?address=${addresses}&pickUpTime=${pickUpTime}&dropOffTime=${dropOffTime}`
         );
-
     };
+
     return (
         <Box
             sx={{

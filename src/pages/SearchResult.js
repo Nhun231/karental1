@@ -57,7 +57,6 @@ export const SearchResult = () => {
                 setTotalPages(response.data.totalPages || 1);
                 setTotalElement(response.data.totalElements || 0);
             } catch (error) {
-                console.error("Failed to fetch car data:", error);
                 setErrorMsg({ message: "Failed to load search results." });
             } finally {
                 setLoading(false);
@@ -69,8 +68,13 @@ export const SearchResult = () => {
     useEffect(() => {
         document.title = 'Search Result';
     }, []);
-    if (loading) return <p>Loading...</p>;
-
+    if (loading) {
+        return (
+            <div className="loader-container">
+                <div className="loader"></div>
+            </div>
+        );
+    }
     return (
         <div>
             {/* Header */}

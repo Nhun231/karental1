@@ -1,13 +1,14 @@
+
 import * as React from "react";
 import MyCars from "./pages/MyCars";
 import HomePage from "./pages/HomePage";
-import {HashRouter, Outlet, Route, Routes, useLocation, useNavigate} from "react-router-dom";
+import { HashRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import AddCarBasic from "./components/AddCar/AddCarBasic";
 import AddCarDetails from "./components/AddCar/AddCarDetails";
 import AddCarPricing from "./components/AddCar/AddCarPricing";
 import AddCarFinish from "./components/AddCar/AddCarFinish";
 import "./App.css";
-import {ToastContainer} from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css"; // Import CSS
 import EditDetails from "./components/EditCar/EditDetails";
 import MyWallet from "./pages/MyWallet";
@@ -18,16 +19,16 @@ import EditBookingDescript from "./components/EditBooking/EditBookingDescription
 import UserProfilePage from "./pages/UserProfile";
 import PrivateRouter from "./utils/PrivateRouter"
 import CarDetail from "./pages/CarDetail";
-import {SearchResult} from "./pages/SearchResult";
+import { SearchResult } from "./pages/SearchResult";
 import MyBooking from "./pages/MyBooking";
 import MyRentals from "./pages/My_Rentals";
 import RentalDetails from "./pages/RentalDetails";
 import AuthProvider from "./components/common/AuthProvider";
 import SetNewPassword from "./pages/SetNewPassword";
-import {useEffect} from "react";
+import { useEffect } from "react";
 import NotFound from "./components/common/NotFound";
 
-import {BookingList} from "./pages/BookingList";
+import { BookingList } from "./pages/BookingList";
 import MyFeedback from "./pages/MyFeedback";
 import ViewListAllCar from "./pages/ViewListAllCar";
 
@@ -46,216 +47,155 @@ function App() {
     };
     return (
         <>
-            <ToastContainer/>
-            <RedirectToHash/>
+            <ToastContainer />
+            <RedirectToHash />
             <AuthProvider>
                 <Routes>
-                    {/*------------------------------------------------------------------*/}
-                    <Route index element={<HomePage/>}/>
-                    <Route path="/user/verify-email" element={<HomePage/>}/>
-                    <Route path="/auth/forgot-password/verify" element={<SetNewPassword/>}/>
-                    <Route path={"/not-found"} element={<NotFound/>}/>
-                    <Route element={
-                        <PrivateRouter allowedRoles={["OPERATOR"]}>
-                            <Outlet/>
-                        </PrivateRouter>
-                    }>
-                        <Route path="/operator-car-list" element={<ViewListAllCar/>}/>
-                        <Route path="/booking-list" element={<BookingList/>}/>
-                    </Route>
-                    <Route element={
-                        <PrivateRouter allowedRoles={["CUSTOMER"]}>
-                            <Outlet/>
-                        </PrivateRouter>
-                    }>
-                        <Route path="/car-detail/:id" element={<CarDetail/>}/>
-                        <Route path="/search-result" element={<SearchResult/>}/>
-                        <Route path="/my-bookings" element={<MyBooking/>}/>
-                        <Route path="/booking-infor/:carId" element={<BookingInfor/>}/>
-                        <Route path="/booking-pay/:carId" element={<BookingPayment/>}/>
-                        <Route path="/booking-finish/:carId" element={<BookingFinish/>}/>
-                        <Route path="/edit-booking/:bookedId" element={<EditBookingDescript/>}/>
-                    </Route>
-                    <Route element={
-                        <PrivateRouter allowedRoles={["CAR_OWNER"]}>
-                            <Outlet/>
-                        </PrivateRouter>
-                    }>
-                        <Route path="/my-rentals" element={<MyRentals/>}/>
-                        <Route path="/rental-detail/:id" element={<RentalDetails/>}/>
-                        <Route path="/add-car-basic" element={<AddCarBasic/>}/>
-                        <Route path="/add-car-details" element={<AddCarDetails/>}/>
-                        <Route path="/add-car-pricing" element={<AddCarPricing/>}/>
-                        <Route path="/add-car-finish" element={<AddCarFinish/>}/>
-                        <Route path="/edit-details/:carId" element={<EditDetails/>}/>
-                    </Route>
-                    <Route element={
-                        <PrivateRouter allowedRoles={["CAR_OWNER", "OPERATOR", 'CUSTOMER']}>
-                            <Outlet/>
-                        </PrivateRouter>
-                    }>
-                        <Route path="/user/profile" element={<UserProfilePage/>}/>
-                    </Route>
-                    <Route element={
-                        <PrivateRouter allowedRoles={["CAR_OWNER", "OPERATOR"]}>
-                            <Outlet/>
-                        </PrivateRouter>
-                    }>
-                        <Route path="/my-cars" element={<MyCars/>}/>
-                    </Route>
-                    <Route element={
-                        <PrivateRouter allowedRoles={["CAR_OWNER", "CUSTOMER"]}>
-                            <Outlet/>
-                        </PrivateRouter>
-                    }>
-                        <Route path="/my-wallet" element={<MyWallet/>}/>
-                        <Route path="/my-feedback" element={<MyFeedback/>}/>
-                    </Route>
-                    <Route path={"/*"} element={<NotFound/>}/>
-                    {/*------------------------------------------------------------------*/}
                     {/* Route cho trang login-register
         <Route path="/login-register" element={<Login_RegisterPage />} /> */}
                     {/* Route cho trang my-cars, chỉ cho phép người dùng có role 'CAR_OWNER' */}
-                    {/*<Route*/}
-                    {/*    path="my-cars"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<MyCars/>}*/}
-                    {/*            allowedRoles={["CAR_OWNER", "OPERATOR"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route path="" element={<HomePage/>}/>*/}
+                    <Route
+                        path="my-cars"
+                        element={
+                            <PrivateRouter
+                                element={<MyCars />}
+                                allowedRoles={["CAR_OWNER", "OPERATOR"]}
+                            />
+                        }
+                    />
+
+                    {/* Route cho trang change-password */}
+                    <Route path="" element={<HomePage />} />
 
                     {/* Route cho trang user-profile, chấp nhận cả role 'CAR_OWNER' và 'CUSTOMER' */}
-                    {/*<Route*/}
-                    {/*    path="/user/profile"*/}
-                    {/*    element={<PrivateRouter element={<UserProfilePage/>}*/}
-                    {/*                            allowedRoles={['CAR_OWNER', 'CUSTOMER', 'OPERATOR']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/car-detail/:id"*/}
-                    {/*    element={<PrivateRouter element={<CarDetail/>} allowedRoles={['CUSTOMER']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/search-result"*/}
-                    {/*    element={<PrivateRouter element={<SearchResult/>} allowedRoles={['CUSTOMER']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/my-bookings"*/}
-                    {/*    element={<PrivateRouter element={<MyBooking/>} allowedRoles={['CUSTOMER']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/my-rentals"*/}
-                    {/*    element={<PrivateRouter element={<MyRentals/>} allowedRoles={['CAR_OWNER']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/rental-detail/:id"*/}
-                    {/*    element={<PrivateRouter element={<RentalDetails/>} allowedRoles={['CAR_OWNER']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route path="/my-wallet" element={<PrivateRouter element={<MyWallet/>}*/}
-                    {/*                                                 allowedRoles={['CAR_OWNER', 'CUSTOMER']}/>}/>*/}
-                    {/*<Route path="/user/verify-email" element={<HomePage/>}/>*/}
-                    {/*<Route path="/auth/forgot-password/verify" element={<SetNewPassword/>}/>*/}
-                    {/*<Route*/}
-                    {/*    path="/add-car-basic"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<AddCarBasic/>}*/}
-                    {/*            allowedRoles={["CAR_OWNER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/add-car-details"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<AddCarDetails/>}*/}
-                    {/*            allowedRoles={["CAR_OWNER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/add-car-pricing"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<AddCarPricing/>}*/}
-                    {/*            allowedRoles={["CAR_OWNER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/add-car-finish"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<AddCarFinish/>}*/}
-                    {/*            allowedRoles={["CAR_OWNER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/edit-details/:carId"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<EditDetails/>}*/}
-                    {/*            allowedRoles={["CAR_OWNER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/booking-infor/:carId"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<BookingInfor/>}*/}
-                    {/*            allowedRoles={["CUSTOMER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/booking-pay/:carId"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<BookingPayment/>}*/}
-                    {/*            allowedRoles={["CUSTOMER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/booking-finish/:carId"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<BookingFinish/>}*/}
-                    {/*            allowedRoles={["CUSTOMER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/edit-booking/:bookedId"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<EditBookingDescript/>}*/}
-                    {/*            allowedRoles={["CUSTOMER"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/my-feedback"*/}
-                    {/*    element={<PrivateRouter element={<MyFeedback/>} allowedRoles={['CAR_OWNER', 'CUSTOMER']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route*/}
-                    {/*    path="/operator-car-list"*/}
-                    {/*    element={<PrivateRouter element={<ViewListAllCar/>} allowedRoles={['OPERATOR']}/>}*/}
-                    {/*/>*/}
-                    {/*<Route path={"/not-found"} element={<NotFound/>}/>*/}
-                    {/*<Route*/}
-                    {/*    path="booking-list"*/}
-                    {/*    element={*/}
-                    {/*        <PrivateRouter*/}
-                    {/*            element={<BookingList/>}*/}
-                    {/*            allowedRoles={["OPERATOR"]}*/}
-                    {/*        />*/}
-                    {/*    }*/}
-                    {/*/>*/}
+                    <Route
+                        path="/user/profile"
+                        element={<PrivateRouter element={<UserProfilePage />} allowedRoles={['CAR_OWNER', 'CUSTOMER', 'OPERATOR']} />}
+                    />
+                    <Route
+                        path="/car-detail/:id"
+                        element={<PrivateRouter element={<CarDetail />} allowedRoles={['CUSTOMER']} />}
+                    />
+                    <Route
+                        path="/search-result"
+                        element={<PrivateRouter element={<SearchResult />} allowedRoles={['CUSTOMER']} />}
+                    />
+                    <Route
+                        path="/my-bookings"
+                        element={<PrivateRouter element={<MyBooking />} allowedRoles={['CUSTOMER']} />}
+                    />
+                    <Route
+                        path="/my-rentals"
+                        element={<PrivateRouter element={<MyRentals />} allowedRoles={['CAR_OWNER']} />}
+                    />
+                    <Route
+                        path="/rental-detail/:id"
+                        element={<PrivateRouter element={<RentalDetails />} allowedRoles={['CAR_OWNER']} />}
+                    />
+                    <Route path="/my-wallet" element={<PrivateRouter element={<MyWallet />} allowedRoles={['CAR_OWNER', 'CUSTOMER']} />} />
+                    <Route path="/user/verify-email" element={<HomePage />} />
+                    <Route path="/auth/forgot-password/verify" element={<SetNewPassword />} />
+                    <Route
+                        path="/add-car-basic"
+                        element={
+                            <PrivateRouter
+                                element={<AddCarBasic />}
+                                allowedRoles={["CAR_OWNER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/add-car-details"
+                        element={
+                            <PrivateRouter
+                                element={<AddCarDetails />}
+                                allowedRoles={["CAR_OWNER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/add-car-pricing"
+                        element={
+                            <PrivateRouter
+                                element={<AddCarPricing />}
+                                allowedRoles={["CAR_OWNER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/add-car-finish"
+                        element={
+                            <PrivateRouter
+                                element={<AddCarFinish />}
+                                allowedRoles={["CAR_OWNER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/edit-details/:carId"
+                        element={
+                            <PrivateRouter
+                                element={<EditDetails />}
+                                allowedRoles={["CAR_OWNER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/booking-infor/:carId"
+                        element={
+                            <PrivateRouter
+                                element={<BookingInfor />}
+                                allowedRoles={["CUSTOMER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/booking-pay/:carId"
+                        element={
+                            <PrivateRouter
+                                element={<BookingPayment />}
+                                allowedRoles={["CUSTOMER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/booking-finish/:carId"
+                        element={
+                            <PrivateRouter
+                                element={<BookingFinish />}
+                                allowedRoles={["CUSTOMER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/edit-booking/:bookedId"
+                        element={
+                            <PrivateRouter
+                                element={<EditBookingDescript />}
+                                allowedRoles={["CUSTOMER"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="booking-list"
+                        element={
+                            <PrivateRouter
+                                element={<BookingList />}
+                                allowedRoles={["OPERATOR"]}
+                            />
+                        }
+                    />
+                    <Route
+                        path="/my-feedback"
+                        element={<PrivateRouter element={<MyFeedback />} allowedRoles={['CAR_OWNER', 'CUSTOMER']} />}
+                    />
+                    <Route
+                        path="/operator-car-list"
+                        element={<PrivateRouter element={<ViewListAllCar />} allowedRoles={['OPERATOR']} />}
+                    />
+                    <Route path={"/not-found"} element={<NotFound />} />
+
+
                 </Routes>
 
             </AuthProvider>

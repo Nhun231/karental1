@@ -422,8 +422,8 @@ export default function EditCarPricing() {
             />
             <Button
               variant="contained"
-              id="nextButton1"
-              sx={{  mt: 2  }}
+              id="save"
+              sx={{ mt: 2 }}
               style={{ backgroundColor: "#00bfa5" }}
               onClick={async () => {
                 dispatch(checkErrors());

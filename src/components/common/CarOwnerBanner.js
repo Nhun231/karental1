@@ -4,12 +4,15 @@ import bannerimg from "../../assets/car_owner_banner.jpg";
 import React from "react";
 import { ModalClose, ModalDialog } from "@mui/joy";
 import Register from "../User/Register";
+import NotificationSnackbar from "./NotificationSnackbar";
+import { useState } from "react";
 /**
  * CarOwnerBanner Component
  * Provide Banner UI for 'Home Page CarOwner'
  */
 const CarOwnerBanner = () => {
     // Check if user is not loggin
+    const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
     const isLoggedIn = Boolean(localStorage.getItem("role"));
     const isCarOwner = "true";
     const [open, setOpen] = React.useState(false);
@@ -123,9 +126,11 @@ const CarOwnerBanner = () => {
                     }}
                 >
                     <ModalClose onClick={handleClose} />
-                    <Register isCarOwner={isCarOwner} />
+                    <Register isCarOwner={isCarOwner} onRegisterSucess={handleClose} />
                 </ModalDialog>
             </Modal>
+            {/* Notification Snackbar */}
+            <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
         </Box>
     );
 };

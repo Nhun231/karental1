@@ -118,7 +118,7 @@ export default function AddCarFinish() {
                   borderRadius: "10px",
                   height: "300px",
                   display: "flex",
-                  border: "8px solid #05CE80",
+                 // border: "8px solid #05CE80",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
@@ -221,8 +221,8 @@ export default function AddCarFinish() {
                     <span style={{ color: "red", fontWeight: "bold" }}>
                       {carData.basePrice
                         ? new Intl.NumberFormat("en-US").format(
-                            carData.basePrice
-                          )
+                          carData.basePrice
+                        )
                         : "0"}
                       K
                     </span>
@@ -289,10 +289,12 @@ export default function AddCarFinish() {
                     flex: 2,
                     fontSize: "1rem",
                     fontWeight: "bold",
-                    color: "green",
+                    color: "red",
                   }}
                 >
-                  Available
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
+                    Not Verified
+                  </Typography>
                 </Box>
               </Box>
             </div>
@@ -321,17 +323,19 @@ export default function AddCarFinish() {
                   variant="contained"
                   style={{ backgroundColor: "#05ce80" }}
                   onClick={async () => {
-                    setTimeout(async () => {
-                      setLoading(true);
-                      try {
-                        await dispatch(addNewCar());
-                      } finally {
-                        setLoading(false);
-                      }
-                    }, 0);
+                    setLoading(true);
+                    try {
+                      const response = await dispatch(addNewCar());
+                      console.log("Response:", response);
+                      if (response?.payload?.data?.id)
+                        navigate(`/edit-details/${response.payload.data.id}`);
+                    } catch (error) {
+                      console.error("Error adding car:", error);
+                    } finally {
+                      setLoading(false);
+                    }
                   }}
-                  sx={{ ml: 2 }}
-                >
+                  sx={{ ml: 2 }}>
                   {loading ? "Loading..." : "Submit"}
                 </Button>
               </>

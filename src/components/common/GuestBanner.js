@@ -50,14 +50,14 @@ const GuestBanner = () => {
                     Choose between hundreds of private cars for rent at affordable prices!
                 </Typography>
                 <Button onClick={() => navigate("/?role=CUSTOMER")} sx={buttonStyle}>
-                    Find a Rental Car
+                    Find a Rental Car Near You
                 </Button>
             </Box>
 
             {/* Divider Line (Only show on md+) */}
             <Box
                 sx={{
-                    display: { xs: "none", sm: "block" },
+                    display: { xs: "none", md: "block" },
                     position: "absolute",
                     top: 0,
                     bottom: 0,
@@ -78,7 +78,7 @@ const GuestBanner = () => {
                     List your car and start earning money today!
                 </Typography>
                 <Button onClick={() => navigate("/?role=CAR_OWNER")} sx={buttonStyle}>
-                    List Your Car
+                    List Your Car Today
                 </Button>
             </Box>
         </Box>

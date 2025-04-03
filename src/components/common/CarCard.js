@@ -28,7 +28,7 @@ const CarCard = ({ carData, large, isEditPage, onStatusChange }) => {
         {isEditPage ? (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1, width: "100%" }}>
             <Typography variant="body1">Status:</Typography>
-            <Select value={carData.status} onChange={(e) => onStatusChange(e.target.value)} sx={{ fontSize: "1rem", fontWeight: "bold", width: "50%" }}>
+            <Select value={carData.status} onChange={(e) => onStatusChange(e.target.value)} sx={{ fontSize: "1rem", fontWeight: "bold", width: "50%" }} id="statusChangeDropdown">
               <MenuItem value="NOT_VERIFIED" disabled>NOT VERIFIED</MenuItem>
               <MenuItem value="VERIFIED" disabled={carData.status !== "NOT_VERIFIED"}>VERIFIED</MenuItem>
               <MenuItem value="STOPPED" disabled>STOPPED</MenuItem>

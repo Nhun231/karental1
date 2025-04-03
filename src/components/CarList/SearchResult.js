@@ -93,10 +93,10 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
                         maxWidth: "1200px",
                         mx: "auto",
                         mt: 4,
-                        bgcolor: { xs: "rgb(243, 242, 242)" }
+
                     }}>
                     {Array.isArray(CarData) && CarData.length === 0 ? (
-                        <img src={emptydata} style={{ display: "block", margin: "32px auto", padding: "0px 24px" }} alt="empty" />
+                        <img src={emptydata} style={{ display: "block", margin: "32px auto", padding: "0px 24px", backgroundColor: "white" }} alt="empty" />
                     ) : (<CarListView ListCar={CarData}></CarListView>)}
 
                 </Box>
@@ -110,7 +110,7 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
                         py: 4,
                     }}>
                     {Array.isArray(CarData) && CarData.length === 0 && (
-                        <img src={emptydata} style={{ display: "block", margin: "0 auto" }} alt="empty" />
+                        <img src={emptydata} style={{ display: "block", margin: "0 auto", bgcolor: "white" }} alt="empty" />
                     )}
 
                     <Grid container direction="column" spacing={1}>
@@ -144,7 +144,7 @@ const SearchResults = ({ CarData, totalElement, sortOption, setSortOption, setPa
                                             <Button
                                                 key={index}
                                                 variant="contained"
-                                                onClick={index === 0 ? () => navigate(`/car-detail/${car.id}`, { replace: true }) : undefined}
+                                                onClick={index === 0 ? () => navigate(`/car-detail/${car.id}`, { replace: true }) : () => navigate(`/booking-infor/${car.id}`, { replace: true })}
                                                 sx={{
                                                     backgroundColor: index === 0 ? "#1976d2" : "#05ce80",
                                                     "&:hover": { backgroundColor: index === 0 ? "#1565c0" : "#04d16b" },

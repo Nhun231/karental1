@@ -44,13 +44,13 @@ const CarListView = ({ ListCar }) => {
                                             </strong>
                                         </TableCell>
                                         <TableCell>{carData.address}</TableCell>
-                                        <TableCell> <strong style={{ color: "#05ce80" }}>{carData.status === "VERIFIED" ? "AVAILABLE" : "NOT AVAILABLE"}</strong></TableCell>
+                                        <TableCell> <strong style={{ color: "#05ce80" }}>{carData.status}</strong></TableCell>
                                         <TableCell>
                                             {["View details", "Rent Now"].map((text, index) => (
                                                 <Button
                                                     key={index}
                                                     variant="contained"
-                                                    onClick={index === 0 ? () => navigate(`/car-detail/${carData.id}`, { replace: true }) : undefined}
+                                                    onClick={index === 0 ? () => navigate(`/car-detail/${carData.id}`) : () => navigate(`/booking-infor/${carData.id}`)}
                                                     sx={{
                                                         backgroundColor: index === 0 ? "#1976d2" : "#05ce80",
                                                         "&:hover": { backgroundColor: index === 0 ? "#1565c0" : "#04d16b" },
@@ -96,7 +96,7 @@ const CarListView = ({ ListCar }) => {
                                                 padding: "4px 10px",
                                             }}
                                         >
-                                            {carData.status === "VERIFIED" ? "AVAILABLE" : "NOT AVAILABLE"}
+                                            {carData.status}
                                         </Box>
                                         <Typography color="textSecondary">{carData.address}</Typography>
                                         <Typography fontWeight="bold" color="primary">
@@ -122,7 +122,7 @@ const CarListView = ({ ListCar }) => {
                                             <Button
                                                 key={index}
                                                 variant="contained"
-                                                onClick={index === 0 ? () => navigate(`/car-detail/${carData.id}`, { replace: true }) : undefined}
+                                                onClick={index === 0 ? () => navigate(`/car-detail/${carData.id}`) : () => navigate(`/booking-infor/${carData.id}`)}
                                                 sx={{
                                                     backgroundColor: index === 0 ? "#1976d2" : "#05ce80",
                                                     "&:hover": { backgroundColor: index === 0 ? "#1565c0" : "#04d16b" },

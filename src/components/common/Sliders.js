@@ -14,10 +14,15 @@ const CustomArrow = ({ onClick, direction }) => (
         onClick={onClick}
         sx={{
             position: "absolute",
-            [direction]: -40,
             top: "50%",
             transform: "translateY(-50%)",
+            left: direction === "left" ? "10px" : "auto",
+            right: direction === "right" ? "10px" : "auto",
             zIndex: 10,
+            backgroundColor: "rgba(255, 255, 255, 0.6)",
+            "&:hover": {
+                backgroundColor: "rgba(255, 255, 255, 0.9)",
+            },
         }}
     >
         {direction === "left" ? <ArrowBackIos fontSize="large" /> : <ArrowForwardIos fontSize="large" />}

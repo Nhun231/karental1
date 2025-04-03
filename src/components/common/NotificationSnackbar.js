@@ -7,7 +7,6 @@ import { Snackbar, Alert } from "@mui/material";
 export default function NotificationSnackbar({ alert, onClose }) {
   return (
     <Snackbar
-      id="notification-snackbar"
       open={alert.open}
       autoHideDuration={3000}
       onClose={onClose}
@@ -16,12 +15,13 @@ export default function NotificationSnackbar({ alert, onClose }) {
         horizontal: "right",
       }}
       sx={{
-        top: { xs: 64, sm: "auto" },
+        top: { xs: 64, sm: "70px" },
         width: { xs: "90%", sm: "auto" },
+        zIndex: 1501,
+        position: "fixed"
       }}
     >
       <Alert
-          id="notification-message"
         severity={alert.severity || "info"}
         onClose={onClose}
         sx={{
@@ -43,3 +43,4 @@ export default function NotificationSnackbar({ alert, onClose }) {
     </Snackbar>
   );
 }
+

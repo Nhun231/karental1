@@ -24,7 +24,6 @@ import CarStepper from "./CarStepper";
 import { useEffect } from "react";
 import Header from "../common/Header";
 import Footer from "../common/Footer";
-import NavigateBreadcrumb from "../common/NavigateBreadcrumb";
 
 export default function AddCarFinish() {
   const dispatch = useDispatch(); // Retrieves the Redux dispatch function to send actions to the store
@@ -245,6 +244,7 @@ export default function AddCarFinish() {
                 control={
                   <Checkbox
                     checked={carData.termsOfUses.noSmoking}
+                    id="noSmoking"
                     onChange={handleChange}
                     name="noSmoking"
                   />
@@ -256,6 +256,7 @@ export default function AddCarFinish() {
                 control={
                   <Checkbox
                     checked={carData.termsOfUses.noPet}
+                    id="noPet"
                     onChange={handleChange}
                     name="noPet"
                   />
@@ -276,6 +277,7 @@ export default function AddCarFinish() {
                 control={
                   <Checkbox
                     checked={carData.termsOfUses.noFoodInCar}
+                    id="noFoodInCar"
                     onChange={handleChange}
                     name="noFoodInCar"
                   />
@@ -336,6 +338,18 @@ export default function AddCarFinish() {
           <Box mt={2} style={{ textAlign: "center" }}>
             {/* Button Back */}
             {step >= 1 && (
+              <>
+                <Button
+                  variant="contained"
+                  id="cancel"
+                  onClick={() => {
+                    navigate("/");
+                  }}
+                  sx={{ ml: 2, mr: 4 }}
+                  style={{ backgroundColor: "red" }}
+                >
+                  Cancel
+                </Button>
               <Button
                 variant="contained"
                 onClick={() => {
@@ -349,6 +363,7 @@ export default function AddCarFinish() {
               >
                 Back
               </Button>
+              </>
             )}
 
             {/* Button Next */}

@@ -28,7 +28,7 @@ import CarStepper from "./CarStepper";
 import Footer from "../common/Footer";
 import axios from "axios";
 import Header from "../common/Header";
-import NavigateBreadcrumb from "../common/NavigateBreadcrumb";
+
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB max to store in IndexedDB
 export default function AddCarBasic() {
@@ -187,6 +187,13 @@ export default function AddCarBasic() {
       document.title = "Add Car Basic";
     };
     loadFiles(); // Call the async function to load files
+
+    // Lắng nghe sự kiện khi IndexedDB thay đổi
+    window.addEventListener("indexedDBUpdated", loadFiles);
+
+    return () => {
+      window.removeEventListener("indexedDBUpdated", loadFiles);
+    };
   }, []); // Runs only once when the component mounts
 
   return (
@@ -636,7 +643,10 @@ export default function AddCarBasic() {
             </Box>
 
             <Box {...dropzoneRegistration.getRootProps()} sx={styles}>
-              <input {...dropzoneRegistration.getInputProps()} />
+              <input
+                {...dropzoneRegistration.getInputProps()}
+                id="registrationPaper"
+              />
               {/* Hidden input field for file selection, controlled by Dropzone */}
               <CloudUploadIcon sx={{ fontSize: 40, color: "#555" }} />
               {/* Upload icon with custom size and color */}
@@ -681,7 +691,10 @@ export default function AddCarBasic() {
               </Typography>
             </Box>
             <Box {...dropzoneCertificate.getRootProps()} sx={styles}>
-              <input {...dropzoneCertificate.getInputProps()} />
+              <input
+                {...dropzoneCertificate.getInputProps()}
+                id="certificateOfInspection"
+              />
               <CloudUploadIcon sx={{ fontSize: 40, color: "#555" }} />
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Drag and drop OR
@@ -722,7 +735,7 @@ export default function AddCarBasic() {
               </Typography>
             </Box>
             <Box {...dropzoneInsurance.getRootProps()} sx={styles}>
-              <input {...dropzoneInsurance.getInputProps()} />
+              <input {...dropzoneInsurance.getInputProps()} id="insurance" />
               <CloudUploadIcon sx={{ fontSize: 40, color: "#555" }} />
               <Typography variant="body2" sx={{ mt: 1 }}>
                 Drag and drop OR
@@ -749,6 +762,17 @@ export default function AddCarBasic() {
         </p>
 
         <Box mt={2} style={{ textAlign: "center" }}>
+          <Button
+            variant="contained"
+            id="cancel"
+            onClick={() => {
+              navigate("/");
+            }}
+            sx={{ ml: 2, mt: 5, mb: 2 }}
+            style={{ backgroundColor: "red" }}
+          >
+            Cancel
+          </Button>
           <Button
             variant="contained"
             id="nextButton"

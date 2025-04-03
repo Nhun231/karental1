@@ -5,871 +5,846 @@ import axios from "axios";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 export const fetchInforProfile = createAsyncThunk(
-    "rentCar/fetchInforProfile",
-    async (_, { rejectWithValue }) => {
-      try {
-        const response = await axios.get(`${BASE_URL}/user/edit-profile`, {
-          withCredentials: true, // Để gửi cookie nếu cần
-        });
+  "rentCar/fetchInforProfile",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/user/edit-profile`, {
+        withCredentials: true, // Để gửi cookie nếu cần
+      });
 
-        if (!response.data) {
-          return rejectWithValue("No data received.");
-        }
-
-        return response.data;
-      } catch (error) {
-        toast.error(`Fetch Profile Failed!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
-
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error."
-        );
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Fetch Profile Failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error."
+      );
     }
+  }
 );
 
 export const getWallet = createAsyncThunk(
-    "rentCar/getWallet",
-    async (_, { rejectWithValue }) => {
-      try {
-        const response = await axios.get(`${BASE_URL}/booking/get-wallet`, {
-          withCredentials: true, // Để gửi cookie nếu cần
-        });
+  "rentCar/getWallet",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`${BASE_URL}/booking/get-wallet`, {
+        withCredentials: true, // Để gửi cookie nếu cần
+      });
 
-        if (!response.data) {
-          return rejectWithValue("No data received.");
-        }
-
-        return response.data;
-      } catch (error) {
-        toast.error(`Fetch Wallet Failed!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
-
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error."
-        );
+      if (!response.data) {
+        return rejectWithValue("No data received.");
       }
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Fetch Wallet Failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error."
+      );
     }
+  }
 );
 
 export const createBooking = createAsyncThunk(
-    "rentCar/createBooking",
-    async (carId, { getState, rejectWithValue }) => {
-      try {
-        const formData = new FormData();
-        const state = getState();
+  "rentCar/createBooking",
+  async (carId, { getState, rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      const state = getState();
 
-        if (state.rentCar.infor.driver === false) {
-          const renter = state.rentCar.infor.data;
-          Object.entries(renter).forEach(([key, value]) => {
-            formData.append(key, value);
-          });
-          formData.append("driver", false);
-        } else {
-          const renter = state.rentCar.infor.renter;
-          const file = await getFileFromDB("driverDrivingLicense");
-          formData.append("driverDrivingLicense", file);
-          Object.entries(renter).forEach(([key, value]) => {
-            formData.append(key, value);
-          });
-          formData.append("driver", true);
-        }
-
-        formData.append(
-            "pickUpLocation",
-            state.rentCar.infor.data.driverCityProvince +
-            ", " +
-            state.rentCar.infor.data.driverDistrict +
-            ", " +
-            state.rentCar.infor.data.driverWard +
-            ", " +
-            state.rentCar.infor.data.driverHouseNumberStreet
-        );
-
-        formData.append("pickUpTime", state.rental.pickUpTime.replace("Z", ""));
-        formData.append("dropOffTime", state.rental.dropOffTime.replace("Z", ""));
-        formData.append("paymentType", state.rentCar.infor.paymentType);
-
-        formData.append("carId", carId);
-        const response = await axios.post(
-            `${BASE_URL}/booking/customer/create-book`,
-            formData,
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-        );
-
-        if (!response.data) {
-          return rejectWithValue("No data received.");
-        }
-
-        toast.success(`Create Booking Successful!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
-
-        return response.data;
-      } catch (error) {
-        const errorMessage =
-            error.response?.data?.message ||
-            "Add Car Failed due to an unknown error.";
-        toast.error(errorMessage, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
-
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error."
-        );
-      }
-    }
-);
-
-export const getBookingDetail = createAsyncThunk(
-    "rentCar/getBookingDetail",
-    async (bookedId, { rejectWithValue }) => {
-      try {
-        const response = await axios.get(
-            `${BASE_URL}/booking/customer/${bookedId}`,
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
-
-        if (!response.data) {
-          return rejectWithValue("No data received.");
-        }
-
-        return response.data;
-      } catch (error) {
-        toast.error(`Fetch Car Failed!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
-
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
-      }
-    }
-);
-
-export const saveBooking = createAsyncThunk(
-    "rentCar/saveBooking",
-    async (_, { getState, rejectWithValue }) => {
-      try {
-        const formData = new FormData();
-        const state = getState();
+      if (state.rentCar.infor.driver === false) {
         const renter = state.rentCar.infor.data;
-
-        if (renter.driver === true) {
-          const file = await getFileFromDB("driverDrivingLicense");
-          if (file) {
-            formData.append("driverDrivingLicense", file);
-          }
-        }
-
         Object.entries(renter).forEach(([key, value]) => {
           formData.append(key, value);
         });
-
-        const response = await axios.put(
-            `${BASE_URL}/booking/customer/edit-book/${renter.bookingNumber}`,
-            formData,
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-              headers: {
-                "Content-Type": "multipart/form-data",
-              },
-            }
-        );
-
-        if (!response.data) {
-          return rejectWithValue("No data received.");
-        }
-
-        toast.success(`Save Booking Successful!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
+        formData.append("driver", false);
+      } else {
+        const renter = state.rentCar.infor.renter;
+        const file = await getFileFromDB("driverDrivingLicense");
+        formData.append("driverDrivingLicense", file);
+        Object.entries(renter).forEach(([key, value]) => {
+          formData.append(key, value);
         });
-
-        return response.data;
-      } catch (error) {
-        toast.error(`Save Booking Failed! Cannot save now!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
-
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
+        formData.append("driver", true);
       }
+
+      formData.append(
+        "pickUpLocation",
+        state.rentCar.infor.data.driverCityProvince +
+          ", " +
+          state.rentCar.infor.data.driverDistrict +
+          ", " +
+          state.rentCar.infor.data.driverWard +
+          ", " +
+          state.rentCar.infor.data.driverHouseNumberStreet
+      );
+
+      formData.append("pickUpTime", state.rental.pickUpTime.replace("Z", ""));
+      formData.append("dropOffTime", state.rental.dropOffTime.replace("Z", ""));
+      formData.append("paymentType", state.rentCar.infor.paymentType);
+
+      formData.append("carId", carId);
+      const response = await axios.post(
+        `${BASE_URL}/booking/customer/create-book`,
+        formData,
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (!response.data) {
+        return rejectWithValue("No data received.");
+      }
+
+      toast.success(`Create Booking Successful!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      const errorMessage =
+        error.response?.data?.message ||
+        "Add Car Failed due to an unknown error.";
+      toast.error(errorMessage, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error."
+      );
     }
+  }
+);
+
+export const getBookingDetail = createAsyncThunk(
+  "rentCar/getBookingDetail",
+  async (bookedId, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(
+        `${BASE_URL}/booking/customer/${bookedId}`,
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
+
+      if (!response.data) {
+        return rejectWithValue("No data received.");
+      }
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Fetch Car Failed!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
+    }
+  }
+);
+
+export const saveBooking = createAsyncThunk(
+  "rentCar/saveBooking",
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const formData = new FormData();
+      const state = getState();
+      const renter = state.rentCar.infor.data;
+
+      if (renter.driver === true) {
+        const file = await getFileFromDB("driverDrivingLicense");
+        if (file) {
+          formData.append("driverDrivingLicense", file);
+        }
+      }
+
+      Object.entries(renter).forEach(([key, value]) => {
+        formData.append(key, value);
+      });
+
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/edit-book/${renter.bookingNumber}`,
+        formData,
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (!response.data) {
+        return rejectWithValue("No data received.");
+      }
+
+      toast.success(`Save Booking Successful!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Save Booking Failed! Cannot save now!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
+    }
+  }
 );
 
 export const cancelBooking = createAsyncThunk(
-    "rentCar/cancelBooking",
-    async (bookingNumber, { getState, rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/customer/cancel-booking/${bookingNumber}`,
-            {},
-            { withCredentials: true }
-        );
-        toast.success(`Canceled Booking successfully!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+  "rentCar/cancelBooking",
+  async (bookingNumber, { getState, rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/cancel-booking/${bookingNumber}`,
+        {},
+        { withCredentials: true }
+      );
+      toast.success(`Canceled Booking successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return response.data;
-      } catch (error) {
-        const errorMessage = error.response?.data || "Cancel booking failed.";
-        toast.error(`Failed to cancel booking. Please try again!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      return response.data;
+    } catch (error) {
+      const errorMessage = error.response?.data || "Cancel booking failed.";
+      toast.error(`Failed to cancel booking. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return rejectWithValue(errorMessage);
-      }
+      return rejectWithValue(errorMessage);
     }
+  }
 );
 
 export const confirmPickup = createAsyncThunk(
-    "rentCar/confirmPickup",
-    async (bookingNumber, { getState, rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/customer/confirm-pick-up/${bookingNumber}`,
-            {},
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
+  "rentCar/confirmPickup",
+  async (bookingNumber, { getState, rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/confirm-pick-up/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
 
-        toast.success(`Confirm pickup successfully!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      toast.success(`Confirm pickup successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return response.data;
-      } catch (error) {
-        toast.error(`Failed to confirm pickup. Please try again!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to confirm pickup. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
-      }
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
+  }
 );
 
 export const returnCar = createAsyncThunk(
-    "rentCar/returnCar",
-    async (bookingNumber, { getState, rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/customer/return-car/${bookingNumber}`,
-            {},
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
+  "rentCar/returnCar",
+  async (bookingNumber, { getState, rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/return-car/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
 
-        toast.success(`Return car successfully!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      toast.success(`Return car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return response.data;
-      } catch (error) {
-        toast.error(`Failed to return car. Please try again!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to return car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
-      }
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
+  }
 );
 
 export const confirmEarlyReturn = createAsyncThunk(
-    "rentCar/confirmEarlyReturn",
-    async (bookingNumber, { rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/car-owner/confirm-early-return/${bookingNumber}`,
-            {},
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
+  "rentCar/confirmEarlyReturn",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/car-owner/confirm-early-return/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
 
-        toast.success(`Return car successfully!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      toast.success(`Return car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return response.data;
-      } catch (error) {
-        toast.error(`Failed to return car. Please try again!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to return car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
-      }
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
+  }
 );
 
 export const rejectEarlyReturn = createAsyncThunk(
-    "rentCar/rejectEarlyReturn",
-    async (bookingNumber, { rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/car-owner/reject-early-return/${bookingNumber}`,
-            {},
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
+  "rentCar/rejectEarlyReturn",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/car-owner/reject-early-return/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
 
-        toast.success(`Reject return car early successfully!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      toast.success(`Reject return car early successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return response.data;
-      } catch (error) {
-        toast.error(`Failed to reject return car early. Please try again!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to reject return car early. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
-      }
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
+  }
 );
 
 export const rejectRentCar = createAsyncThunk(
-    "rentCar/rejectRentCar",
-    async (bookingNumber, { rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/car-owner/reject-booking/${bookingNumber}`,
-            {},
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
+  "rentCar/rejectRentCar",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/car-owner/reject-booking/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
 
-        toast.success(`Reject return car successfully!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      toast.success(`Reject return car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return response.data;
-      } catch (error) {
-        toast.error(`Failed to reject return car. Please try again!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to reject return car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
-      }
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
+  }
 );
 
 export const payDepositAgain = createAsyncThunk(
-    "rentCar/payDepositAgain",
-    async (bookingNumber, { rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/customer/pay-deposit-again/${bookingNumber}`,
-            {},
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
+  "rentCar/payDepositAgain",
+  async (bookingNumber, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/pay-deposit-again/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
 
-        toast.success(`Pay deposit car successfully!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
+      toast.success(`Pay deposit car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
 
-        return response.data;
-      } catch (error) {
-        toast.error(
-            `Your account does not have enough funds to make the payment.`,
-            {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              style: {
-                fontWeight: "bold",
-                marginTop: "100px",
-                border: "2px solid #05ce80",
-                borderRadius: "8px",
-                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                backgroundColor: "#e6f9f2",
-                color: "#0a6847",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "12px 16px",
-                fontSize: "16px",
-              },
-            }
-        );
+      return response.data;
+    } catch (error) {
+      toast.error(
+        `Your account does not have enough funds to make the payment.`,
+        {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+        }
+      );
 
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
-        );
-      }
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
+  }
 );
 
 export const payTotalFee = createAsyncThunk(
-    "rentCar/payTotalFee",
-    async ({ bookingNumber, status }, { rejectWithValue }) => {
-      try {
-        const response = await axios.put(
-            `${BASE_URL}/booking/customer/pay-total-payment-again/${bookingNumber}`,
-            {},
-            {
-              withCredentials: true, // Để gửi cookie nếu cần
-            }
-        );
+  "rentCar/payTotalFee",
+  async ({ bookingNumber, status }, { rejectWithValue }) => {
+    try {
+      const response = await axios.put(
+        `${BASE_URL}/booking/customer/pay-total-payment-again/${bookingNumber}`,
+        {},
+        {
+          withCredentials: true, // Để gửi cookie nếu cần
+        }
+      );
 
-        if (response.data.data.status === status) {
-          toast.error(
-              `Your wallet does not have enough balance, please top up and then come back to pay.`,
-              {
-                position: "top-right",
-                autoClose: 3000,
-                hideProgressBar: true,
-                closeOnClick: true,
-                pauseOnHover: true,
-                draggable: true,
-                progress: undefined,
-                style: {
-                  fontWeight: "bold",
-                  marginTop: "100px",
-                  border: "2px solid #05ce80",
-                  borderRadius: "8px",
-                  boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                  backgroundColor: "#e6f9f2",
-                  color: "#0a6847",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "8px",
-                  padding: "12px 16px",
-                  fontSize: "16px",
-                },
-              }
-          );
-        } else {
-          toast.success(`Pay total fee car successfully!`, {
+      if (response.data.data.status === status) {
+        toast.error(
+          `Your wallet does not have enough balance, please top up and then come back to pay.`,
+          {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: true,
@@ -891,40 +866,65 @@ export const payTotalFee = createAsyncThunk(
               padding: "12px 16px",
               fontSize: "16px",
             },
-          });
-        }
-
-        return response.data;
-      } catch (error) {
-        toast.error(`Failed to pay total fee car. Please try again!`, {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: true,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          style: {
-            fontWeight: "bold",
-            marginTop: "100px",
-            border: "2px solid #05ce80",
-            borderRadius: "8px",
-            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-            backgroundColor: "#e6f9f2",
-            color: "#0a6847",
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
-            padding: "12px 16px",
-            fontSize: "16px",
-          },
-        });
-
-        return rejectWithValue(
-            error.response?.data || error.message || "Network error"
+          }
         );
+      } else {
+      toast.success(`Pay total fee car successfully!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
       }
+
+      return response.data;
+    } catch (error) {
+      toast.error(`Failed to pay total fee car. Please try again!`, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: true,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        style: {
+          fontWeight: "bold",
+          marginTop: "100px",
+          border: "2px solid #05ce80",
+          borderRadius: "8px",
+          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+          backgroundColor: "#e6f9f2",
+          color: "#0a6847",
+          display: "flex",
+          alignItems: "center",
+          gap: "8px",
+          padding: "12px 16px",
+          fontSize: "16px",
+        },
+      });
+
+      return rejectWithValue(
+        error.response?.data || error.message || "Network error"
+      );
     }
+  }
 );
 
 export const rentCarSlice = createSlice({
@@ -936,7 +936,7 @@ export const rentCarSlice = createSlice({
         driverDistrict: "",
         driverWard: "",
         driverHouseNumberStreet: "",
-      },
+    },
     },
     step: 1,
     statusBooking: "idle",
@@ -974,14 +974,14 @@ export const rentCarSlice = createSlice({
           newErrors.dob = "You must be at least 18 years old.";
         }
         if (
-            !state.infor.renter.driverPhoneNumber ||
-            !/^\d{10}$/.test(state.infor.renter.driverPhoneNumber)
+          !state.infor.renter.driverPhoneNumber ||
+          !/^\d{10}$/.test(state.infor.renter.driverPhoneNumber)
         ) {
           newErrors.phoneNumber = "Phone number is required.";
         }
         if (
-            !state.infor.renter.driverNationalId ||
-            !/^\d{9,12}$/.test(state.infor.renter.driverNationalId)
+          !state.infor.renter.driverNationalId ||
+          !/^\d{9,12}$/.test(state.infor.renter.driverNationalId)
         ) {
           newErrors.nationalId = "National ID is required.";
         }
@@ -1004,8 +1004,8 @@ export const rentCarSlice = createSlice({
           newErrors.email = "Email is required.";
         }
         if (
-            state.infor.renter.driverEmail &&
-            !/^\S+@\S+\.\S+$/.test(state.infor.renter.driverEmail)
+          state.infor.renter.driverEmail &&
+          !/^\S+@\S+\.\S+$/.test(state.infor.renter.driverEmail)
         ) {
           newErrors.email = "Invalid email format.";
         }
@@ -1037,30 +1037,30 @@ export const rentCarSlice = createSlice({
 
       if (Object.keys(newErrors).length > 0) {
         toast.error(
-            `Please fulfill driver information! or fullfill renter information in profile`,
-            {
-              position: "top-right",
-              autoClose: 3000,
-              hideProgressBar: true,
-              closeOnClick: true,
-              pauseOnHover: true,
-              draggable: true,
-              progress: undefined,
-              style: {
-                fontWeight: "bold",
-                border: "2px solid #05ce80",
-                borderRadius: "8px",
-                marginTop: "100px",
-                boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-                backgroundColor: "#e6f9f2",
-                color: "#0a6847",
-                display: "flex",
-                alignItems: "center",
-                gap: "8px",
-                padding: "12px 16px",
-                fontSize: "16px",
-              },
-            }
+          `Please fulfill driver information! or fullfill renter information in profile`,
+          {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: true,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          style: {
+            fontWeight: "bold",
+            border: "2px solid #05ce80",
+            borderRadius: "8px",
+              marginTop: "100px",
+            boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+            backgroundColor: "#e6f9f2",
+            color: "#0a6847",
+            display: "flex",
+            alignItems: "center",
+            gap: "8px",
+            padding: "12px 16px",
+            fontSize: "16px",
+          },
+          }
         );
         return;
       } else {
@@ -1105,14 +1105,14 @@ export const rentCarSlice = createSlice({
           newErrors.dob = "You must be at least 18 years old.";
         }
         if (
-            !state.infor.data.driverPhoneNumber ||
-            !/^\d{10}$/.test(state.infor.data.driverPhoneNumber)
+          !state.infor.data.driverPhoneNumber ||
+          !/^\d{10}$/.test(state.infor.data.driverPhoneNumber)
         ) {
           newErrors.phoneNumber = "Phone number is required.";
         }
         if (
-            !state.infor.data.driverNationalId ||
-            !/^\d{9,12}$/.test(state.infor.data.driverNationalId)
+          !state.infor.data.driverNationalId ||
+          !/^\d{9,12}$/.test(state.infor.data.driverNationalId)
         ) {
           newErrors.nationalId = "National ID is required.";
         }

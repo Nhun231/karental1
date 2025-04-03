@@ -82,8 +82,13 @@ const CarDetail = () => {
     useEffect(() => {
         document.title = 'Car Detail';
     }, []);
-    if (loading) return <p>Loading...</p>;
-
+    if (loading) {
+        return (
+            <div className="loader-container">
+                <div className="loader"></div>
+            </div>
+        );
+    }
     return (
         <div>
             {/* Header */}

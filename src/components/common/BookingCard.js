@@ -27,13 +27,19 @@ const getStatusColor = (status) => {
     if (["IN_PROGRESS", "WAITING_CONFIRMED", "WAITING_PAYMENT", "WAITING_CONFIRMED_RETURN_CAR"].includes(status)) return "orange";
     if (["PENDING_DEPOSIT", "PENDING_PAYMENT"].includes(status)) return "red";
     if (status === "COMPLETED") return "blue";
-    if (status === "CANCEL") return "gray";
+    if (status === "CANCELLED") return "gray";
     return "black";
 };
 const BookingCard = ({ BookingData }) => {
     // Check if screen is xs
     const isSmallScreen = useMediaQuery("(max-width:600px)");
-    if (!BookingData) return <Typography>Loading...</Typography>;
+    if (!BookingData) {
+        return (
+            <div className="loader-container">
+                <div className="loader"></div>
+            </div>
+        );
+    }
     return (
         <Card sx={{ display: "flex", flexDirection: { xs: "column", sm: "row" }, justifyContent: "space-between", alignItems: "center", maxWidth: { xs: "300px", sm: "700px", md: "1000px" }, minHeight: { xs: "auto", md: "220px" }, maxHeight: { xs: "none", sm: "700px", md: "280px" }, width: "100%", p: { xs: 0, md: 3 }, boxShadow: "none" }}>
             {/* Image Slider */}

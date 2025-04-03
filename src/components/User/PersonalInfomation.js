@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import {
-  TextField,
   Button,
   Box,
   Typography,
@@ -16,20 +15,18 @@ import ConfirmationDialog from "../common/ConfirmationDialog";
 import { updateUserProfile } from "../../services/UserServices";
 export default function PersonalInformation({ initialData = {}, onlyView = false }) {
   const [formData, setFormData] = useState({
-    fullName: initialData?.fullName || "",
-    phoneNumber: initialData?.phoneNumber || "",
-    email: initialData?.email || "",
-    nationalId: initialData?.nationalId || "",
-    dob: initialData?.dob ? dayjs(initialData?.dob) : null,
-    cityProvince: initialData?.cityProvince || "",
-    district: initialData?.district || "",
-    ward: initialData?.ward || "",
-    houseNumberStreet: initialData?.houseNumberStreet || "",
-    drivingLicenseFile: initialData?.drivingLicenseUrl || initialData?.drivingLicenseFile || null,
-    drivingLicensePreview: initialData?.drivingLicenseUrl || initialData?.drivingLicenseFile || null,
+    fullName: initialData.fullName || "",
+    phoneNumber: initialData.phoneNumber || "",
+    email: initialData.email || "",
+    nationalId: initialData.nationalId || "",
+    dob: initialData.dob ? dayjs(initialData.dob) : null,
+    cityProvince: initialData.cityProvince || "",
+    district: initialData.district || "",
+    ward: initialData.ward || "",
+    houseNumberStreet: initialData.houseNumberStreet || "",
+    drivingLicenseFile: initialData.drivingLicenseUrl || initialData.drivingLicenseFile || null,
+    drivingLicensePreview: initialData.drivingLicenseUrl || initialData.drivingLicenseFile || null,
   });
-  // console.log("pinfor:", initialData)
-  // console.log("formdata:", formData)
   const [errorMsg, setErrorMsg] = useState({});
   const [openConfirm, setOpenConfirm] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
@@ -46,7 +43,7 @@ export default function PersonalInformation({ initialData = {}, onlyView = false
     }
     if (!value.trim()) error = "This field is required";
 
-    if (name === "phoneNumber" && !/^0\d{9}$/.test(value)) error = "Phone must be 10 digits";
+    if (name === "phoneNumber" && !/^0\d{9}$/.test(value)) error = "Phone must be 10 digits and start with '0'";
     if (name === "dob" && value && dayjs(value).isAfter(dayjs())) error = "Date of Birth cannot be in the future";
     if (name === "fullName" && (!/^[\p{L}\s]+$/u.test(value) || value.trim() === "")) error = "Full Name must contain only letters";
     if (name === "nationalId" && (!/^\d{12}$/.test(value))) {
@@ -89,7 +86,6 @@ export default function PersonalInformation({ initialData = {}, onlyView = false
   const handleChange = (e) => {
 
     const { name, value } = e.target;
-    console.log(name + ":" + value)
     setFormData({ ...formData, [name]: value });
     validateField(name, value);
   };
@@ -121,11 +117,9 @@ export default function PersonalInformation({ initialData = {}, onlyView = false
 
   };
 
-
-
   const handleFileChange = (file) => {
     if (file?.size > 5 * 1024 * 1024) {
-      setAlert({ open: true, message: "File size must be under 5MB", severity: "error" });
+      setAlert({ open: true, message: "Can't upload file, file size must be under 5MB", severity: "error" });
       return;
     }
     setFormData({
@@ -174,9 +168,10 @@ export default function PersonalInformation({ initialData = {}, onlyView = false
       try {
         const response = await updateUserProfile(formDataToSend);
         console.log("Profile updated:", response);
-        window.alert("Profile updated successfully!");
+        setAlert({ open: true, message: "Profile Updated Successfully!", severity: "success" });
       } catch (error) {
         console.error("Update failed:", error);
+        setAlert({ open: true, message: error.response?.data?.message || "Profile Updated Failed!", severity: "error" });
       }
       setOpenConfirm(false);
     });
@@ -187,6 +182,7 @@ export default function PersonalInformation({ initialData = {}, onlyView = false
   const handleDiscard = () => {
     setOpenConfirm(true);
     setConfirmAction(() => () => {
+      setAlert({ open: true, message: "Discard Change Successfully!", severity: "success" })
       setErrorMsg({});
       setFormData({
         ...initialData, dob: initialData.dob ? dayjs(initialData.dob) : null, drivingLicenseFile: initialData.drivingLicenseUrl || null, // Khôi phục file ảnh
@@ -206,7 +202,7 @@ export default function PersonalInformation({ initialData = {}, onlyView = false
           <Grid item xs={12}>
             <PersonalDetails formData={formData} handleChange={handleChange} handleDateChange={handleDateChange} handleFileChange={handleFileChange} errorMsg={errorMsg} onlyView={onlyView} />
           </Grid>
-          <Grid item xs={6} >
+          <Grid item xs={12} md={6} sx={{ marginTop: { xs: "250px", md: "0px" } }}>
             <AddressSelector
               formData={formData}
               setFormData={setFormData}

@@ -11,7 +11,7 @@ export default function PersonalDetails({
 }) {
   return (
     <Grid container spacing={2} rowSpacing={3}>
-      <Grid item xs={6}>
+      <Grid item xs={12} md={6}>
         <TextField
           fullWidth
           label="Full Name"
@@ -25,7 +25,7 @@ export default function PersonalDetails({
           required
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} md={6}>
         <DatePickerInput
           label="Date of Birth"
           name="dob"
@@ -35,7 +35,7 @@ export default function PersonalDetails({
         />
         {errorMsg.dob && <FormHelperText error>{errorMsg.dob}</FormHelperText>}
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} md={6}>
         <TextField
           fullWidth
           label="Phone Number"
@@ -49,7 +49,7 @@ export default function PersonalDetails({
           disabled={onlyView}
         />
       </Grid>
-      <Grid item xs={6}>
+      <Grid item xs={12} md={6}>
         <TextField
           fullWidth
           label="Email"
@@ -59,7 +59,7 @@ export default function PersonalDetails({
           disabled
         />
       </Grid>
-      <Grid item xs={6} height={"80px"}>
+      <Grid item xs={12} md={6} height={"80px"}>
         <TextField
           fullWidth
           label="National ID No"
@@ -73,8 +73,7 @@ export default function PersonalDetails({
           required
         />
       </Grid>
-      <Grid item xs={6} height={"50px"}>
-
+      <Grid item xs={12} md={6} height={"50px"}>
         <FileUpload
           label="Driving License"
           value={formData.drivingLicensePreview}

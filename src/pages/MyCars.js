@@ -1,10 +1,7 @@
 import CarCard from "../components/common/CarCard";
 import { useSearchParams } from "react-router-dom";
 import {
-  Breadcrumbs,
-  Link,
   Typography,
-  Button,
   Grid,
   Box,
   MenuItem,
@@ -13,14 +10,18 @@ import {
   Divider,
   InputLabel
 } from "@mui/material";
+import { Link } from "react-router-dom";
 import Layout from "../components/common/Layout";
 import PaginationComponent from "../components/common/Pagination";
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { clearAllFilesFromDB } from "../Helper/indexedDBHelper";
 import { getMyCars } from '../services/CarServices';
 import Breadcrumb from "../components/common/Breadcrumb";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@mui/joy";
+import NoFeedbackMessage from "../components/Feedback/NoDataMessage";
 const MyCars = () => {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [cars, setCars] = useState([]);
   const [page, setPage] = useState(parseInt(searchParams.get("page")) || 1);
@@ -29,7 +30,7 @@ const MyCars = () => {
   );
   const [totalPages, setTotalPages] = useState(1);
   const [sortOption, setSortOption] = useState("newest");
-
+  const [loading, setLoading] = useState(true);
   const getSortQuery = (option) =>
   ({
     newest: "productionYear,DESC",
@@ -48,11 +49,14 @@ const MyCars = () => {
           size: pageSize,
           sort: getSortQuery(sortOption),
         };
+        setLoading(true)
         const response = await getMyCars(searchParams);
         setCars(response.data.content || []);
         setTotalPages(response.data.totalPages || 0);
       } catch (error) {
         console.error("Failed to fetch car data:", error);
+      } finally {
+        setLoading(false)
       }
     }
     fetchMyCars();
@@ -61,6 +65,13 @@ const MyCars = () => {
   useEffect(() => {
     document.title = 'My Cars';
   }, []);
+  if (loading) {
+    return (
+      <div className="loader-container">
+        <div className="loader"></div>
+      </div>
+    );
+  }
   return (
     <Layout>
       <Box sx={{ maxWidth: "1200px", mx: "auto", mt: 2 }}>
@@ -101,8 +112,7 @@ const MyCars = () => {
                 color: "white",
                 "&:hover": { backgroundColor: "#04b16d" },
               }}
-              component="a"
-              href="/add-car-basic"
+              component={Link} to="/add-car-basic"
             >
               Add Car
             </Button>
@@ -138,12 +148,7 @@ const MyCars = () => {
 
           {/* List of Cars */}
           {cars.length === 0 ? (
-            <Typography
-              variant="h6"
-              sx={{ textAlign: "center", my: 4, color: "gray" }}
-            >
-              No cars available.
-            </Typography>
+            <NoFeedbackMessage message="You haven't add any car."></NoFeedbackMessage>
           ) : (
             <Grid container direction="column" spacing={3}>
               {cars.map((car) => (
@@ -159,16 +164,22 @@ const MyCars = () => {
                   }}
                 >
                   <Grid container spacing={2} alignItems="stretch">
-                    <Grid item xs={10}>
+                    <Grid item xs={12} sm={10}
+                      className="car-item"
+                      data-car-id={car.id || ""}
+                      data-productionYear={car.productionYear || ""}
+                      data-basePrice={car.basePrice || ""}
+                    >
                       <CarCard carData={car} />
                     </Grid>
                     <Grid
                       item
-                      xs={2}
+                      xs={12}
+                      sm={2}
                       container
                       direction="column"
                       spacing={2}
-                      alignItems="flex-end"
+                      alignItems="center"
                       sx={{
                         height: "100%",
                         justifyContent: "space-between",
@@ -178,8 +189,8 @@ const MyCars = () => {
                       <Button
                         variant="contained"
                         onClick={() => {
-                          sessionStorage.setItem("selectedCarId", car.id);
                           clearAllFilesFromDB();
+                          navigate(`/edit-details/${car.id}`);
                         }}
                         sx={{
                           backgroundColor: "#1976d2",

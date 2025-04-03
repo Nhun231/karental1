@@ -6,6 +6,7 @@ import { Button, Box, Rating, Typography, Breadcrumbs, Link } from "@mui/materia
 import Pagination from "../components/common/Pagination";
 import { Divider } from "@mui/joy";
 import FeedbackList from "../components/CarDetails/FeedbackList";
+import NoFeedbackMessage from "../components/Feedback/NoDataMessage";
 const MyFeedback = () => {
     const [feedbackList, setFeedbackList] = useState(null);
     const [averageRating, setAverageRating] = useState(0);
@@ -155,27 +156,7 @@ const MyFeedback = () => {
                     {feedbackList && feedbackList.length > 0 ? (
                         <FeedbackList feedbackList={feedbackList}></FeedbackList>
                     ) : (
-                        <Box
-                            sx={{
-                                textAlign: "center",
-                                p: 4,
-                                bgcolor: "#f9f9f9",
-                                borderRadius: "8px",
-                                boxShadow: "0px 2px 5px rgba(0, 0, 0, 0.1)",
-                                height: "250px",
-                                alignContent: "center"
-                            }}
-                        >
-                            <Typography variant="h6" color="textSecondary">
-                                No feedback available for this rating.
-                            </Typography>
-                            <img
-                                src="https://img.icons8.com/?size=100&id=SfQftXEz2mXG&format=png&color=05ce80"
-                                alt="No feedback"
-                                width="200"
-                                height="200"
-                            />
-                        </Box>
+                        <NoFeedbackMessage></NoFeedbackMessage>
                     )}
                 </Box>
                 {/* Pagination */}

@@ -1,59 +1,21 @@
-import Slider from "react-slick";
-import { ArrowBackIos, ArrowForwardIos } from "@mui/icons-material";
 import {
-  IconButton,
   Card,
   CardContent,
   Typography,
   Box,
   Stack,
 } from "@mui/material";
-
-import "slick-carousel/slick/slick.css";
-import "slick-carousel/slick/slick-theme.css";
-const CustomPrevArrow = ({ onClick }) => (
-  <IconButton
-    onClick={onClick}
-    sx={{
-      position: "absolute",
-      left: -40,
-      zIndex: 10,
-      top: "50%",
-      transform: "translateY(-50%)",
-    }}
-  >
-    <ArrowBackIos fontSize="large" />
-  </IconButton>
-);
-
-const CustomNextArrow = ({ onClick }) => (
-  <IconButton
-    onClick={onClick}
-    sx={{
-      position: "absolute",
-      right: -50,
-      top: "50%",
-      transform: "translateY(-50%)",
-    }}
-  >
-    <ArrowForwardIos fontSize="large" />
-  </IconButton>
-);
+import Sliders from "../common/Sliders";
+import { useMediaQuery } from "@mui/material";
 
 const ListCard = ({ BookingData }) => {
+  const isSmallScreen = useMediaQuery("(max-width:600px)");
   // console.log("Received Booking Data in BookingCard:", BookingData);
-  if (!BookingData) return <Typography>Loading...</Typography>;
+  if (!BookingData) return
+  <div className="loader-container">
+    <div className="loader"></div>
+  </div>;
   // console.log(BookingData)
-  const settings = {
-    dots: true,
-    infinite: true,
-    speed: 500,
-    slidesToShow: 1,
-    slidesToScroll: 1,
-    arrows: true,
-    prevArrow: <CustomPrevArrow />,
-    nextArrow: <CustomNextArrow />,
-  };
   return (
     <div>
       <Card
@@ -70,34 +32,10 @@ const ListCard = ({ BookingData }) => {
         }}
       >
         {/* Car Image */}
-        <Box id="image" sx={{ width: "55%", p: 2 }}>
-          <Slider {...settings}>
-            {[
-              BookingData.carImageFrontUrl,
-              BookingData.carImageBackUrl,
-              BookingData.carImageLeftUrl,
-              BookingData.carImageRightUrl,
-            ]
-              .filter(Boolean)
-              .map((img, index) => (
-                <img
-                  key={index}
-                  src={img}
-                  alt={`Booking ${index + 1}`}
-                  style={{
-                    width: "80%",
-                    height: "200px",
-                    objectFit: "cover",
-                    padding: "5px",
-                    right: -5,
-                    borderRadius: 8,
-                  }}
-                />
-              ))}
-          </Slider>
-        </Box>
+          <Sliders images={[BookingData.carImageFrontUrl, BookingData.carImageBackUrl, BookingData.carImageLeftUrl, BookingData.carImageRightUrl]} isSmallScreen={isSmallScreen} />
 
-        {/* Booking Information */}
+
+          {/* Booking Information */}
         <CardContent
           sx={{
             display: "flex",

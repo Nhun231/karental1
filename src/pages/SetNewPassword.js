@@ -103,7 +103,7 @@ const SetNewPassword = () => {
         const response = await forgotPasswordChange(formChangePassword);
         if (response) {
           alert(response.data.message);
-          nav("/");
+          nav("/login-register");
         }
       } catch (error) {
         alert(error);

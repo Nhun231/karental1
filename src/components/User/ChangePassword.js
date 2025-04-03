@@ -24,39 +24,59 @@ export default function SecurityChangePassword() {
     newPassword: true,
     confirmPassword: true,
   });
-  const [generalError, setGeneralError] = useState("");
+  const [formErrors, setFormErrors] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const [touched, setTouched] = useState({
+    currentPassword: false,
+    newPassword: false,
+    confirmPassword: false,
+  });
+
+  const handleBlur = (e) => {
+    setTouched({ ...touched, [e.target.name]: true });
+    validateField(e.target.name, formData[e.target.name]);
   };
 
+
+
   const validateField = (name, value) => {
+    let error = "";
+
     if (value.trim() === "") {
-      setFormValid((prevState) => ({ ...prevState, [name]: false }));
-      setGeneralError(`* ${name === "currentPassword" ? "Current" : name === "newPassword" ? "New" : "Confirm"} password is required.`);
-      return;
-    }
-
-    const passwordRegex = /^(?=.*\d).{9,}$/;
-
+      error = `* ${name === "currentPassword" ? "Current" : name === "newPassword" ? "New" : "Confirm"} password is required.`;
+    } else {
+      const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d).{9,}$/;
     if (name === "currentPassword" || name === "newPassword") {
       if (!passwordRegex.test(value)) {
-        setFormValid((prevState) => ({ ...prevState, [name]: false }));
-        setGeneralError(`* ${name === "currentPassword" ? "Current" : "New"} password must be at least 9 characters long and include at least one number.`);
-        return;
+          error = `* ${name === "currentPassword" ? "Current" : "New"} password must be at least 9 characters long and include at least one number.`;
       }
     }
 
     if (name === "confirmPassword" && value !== formData.newPassword) {
-      setFormValid((prevState) => ({ ...prevState, confirmPassword: false }));
-      setGeneralError("* New password and confirm password must match.");
-      return;
+        error = "* New password and confirm password must match.";
+      }
     }
 
-    setFormValid((prevState) => ({ ...prevState, [name]: true }));
-    setGeneralError("");
-  };
+    setFormValid((prevState) => ({
+      ...prevState,
+      [name]: !error,
+    }));
 
+    setFormErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: error,
+    }));
+  };
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+    setTouched((prevTouched) => ({ ...prevTouched, [name]: true }));
+    validateField(name, value);
+  };
 
   useEffect(() => {
     Object.keys(formData).forEach((field) => {
@@ -68,6 +88,7 @@ export default function SecurityChangePassword() {
     if (Object.values(formValid).every((valid) => valid)) {
       setOpenChangeConfirm(true);
     } else {
+      console.log('Form validation errors:', formErrors);
       setAlert({ open: true, message: "Password validation failed. Please check your inputs.", severity: "error" });
     }
   };
@@ -76,16 +97,30 @@ export default function SecurityChangePassword() {
     try {
       const response = await updateUserPassword(formData);
       setAlert({ open: true, message: "Password changed successfully!", severity: "success" });
+      // Reset form data, errors, and touched states
       setFormData({ currentPassword: "", newPassword: "", confirmPassword: "" });
-      try {
-        window.alert("Password changed successfully!");
-      } catch (error) {
-        console.error("Update failed:", error);
-      }
+      setFormValid({
+        currentPassword: true,
+        newPassword: true,
+        confirmPassword: true,
+      });
+      setFormErrors({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      setTouched({
+        currentPassword: false,
+        newPassword: false,
+        confirmPassword: false,
+      });
+
       setOpenChangeConfirm(false);
+
       console.log("Password successfully changed", response);
     } catch (error) {
-      setAlert({ open: true, message: "Password update failed. Please check your inputs.", severity: "error" });
+      setAlert({ open: true, message: error.response?.data?.message || "Password update failed. Please check your inputs.", severity: "error" });
+      setOpenChangeConfirm(false);
     }
   };
 
@@ -113,17 +148,18 @@ export default function SecurityChangePassword() {
       </Typography>
 
       <Grid container spacing={2}>
-        <Grid item xs={6}>
+        <Grid item xs={12} md={6}>
           <Grid item xs={12}>
             <PasswordInput
               label="Old Password"
               name="currentPassword"
               value={formData.currentPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               showPassword={showPassword.currentPassword}
               onTogglePassword={togglePasswordVisibility}
-              error={!formValid.currentPassword && formData.currentPassword !== ""}
-              helperText={!formValid.currentPassword && formData.currentPassword !== "" && generalError}
+              error={touched.currentPassword && !formValid.currentPassword}
+              helperText={touched.currentPassword ? formErrors.currentPassword : ""}
             />
           </Grid>
           <Grid item xs={12}>
@@ -132,10 +168,11 @@ export default function SecurityChangePassword() {
               name="newPassword"
               value={formData.newPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               showPassword={showPassword.newPassword}
               onTogglePassword={togglePasswordVisibility}
-              error={!formValid.newPassword && formData.newPassword !== ""}
-              helperText={!formValid.newPassword && formData.newPassword !== "" && generalError}
+              error={touched.newPassword && !formValid.newPassword}
+              helperText={touched.newPassword ? formErrors.newPassword : ""}
             />
           </Grid>
           <Grid item xs={12}>
@@ -144,10 +181,11 @@ export default function SecurityChangePassword() {
               name="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
+              onBlur={handleBlur}
               showPassword={showPassword.confirmPassword}
               onTogglePassword={togglePasswordVisibility}
-              error={!formValid.confirmPassword && formData.confirmPassword !== ""}
-              helperText={!formValid.confirmPassword && formData.confirmPassword !== "" && generalError}
+              error={touched.confirmPassword && !formValid.confirmPassword}
+              helperText={touched.confirmPassword ? formErrors.confirmPassword : ""}
             />
           </Grid>
         </Grid>

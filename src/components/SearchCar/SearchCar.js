@@ -11,6 +11,7 @@ import RentalDatePicker from "../common/RentalDateTimePicker";
 import { ModalClose, ModalDialog } from "@mui/joy";
 import Register from "../User/Register";
 const SearchCar = () => {
+    const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
     const isLoggedIn = Boolean(localStorage.getItem("role"));
     const isCarOwner = "false";
     console.log(isCarOwner)
@@ -185,7 +186,7 @@ const SearchCar = () => {
                                         }}
                                     >
                                         <ModalClose onClick={handleClose} />
-                                        <Register isCarOwner={isCarOwner} />
+                                        <Register isCarOwner={isCarOwner} setAlert={setAlert} onRegisterSucess={handleClose} />
                                     </ModalDialog>
                                 </Modal>
                             </Box>

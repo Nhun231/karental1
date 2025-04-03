@@ -12,7 +12,7 @@ import {
   Tabs,
   Tab,
 } from "@mui/material";
-
+import Layout from "../components/common/Layout"
 export default function UserProfilePage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -30,7 +30,6 @@ export default function UserProfilePage() {
       } finally {
         setLoading(false);
       }
-      document.title = 'My Profile';
     }
     getUserData();
   }, []);
@@ -42,8 +41,7 @@ export default function UserProfilePage() {
   };
 
   return (
-    <div>
-      <Header></Header>
+    <Layout>
       <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2, my: 2 }}>
         <Link underline="hover" color="inherit" href="/">
           Home
@@ -84,7 +82,6 @@ export default function UserProfilePage() {
           <SecurityChangePassword />
         </Box>
       </Box>
-      <Footer></Footer>
-    </div>
+    </Layout>
   );
 }

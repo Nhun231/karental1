@@ -296,6 +296,7 @@ export default function AddCarDetails() {
         <CarStepper />
         <Box
           component="form"
+          onSubmit={(e) => e.preventDefault()}
           sx={{
             display: "flex",
             flexDirection: "column",
@@ -642,8 +643,8 @@ export default function AddCarDetails() {
                   },
                 }}
                 onChange={(e) => {
-                  const newAddressHouseNumberStreet = e.target.value;
-
+                  const newAddressHouseNumberStreet = e.target.value.trim();
+                  if (newAddressHouseNumberStreet === "") return;
                   const addressParts = [
                     carData?.addressCityProvince || "",
                     carData?.addressDistrict || "",
@@ -734,13 +735,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.Bluetooth}
+                    checked={carData?.additionalFunctions?.Bluetooth || false}
                     onChange={handleChange}
                     name="Bluetooth"
                   />
                 }
+                id="bluetooth"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <Bluetooth />
                     <Typography>Bluetooth</Typography>
                   </Box>
@@ -749,13 +751,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.GPS}
+                    checked={carData?.additionalFunctions?.GPS || false}
                     onChange={handleChange}
                     name="GPS"
                   />
                 }
+                id="gps"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <GpsFixed />
                     <Typography>GPS</Typography>
                   </Box>
@@ -764,13 +767,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.Camera}
+                    checked={carData?.additionalFunctions?.Camera || false}
                     onChange={handleChange}
                     name="Camera"
                   />
                 }
+                id="camera"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <CameraAlt />
                     <Typography>Camera</Typography>
                   </Box>
@@ -789,13 +793,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.SunRoof}
+                    checked={carData?.additionalFunctions?.SunRoof || false}
                     onChange={handleChange}
                     name="SunRoof"
                   />
                 }
+                id="sunroof"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <WbSunny />
                     <Typography>Sun roof</Typography>
                   </Box>
@@ -804,13 +809,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.ChildLock}
+                    checked={carData?.additionalFunctions?.ChildLock || false}
                     onChange={handleChange}
                     name="ChildLock"
                   />
                 }
+                id="childlock"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <Lock />
                     <Typography>Child lock</Typography>
                   </Box>
@@ -819,13 +825,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.ChildSeat}
+                    checked={carData?.additionalFunctions?.ChildSeat || false}
                     onChange={handleChange}
                     name="ChildSeat"
                   />
                 }
+                id="childseat"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <ChildCare />
                     <Typography>Child lock</Typography>
                   </Box>
@@ -844,13 +851,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.DVD}
+                    checked={carData?.additionalFunctions?.DVD || false}
                     onChange={handleChange}
                     name="DVD"
                   />
                 }
+                id="dvd"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <Dvr />
                     <Typography>DVD</Typography>
                   </Box>
@@ -859,13 +867,14 @@ export default function AddCarDetails() {
               <FormControlLabel
                 control={
                   <Checkbox
-                    checked={carData.additionalFunctions.USB}
+                    checked={carData?.additionalFunctions?.USB || false}
                     onChange={handleChange}
                     name="USB"
                   />
                 }
+                id="usb"
                 label={
-                  <Box display={"flex"}>
+                  <Box display={"flex"} gap={1}>
                     <Usb />
                     <Typography>USB</Typography>
                   </Box>
@@ -1204,6 +1213,18 @@ export default function AddCarDetails() {
           <Box mt={2} style={{ textAlign: "center" }}>
             {/* button back */}
             {step >= 1 && (
+              <>
+                <Button
+                  variant="contained"
+                  id="cancel"
+                  onClick={() => {
+                    navigate("/");
+                  }}
+                  sx={{ ml: 2, mr: 4 }}
+                  style={{ backgroundColor: "red" }}
+                >
+                  Cancel
+                </Button>
               <Button
                 variant="contained"
                 onClick={() => {
@@ -1217,6 +1238,7 @@ export default function AddCarDetails() {
               >
                 Back
               </Button>
+              </>
             )}
 
             {/* button next */}

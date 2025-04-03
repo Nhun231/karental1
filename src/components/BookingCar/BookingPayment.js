@@ -101,6 +101,7 @@ export default function BookingPayment() {
           id="nextButton"
           onClick={() => {
             dispatch(setStepBooking(1));
+            dispatch(setInfor({ ...infor, paymentType: "" }));
             navigate(`/booking-infor/${carId}`);
           }}
           sx={{ ml: 2 }}
@@ -112,20 +113,20 @@ export default function BookingPayment() {
           <Button
             variant="contained"
             id="nextButton"
-            disabled={infor.paymentType === "" || loading === true}
-            onClick={async () => {
+          disabled={infor.paymentType === "" || loading === true}
+          onClick={async () => {
               setLoading(true);
               const result = await dispatch(createBooking(carId)).unwrap();
               if (result) {
                 dispatch(setStepBooking(1));
                 navigate(`/booking-finish/${carId}`); // just navigate when success
-              }
-            }}
-            sx={{ ml: 2 }}
-            style={{ backgroundColor: "#00bfa5" }}
-          >
-            {loading ? "Booking..." : "Confirm payment"}
-          </Button>
+            }
+          }}
+          sx={{ ml: 2 }}
+          style={{ backgroundColor: "#00bfa5" }}
+        >
+          {loading ? "Booking..." : "Confirm payment"}
+        </Button>
         )}
       </Box>
 

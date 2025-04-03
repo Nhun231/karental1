@@ -62,9 +62,10 @@ const PaginationComponent = ({
         value={pageSize || 10}
         onChange={handlePageSizeChange}
         size="small"
+        id="pageSizeSelect"
       >
         {[10, 15, 20, 25, 30].map((size) => (
-          <MenuItem key={size} value={size}>
+          <MenuItem key={size} value={size} id={`pageSizeOption-${size}`} >
             {size}
           </MenuItem>
         ))}

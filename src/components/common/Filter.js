@@ -10,21 +10,23 @@ const Filters = ({ sortOption, setSortOption, statusFilter, setStatusFilter, sta
             {/* Sorting */}
             <FormControl sx={{ minWidth: "200px" }}>
                 <TextField
+                    id="sortByDropdown"
                     select
                     label="Sort By"
                     value={sortOption}
                     onChange={(e) => setSortOption(e.target.value)}
                     fullWidth
                 >
-                    <MenuItem value="newest">Update At: Newest to Oldest</MenuItem>
-                    <MenuItem value="oldest">Update At: Oldest to Newest</MenuItem>
-                    <MenuItem value="priceHigh">Price: High to Low</MenuItem>
-                    <MenuItem value="priceLow">Price: Low to High</MenuItem>
+                    <MenuItem id="newestOption" value="newest">Update At: Newest to Oldest</MenuItem>
+                    <MenuItem id="oldestOption" value="oldest">Update At: Oldest to Newest</MenuItem>
+                    <MenuItem id="priceHighOption" value="priceHigh">Price: High to Low</MenuItem>
+                    <MenuItem id="priceLowOption" value="priceLow">Price: Low to High</MenuItem>
                 </TextField>
             </FormControl>
             {/* Status Filter */}
             <FormControl sx={{ minWidth: "200px", ml: 2 }}>
                 <TextField
+                    id="statusFilterDropdown"
                     select
                     label="Status Filter"
                     value={statusFilter}
@@ -32,7 +34,9 @@ const Filters = ({ sortOption, setSortOption, statusFilter, setStatusFilter, sta
                     fullWidth
                 >
                     {statusOptions.map((status) => (
-                        <MenuItem key={status} value={status}>{status}</MenuItem>
+                        <MenuItem key={status} id={`statusOption-${status}`} value={status}>
+                            {status}
+                        </MenuItem>
                     ))}
                 </TextField>
             </FormControl>

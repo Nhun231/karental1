@@ -248,7 +248,7 @@ export const BookingList = () => {
                     marginTop: "40px",
                   }}
                 >
-                  {booking.status === "PENDING_DEPOSIT" && (
+                  {(booking.status === "PENDING_DEPOSIT" && booking.paymentType !== "WALLET") && (
                     <>
                       <Button
                         variant="contained"

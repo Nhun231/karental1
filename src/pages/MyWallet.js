@@ -283,10 +283,10 @@ const [refresh, setRefresh] = useState(false);
         });
         return;
       }
-            console.log(res);
-            handleCloseTopUp();
+      console.log(res);
+      handleCloseTopUp();
       window.open(res.data.payment.vnp_url);
-
+      
     } catch (error) {
       console.error("Top-up Error:", error);
       setAlert({ 
@@ -321,12 +321,13 @@ const [refresh, setRefresh] = useState(false);
       }catch(error){
         console.error("Withdraw Error:", error); // Debugging
          setAlert({ open: true, message: `Withdraw error: ${error.response.data.message}`, severity: "error" });
+        // alert(`Withdraw error: ${error.response.data.message}`)
 
-            }finally {
-                // Chờ alert đóng rồi mới đóng modal
-                setTimeout(() => {
-         handleCloseWithdraw();
-                }, 2000);
+      }finally {
+        // Chờ alert đóng rồi mới đóng modal
+        setTimeout(() => {
+          handleCloseWithdraw();
+        }, 2000);
       }
       
     }
@@ -363,7 +364,9 @@ const [refresh, setRefresh] = useState(false);
             >
               My Wallet
             </Typography>
+
           </Box>
+          
           <Box
             className="account-balance"
             display={"flex"}
@@ -419,6 +422,7 @@ const [refresh, setRefresh] = useState(false);
               >
                 Top-Up
               </Button>
+             
               <Modal open={openTopUp} onClose={handleCloseTopUp}>
                 <ModalDialog>
                   <ModalClose onClick={handleCloseTopUp} />
@@ -684,10 +688,12 @@ const [refresh, setRefresh] = useState(false);
                 pageSizeOptions={[10, 15, 20, 25, 30]}
               ></DataGrid>
             </Paper>
+            
           </Box>
         </Container>
+        
       </Layout>
-
+      
     </div>
   );
 };

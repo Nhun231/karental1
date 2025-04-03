@@ -12,7 +12,9 @@ export default function FileUpload({ label, onFileChange, preview, disabled }) {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (file.size < 5 * 1024 * 1024) {
       setFileName(file.name);
+      }
       onFileChange(file);
     }
   };

@@ -137,24 +137,24 @@ export default function EditBookingDescription() {
   }, [bookedId]);
 
   // Get feedback status
-  // useEffect(() => {
-  //   const getFeedbackStatus = async () => {
-  //     try {
-  //       const result = await getFeedbackByBookingId(bookedId);
-  //       setHasReviewed(result.data.length > 0);
-  //     } catch (error) {
-  //       console.error("Error fetching feedback:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const getFeedbackStatus = async () => {
+      try {
+        const result = await getFeedbackByBookingId(bookedId);
+        setHasReviewed(result.data.length > 0);
+      } catch (error) {
+        console.error("Error fetching feedback:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   getFeedbackStatus();
-  // }, [bookedId]);
+    getFeedbackStatus();
+  }, [bookedId, hasReviewed]);
 
   // If feedback has sent, disable modal
   const handleGivefeedback = (data) => {
-    // console.log("Review Submitted:", data);
+    console.log("Review Submitted:", data);
     setHasReviewed(true);
   };
   return (
@@ -407,9 +407,7 @@ export default function EditBookingDescription() {
                         }).then((result) => {
                           if (result.isConfirmed) {
                             setLoading(true);
-                            dispatch(
-                              confirmPickup(infor?.data?.bookingNumber)
-                            ).finally(() => {
+                            dispatch(confirmPickup()).finally(() => {
                               setLoading(false);
                             });
                           }
@@ -589,9 +587,7 @@ export default function EditBookingDescription() {
                         }).then((result) => {
                           if (result.isConfirmed) {
                             setLoading(true);
-                            dispatch(
-                              cancelBooking(infor?.data?.bookingNumber)
-                            ).finally(() => {
+                            dispatch(cancelBooking()).finally(() => {
                               setLoading(false);
                             });
                           }

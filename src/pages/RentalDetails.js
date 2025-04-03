@@ -75,7 +75,7 @@ const RentalDetails = () => {
       console.error("Failed to fetch car data:", error);
     }
     document.title = "Rental Details";
-  }, [id]); // useCallback giúp tránh việc tạo lại hàm không cần thiết
+  }, [id]);
 
   useEffect(() => {
     getData();
@@ -119,9 +119,7 @@ const RentalDetails = () => {
         <div>
             {/* Header */}
             <Header />
-
       {/* Breadcrumbs */}
-
       <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
         <Link underline="hover" color="inherit" href="/">
           Home
@@ -188,11 +186,32 @@ const RentalDetails = () => {
                       height: "auto",
                     }}
                     onClick={async () => {
+
+                      const result = await Swal.fire({
+
+                        title: "Are you sure?",
+
+                        text: "Do you really want to reject this booking?",
+
+                        icon: "warning",
+
+                        showCancelButton: true,
+
+                        confirmButtonText: "Yes, reject it!",
+
+                        cancelButtonText: "No, keep it",
+
+                      });
+                      if (result.isConfirmed) {
                       try {
+                          setLoading(true);
                         await dispatch(rejectRentCar(id)).unwrap(); // Đợi action hoàn tất
                         getData();
                       } catch (error) {
-                        console.error("Error rejecting booking:", error);
+                          console.error("Error confirming return:", error);
+                        } finally {
+                          setLoading(false); // Đảm bảo loading được reset
+                        }
                       }
                     }}
                   >
@@ -216,6 +235,15 @@ const RentalDetails = () => {
                         height: "auto",
                       }}
                       onClick={async () => {
+                        const result = await Swal.fire({
+                          title: "Are you sure?",
+                          text: "Do you really want to approve return early this booking?",
+                          icon: "warning",
+                          showCancelButton: true,
+                          confirmButtonText: "Yes, approve it!",
+                          cancelButtonText: "No, keep it",
+                        });
+                        if (result.isConfirmed) {
                         try {
                           setLoading(true);
                           await dispatch(confirmEarlyReturn(id)).unwrap(); // Đợi action hoàn tất
@@ -224,6 +252,7 @@ const RentalDetails = () => {
                           console.error("Error confirming return:", error);
                         } finally {
                           setLoading(false); // Đảm bảo loading được reset
+                        }
                         }
                       }}
                     >

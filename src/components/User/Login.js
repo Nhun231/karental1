@@ -6,9 +6,7 @@ import * as Icons from "@mui/icons-material";
 import { useState } from "react";
 import { ModalClose, ModalDialog } from '@mui/joy';
 import { useNavigate } from "react-router-dom";
-import NotificationSnackbar from "../common/NotificationSnackbar.js";
-const Login = () => {
-    const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
+const Login = ({ onLoginSuccess, setAlert }) => {
 
   const [formLogin, setFormLogin] = useState({
     email: "",
@@ -24,21 +22,22 @@ const Login = () => {
     const [showPassword, setShowPassword] = useState(false);
     const handleClickShowPassword = () => setShowPassword((show) => !show);
     const nav = useNavigate();
-　const handleSubmit = async (event) =>{
+  const handleSubmit = async (event) => {
   event.preventDefault();
   try {
     const response = await login(formLogin); // Await the login call
     console.log("Login Response:", response);
     //set role into localStorage
-    if(response.code===1000){
+      if (response.code === 1000) {
       localStorage.setItem("role", response.data.userRole);
         localStorage.setItem("name", response.data.fullName);
         localStorage.setItem("csrfToken", response.data.csrfToken);
         setAlert({ open: true, message: "Welcome to Our Community", severity: "success" });
     setTimeout(() => {
       nav("/", { replace: true });
+          onLoginSuccess();
     }, 1000);
-    }else{
+      } else {
       setAlert({ open: true, message: response.message, severity: "error" });
     }
   } catch (error) {
@@ -178,7 +177,6 @@ const handleForgotPassword = async() => {
           </Mui.Box>
         </Mui.Box>
       </Mui.Box>
-       <NotificationSnackbar  alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
     </>
   );
 };

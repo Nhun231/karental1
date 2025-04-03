@@ -36,13 +36,13 @@ export default function BookingFinish() {
 
   //variable to format date
   const pickUpTime = wallet?.data?.pickUpTime
-    ? dayjs(wallet?.data?.pickUpTime).format("DD/MM/YYYY - hh:mm A")
-    : "";
+      ? dayjs(wallet?.data?.pickUpTime).format("DD/MM/YYYY - hh:mm A")
+      : "";
 
   //variable to format date
   const dropOffTime = wallet?.data?.dropOffTime
-    ? dayjs(wallet?.data?.dropOffTime).format("DD/MM/YYYY - hh:mm A")
-    : "";
+      ? dayjs(wallet?.data?.dropOffTime).format("DD/MM/YYYY - hh:mm A")
+      : "";
 
   //function to get data from car detail
   useEffect(() => {
@@ -57,104 +57,104 @@ export default function BookingFinish() {
   }, []);
 
   return (
-    <>
-      <Header />
-      <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
-        <Link underline="hover" color="inherit" href="/">
-          Home
-        </Link>
+      <>
+        <Header />
+        <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
+          <Link underline="hover" color="inherit" href="/">
+            Home
+          </Link>
 
-        <Typography color="text.primary">Booking Finsh</Typography>
-      </Breadcrumbs>
-      <RentStepper />
-      <Box sx={{ mx: "auto", maxWidth: "1200px", p: 2 }}>
-        <Grid container justifyContent="center" mt={4}>
-          <Grid item xs={12} md={8}>
-            <Box sx={{ p: 3, textAlign: "center" }}>
-              {status === "PENDING_DEPOSIT" ? (
-                <Alert
-                  severity="warning"
-                  icon={<CalendarMonthIcon />}
-                  sx={{ fontWeight: "bold", mb: 2 }}
-                >
-                  The system has recorded your booking. Please complete the
-                  payment within <strong>1 hour</strong>.
-                </Alert>
-              ) : status === "WAITING_CONFIRMED" ? (
-                <Card sx={{ p: 3, boxShadow: 3, borderRadius: 3 }}>
-                  <CardContent>
-                    <Stack spacing={2} alignItems="center">
-                      <Typography
-                        variant="h5"
-                        fontWeight="bold"
-                        color="primary"
-                      >
-                        {"\u2705"} Booking Confirmed!
-                      </Typography>
+          <Typography color="text.primary">Booking Finsh</Typography>
+        </Breadcrumbs>
+        <RentStepper />
+        <Box sx={{ mx: "auto", maxWidth: "1200px", p: 2 }}>
+          <Grid container justifyContent="center" mt={4}>
+            <Grid item xs={12} md={8}>
+              <Box sx={{ p: 3, textAlign: "center" }}>
+                {status === "PENDING_DEPOSIT" ? (
+                    <Alert
+                        severity="warning"
+                        icon={<CalendarMonthIcon />}
+                        sx={{ fontWeight: "bold", mb: 2 }}
+                    >
+                      The system has recorded your booking. Please complete the
+                      payment within <strong>1 hour</strong>.
+                    </Alert>
+                ) : status === "WAITING_CONFIRMED" ? (
+                    <Card sx={{ p: 3, boxShadow: 3, borderRadius: 3 }}>
+                        <CardContent>
+                            <Stack spacing={2} alignItems="center">
+                                <Typography
+                                    variant="h5"
+                                    fontWeight="bold"
+                                    color="primary"
+                                >
+                                    {"\u2705"} Booking Confirmed!
+                                </Typography>
 
-                      <Typography variant="body1" align="center">
-                        You have successfully booked{" "}
-                        <strong>
-                          {carData?.data?.brand} {carData?.data?.model}
-                        </strong>
-                      </Typography>
+                                <Typography variant="body2" align="center">
+                                    You have successfully booked{" "}
+                                    <strong>
+                                        {carData?.data?.brand} {carData?.data?.model}
+                                    </strong>
+                                </Typography>
 
-                      <Divider sx={{ width: "100%" }} />
+                                <Divider sx={{ width: "100%" }} />
 
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <CalendarMonthIcon color="action" />
-                        <Typography variant="body2" color="text.secondary">
-                          From <strong>{pickUpTime}</strong> to{" "}
-                          <strong>{dropOffTime}</strong>
-                        </Typography>
-                      </Stack>
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <CalendarMonthIcon color="action" />
+                                    <Typography variant="body2" >
+                                        From <strong>{pickUpTime}</strong> to{" "}
+                                        <strong>{dropOffTime}</strong>
+                                    </Typography>
+                                </Stack>
 
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <ConfirmationNumberIcon color="action" />
-                        <Typography variant="h6" fontWeight="bold">
-                          Booking Number: {wallet?.data?.bookingNumber}
-                        </Typography>
-                      </Stack>
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <ConfirmationNumberIcon color="action" />
+                                    <Typography variant="h6" fontWeight="bold">
+                                        Booking Number: {wallet?.data?.bookingNumber}
+                                    </Typography>
+                                </Stack>
 
-                      <Divider sx={{ width: "100%" }} />
+                                <Divider sx={{ width: "100%" }} />
 
-                      <Stack direction="row" spacing={1} alignItems="center">
-                        <PhoneIcon color="action" />
-                        <Typography
-                          variant="body1"
-                          fontWeight="bold"
-                          textAlign="center"
-                        >
-                          Our operator will contact you with further guidance
-                          about pickup.
-                        </Typography>
-                      </Stack>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              ) : (
-                <Alert severity="info" sx={{ fontWeight: "bold", mb: 2 }}>
-                  Booking status is unknown. Please check again.
-                </Alert>
-              )}
-            </Box>
+                                <Stack direction="row" spacing={1} alignItems="center">
+                                    <PhoneIcon color="action" />
+                                    <Typography
+                                        variant="body2"
+                                        // fontWeight="bold"
+                                        textAlign="center"
+                                    >
+                                        Our operator will contact you with further guidance
+                                        about pickup.
+                                    </Typography>
+                                </Stack>
+                            </Stack>
+                        </CardContent>
+                    </Card>
+                ) : (
+                    <Alert severity="info" sx={{ fontWeight: "bold", mb: 2 }}>
+                      Booking status is unknown. Please check again.
+                    </Alert>
+                )}
+              </Box>
+            </Grid>
           </Grid>
-        </Grid>
-      </Box>
-      <Box m={2} style={{ textAlign: "center" }}>
-        <Button
-          variant="contained"
-          id="nextButton"
-          onClick={() => {
-            navigate("/my-bookings");
-          }}
-          sx={{ ml: 2, mb: 4 }}
-          style={{ backgroundColor: "#00bfa5" }}
-        >
-          Next
-        </Button>
-      </Box>
-      <Footer />
-    </>
+        </Box>
+        <Box m={2} style={{ textAlign: "center" }}>
+          <Button
+              variant="contained"
+              id="nextButton"
+              onClick={() => {
+                navigate("/my-bookings");
+              }}
+              sx={{ ml: 2, mb: 4 }}
+              style={{ backgroundColor: "#00bfa5" }}
+          >
+            Next
+          </Button>
+        </Box>
+        <Footer />
+      </>
   );
 }

@@ -9,8 +9,10 @@ import Login from "../User/Login";
 import Register from "../User/Register";
 import * as Mui from "@mui/material";
 import { useMediaQuery } from "@mui/material";
-
+import { useState } from "react";
+import NotificationSnackbar from "./NotificationSnackbar";
 const Header = () => {
+  const [alert, setAlert] = useState({ open: false, message: "", severity: "success" });
   const isLoggedIn = Boolean(localStorage.getItem("role"));
   const [open, setOpen] = React.useState(false);
   const [drawerOpen, setDrawerOpen] = React.useState(false);
@@ -80,15 +82,18 @@ const Header = () => {
 
         {/* Login/Register Modal */}
         <Modal open={open} onClose={handleClose}>
-          <ModalDialog sx={{ width: "65vw", maxWidth: "lg", maxHeight: "100vh", overflowY: "auto" }}>
+          <ModalDialog sx={{ width: "65vw", maxWidth: "lg", maxHeight: "100vh", overflowY: "auto", zIndex: 1200, }}>
             <ModalClose onClick={handleClose} />
             <Mui.Container sx={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 2 }}>
-              <Login />
+              <Login onLoginSuccess={handleClose} setAlert={setAlert} />
               {!isMobile && <Mui.Divider orientation="vertical" flexItem />}
-              <Register />
+              <Register onRegisterSucess={handleClose} setAlert={setAlert} />
             </Mui.Container>
           </ModalDialog>
         </Modal>
+        {/* Notification Snackbar */}
+        <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} disablePortal={false} // Thử để false để snackbar render trong cùng DOM
+          sx={{ zIndex: 2000 }} />
       </Toolbar>
     </AppBar>
   );

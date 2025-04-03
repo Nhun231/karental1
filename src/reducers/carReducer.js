@@ -73,7 +73,7 @@ export const addNewCar = createAsyncThunk(
 
       return response.data;
     } catch (error) {
-      toast.error(`Add Car Failed!`, {
+      toast.error(`Add Car Failed! license plate already exists`, {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: true,
@@ -362,6 +362,7 @@ export const carsSlice = createSlice({
             fontWeight: "bold",
             border: "2px solid #05ce80",
             borderRadius: "8px",
+            marginTop: "100px",
             boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
             backgroundColor: "#e6f9f2",
             color: "#0a6847",
@@ -391,6 +392,7 @@ export const carsSlice = createSlice({
               fontWeight: "bold",
               border: "2px solid #05ce80",
               borderRadius: "8px",
+              marginTop: "100px",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
               backgroundColor: "#e6f9f2",
               color: "#0a6847",
@@ -415,6 +417,7 @@ export const carsSlice = createSlice({
               fontWeight: "bold",
               border: "2px solid #05ce80",
               borderRadius: "8px",
+              marginTop: "100px",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
               backgroundColor: "#e6f9f2",
               color: "#0a6847",
@@ -439,6 +442,7 @@ export const carsSlice = createSlice({
               fontWeight: "bold",
               border: "2px solid #05ce80",
               borderRadius: "8px",
+              marginTop: "100px",
               boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
               backgroundColor: "#e6f9f2",
               color: "#0a6847",
