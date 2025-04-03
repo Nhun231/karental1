@@ -39,6 +39,10 @@ export const BookingDescript = () => {
 
   const pickUpDate = new Date(pickUpTime);
   const dropOffDate = new Date(dropOffTime);
+    console.log("pickUpTime", pickUpTime);
+    console.log("pickUpDate", pickUpDate);
+    console.log("dropOffTime", dropOffTime);
+    console.log("dropOffDate", dropOffDate);
   const diffInMs = dropOffDate - pickUpDate;
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
   const days = Math.ceil(diffInDays);
