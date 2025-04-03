@@ -345,6 +345,7 @@ const [refresh, setRefresh] = useState(false);
     <div>
       <Layout>
         <Container sx={{ marginInline: "150px" }}>
+        <NotificationSnackbar  alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
           <Breadcrumb listData={listBreadcrumbData} />
           <Box display={"flex"} sx={{ marginBottom: 2 }}>
             <Box

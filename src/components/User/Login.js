@@ -125,7 +125,7 @@ const handleForgotPassword = async() => {
             Forgot your password?</Mui.Link>
           <Mui.Modal open={openModalForgot} >
             <ModalDialog>
-              <ModalClose onClose={() => setOpenModalForgot(false)} />
+              <ModalClose onClick={() => setOpenModalForgot(false)} />
               <Mui.Box textAlign={"center"}>
                 <Mui.Typography variant={"h6"}>Forgot your password?</Mui.Typography>
                 <Mui.TextField variant='standard' onChange={(e) => (setForgotPasswordEmail(e.target.value))} label="Your email" value={forgotPasswordEmail}></Mui.TextField>

@@ -3,7 +3,7 @@ import { toast } from "react-toastify";
 import { getFileFromDB } from "../Helper/indexedDBHelper";
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8080/karental";
+const BASE_URL = process.env.REACT_APP_BASE_URL;
 export const fetchInforProfile = createAsyncThunk(
     "rentCar/fetchInforProfile",
     async (_, { rejectWithValue }) => {
