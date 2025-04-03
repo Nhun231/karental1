@@ -52,18 +52,27 @@ const handleMouseDown = (event) => {
 };
 const [openModalForgot, setOpenModalForgot] = useState(false)
 const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
-const handleForgotPassword = async() => {
-    setForgotPasswordEmail(forgotPasswordEmail);
-    try{
-      const response =  await forgotPasswordEmailFunction(forgotPasswordEmail);
-      if(response){
-        setAlert({ open: true, message: response.data.message, severity: "error" });
-      }
+    const handleForgotPassword = async () => {
+        console.log("Forgot password clicked, email:", forgotPasswordEmail);
 
-    }catch(error){
-      setAlert({ open: true, message: error, severity: "error" });
-    }
-  }
+        if (!forgotPasswordEmail) {
+            setAlert({ open: true, message: "Please enter your email", severity: "warning" });
+            return;
+        }
+        try {
+            const response = await forgotPasswordEmailFunction(forgotPasswordEmail);
+
+            if (response?.data?.message) {
+                setAlert({ open: true, message: response?.data?.message, severity: "success" });
+            } else {
+                setAlert({ open: true, message: "Failed to send email. Try again.", severity: "error" });
+            }
+            setOpenModalForgot(false); // Đóng modal sau khi gửi email thành công
+        } catch (error) {
+            console.error("Forgot password error:", error);
+            setAlert({ open: true, message: error.response?.data?.message || "An error occurred", severity: "error" });
+        }
+    };
   return (
     <>
       <Mui.Box component="form" sx={normalForm}>
