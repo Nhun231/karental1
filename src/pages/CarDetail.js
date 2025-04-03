@@ -21,6 +21,7 @@ import { setRentalTime } from "../reducers/RentalTimeReducer";
 import FeedbackList from "../components/CarDetails/FeedbackList";
 import { getFeedbackByCarId } from "../services/FeedbackServices";
 import dayjs from "dayjs";
+import LoadingComponent from "../components/common/LoadingComponent";
 
 const CarDetail = () => {
     // Get id from URL
@@ -84,9 +85,7 @@ const CarDetail = () => {
     }, []);
     if (loading) {
         return (
-            <div className="loader-container">
-                <div className="loader"></div>
-            </div>
+            <LoadingComponent/>
         );
     }
     return (

@@ -20,6 +20,7 @@ import ConfirmationDialog from "../components/common/ConfirmationDialog";
 import NotificationSnackbar from "../components/common/NotificationSnackbar";
 import Documents from "../components/common/Document";
 import CloseIcon from "@mui/icons-material/Close";
+import LoadingComponent from "../components/common/LoadingComponent";
 const ViewListAllCar = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [cars, setCars] = useState([]);
@@ -126,9 +127,7 @@ const ViewListAllCar = () => {
       }, []); 
     if (loading) {
         return (
-            <div className="loader-container">
-                <div className="loader"></div>
-            </div>
+            <LoadingComponent/>
         );
     }
     return (

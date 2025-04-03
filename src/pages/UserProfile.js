@@ -13,6 +13,7 @@ import {
   Tab,
 } from "@mui/material";
 import Layout from "../components/common/Layout"
+import LoadingComponent from "../components/common/LoadingComponent";
 export default function UserProfilePage() {
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,7 @@ export default function UserProfilePage() {
     getUserData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <LoadingComponent/>;
 
   const handleTabChange = (event, newValue) => {
     setSelectedTab(newValue);

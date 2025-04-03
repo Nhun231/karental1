@@ -14,6 +14,7 @@ import dayjs from "dayjs";
 import PaginationComponent from "../components/common/Pagination";
 import Footer from "../components/common/Footer";
 import utc from "dayjs/plugin/utc";
+import LoadingComponent from "../components/common/LoadingComponent";
 export const SearchResult = () => {
     dayjs.extend(utc);
     const [errorMsg, setErrorMsg] = useState({});
@@ -70,9 +71,7 @@ export const SearchResult = () => {
     }, []);
     if (loading) {
         return (
-            <div className="loader-container">
-                <div className="loader"></div>
-            </div>
+            <LoadingComponent/>
         );
     }
     return (

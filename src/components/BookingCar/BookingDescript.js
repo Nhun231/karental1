@@ -24,6 +24,8 @@ import { getCarDetail } from "../../reducers/carFetchReducer";
 import { getWallet } from "../../reducers/rentCarReducer";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+dayjs.extend(utc);
 
 export const BookingDescript = () => {
   //repository of car

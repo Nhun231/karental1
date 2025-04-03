@@ -13,6 +13,7 @@ import { useDispatch } from "react-redux";
 import { getBookingDetail, getWallet, cancelBooking, confirmPickup, returnCar, payDepositAgain, payTotalFee, } from "../reducers/rentCarReducer";
 import Swal from "sweetalert2";
 import NoFeedbackMessage from "../components/Feedback/NoDataMessage";
+import LoadingComponent from "../components/common/LoadingComponent";
 const MyBooking = () => {
   const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
@@ -108,9 +109,7 @@ const MyBooking = () => {
     }, []);
     if (loading) {
         return (
-            <div className="loader-container">
-                <div className="loader"></div>
-            </div>
+            <LoadingComponent/>
         );
     }
     return (
@@ -405,7 +404,7 @@ const MyBooking = () => {
                                                     if (result.isConfirmed) {
                                                         setLoading(true);
                                                         dispatch(
-                                                            confirmPickup(booking.bookingNumber)
+                                                            returnCar(booking.bookingNumber)
                                                         ).finally(() => {
                                                             setLoading(false);
                                                             fetchMyBookings();

@@ -20,6 +20,7 @@ import Breadcrumb from "../components/common/Breadcrumb";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@mui/joy";
 import NoFeedbackMessage from "../components/Feedback/NoDataMessage";
+import LoadingComponent from "../components/common/LoadingComponent";
 const MyCars = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,9 +68,7 @@ const MyCars = () => {
   }, []);
   if (loading) {
     return (
-      <div className="loader-container">
-        <div className="loader"></div>
-      </div>
+      <LoadingComponent/>
     );
   }
   return (
