@@ -16,17 +16,17 @@ import ConfirmationDialog from "../common/ConfirmationDialog";
 import { updateUserProfile } from "../../services/UserServices";
 export default function PersonalInformation({ initialData = {}, onlyView = false }) {
   const [formData, setFormData] = useState({
-    fullName: initialData.fullName || "",
-    phoneNumber: initialData.phoneNumber || "",
-    email: initialData.email || "",
-    nationalId: initialData.nationalId || "",
-    dob: initialData.dob ? dayjs(initialData.dob) : null,
-    cityProvince: initialData.cityProvince || "",
-    district: initialData.district || "",
-    ward: initialData.ward || "",
-    houseNumberStreet: initialData.houseNumberStreet || "",
-    drivingLicenseFile: initialData.drivingLicenseUrl || initialData.drivingLicenseFile || null,
-    drivingLicensePreview: initialData.drivingLicenseUrl || initialData.drivingLicenseFile || null,
+    fullName: initialData?.fullName || "",
+    phoneNumber: initialData?.phoneNumber || "",
+    email: initialData?.email || "",
+    nationalId: initialData?.nationalId || "",
+    dob: initialData?.dob ? dayjs(initialData?.dob) : null,
+    cityProvince: initialData?.cityProvince || "",
+    district: initialData?.district || "",
+    ward: initialData?.ward || "",
+    houseNumberStreet: initialData?.houseNumberStreet || "",
+    drivingLicenseFile: initialData?.drivingLicenseUrl || initialData?.drivingLicenseFile || null,
+    drivingLicensePreview: initialData?.drivingLicenseUrl || initialData?.drivingLicenseFile || null,
   });
   // console.log("pinfor:", initialData)
   // console.log("formdata:", formData)

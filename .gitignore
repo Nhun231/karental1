@@ -27,3 +27,6 @@ yarn-error.log*
 
 # Ignore database file
 db.json
+
+# Folder build to deploy project
+/build
