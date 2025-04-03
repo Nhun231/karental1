@@ -9,6 +9,8 @@ import { getMyRentals, confirmBooking } from "../services/BookingServices";
 import Pagination from "../components/common/Pagination";
 import ConfirmationDialog from "../components/common/ConfirmationDialog";
 import NotificationSnackbar from "../components/common/NotificationSnackbar";
+import Filters from "../components/common/Filter"
+
 import {
   confirmEarlyReturn,
   rejectEarlyReturn,
