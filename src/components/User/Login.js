@@ -68,6 +68,7 @@ const [forgotPasswordEmail, setForgotPasswordEmail] = useState("");
                 setAlert({ open: true, message: "Failed to send email. Try again.", severity: "error" });
             }
             setOpenModalForgot(false); // Đóng modal sau khi gửi email thành công
+            onLoginSuccess();
         } catch (error) {
             console.error("Forgot password error:", error);
             setAlert({ open: true, message: error.response?.data?.message || "An error occurred", severity: "error" });
