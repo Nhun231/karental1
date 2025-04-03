@@ -1,8 +1,8 @@
 import Header from "../components/common/Header";
 import Footer from "../components/common/Footer";
-import { useSearchParams, Link } from "react-router-dom";
+import {useSearchParams, Link} from "react-router-dom";
 import BookingCard from "../components/common/BookingCard";
-import { useEffect, useState } from "react";
+import {useEffect, useState} from "react";
 import {
     Breadcrumbs,
     Typography,
@@ -13,8 +13,8 @@ import {
     TextField,
     CircularProgress,
 } from "@mui/material";
-import { Grid, Divider, Button } from "@mui/joy";
-import { getMyRentals, confirmBooking } from "../services/BookingServices";
+import {Grid, Divider, Button} from "@mui/joy";
+import {getMyRentals, confirmBooking} from "../services/BookingServices";
 import Pagination from "../components/common/Pagination";
 import ConfirmationDialog from "../components/common/ConfirmationDialog";
 import NotificationSnackbar from "../components/common/NotificationSnackbar";
@@ -23,7 +23,7 @@ import {
     rejectEarlyReturn,
     rejectRentCar,
 } from "../reducers/rentCarReducer";
-import { useDispatch } from "react-redux";
+import {useDispatch} from "react-redux";
 import Swal from "sweetalert2";
 
 const MyRentals = () => {
@@ -37,7 +37,7 @@ const MyRentals = () => {
         searchParams.get("status") || "ALL"
     );
     const [openConfirm, setOpenConfirm] = useState(false);
-    const [confirmAction, setConfirmAction] = useState(null);
+    // const [confirmAction, setConfirmAction] = useState(null);
     const [alert, setAlert] = useState({
         open: false,
         message: "",
@@ -110,35 +110,35 @@ const MyRentals = () => {
         fetchMyBookings();
     }, [page, pageSize, sortOption, statusFilter]);
 
-    const handleConfirm = (id) => {
-        setConfirmAction(() => async () => {
+    const handleConfirm = async (id) => {
+        // setConfirmAction(() => async () => {
             try {
+                setLoading(true);
                 await confirmBooking(id);
-                setAlert({
+                await setAlert({
                     open: true,
                     message: "Booking confirmed successfully!",
                     severity: "success",
                 });
-                setLoading(true);
-                fetchMyBookings();
+                await fetchMyBookings();
             } catch (error) {
-                setAlert({
+                await setAlert({
                     open: true,
                     message: error.response?.data?.message || "Failed to confirm booking",
                     severity: "error",
                 });
             } finally {
                 setLoading(false);
+                setOpenConfirm(false);
             }
-            setOpenConfirm(false);
-        });
-        setOpenConfirm(true);
+        // });
+        // setOpenConfirm(true);
     };
 
     return (
         <div>
             <Header></Header>
-            <Breadcrumbs sx={{ mx: "auto", maxWidth: "1200px", py: 1, px: 2 }}>
+            <Breadcrumbs sx={{mx: "auto", maxWidth: "1200px", py: 1, px: 2}}>
                 <MUILink underline="hover" color="inherit" href="/">
                     Home
                 </MUILink>
@@ -151,7 +151,7 @@ const MyRentals = () => {
                     mt: 4,
                 }}
             >
-                <Typography variant="h4" fontWeight="bold" sx={{ textAlign: "center" }}>
+                <Typography variant="h4" fontWeight="bold" sx={{textAlign: "center"}}>
                     My Rentals
                 </Typography>
             </Box>
@@ -167,13 +167,13 @@ const MyRentals = () => {
             >
                 <Typography variant="subtitle1">
                     You have{" "}
-                    <span style={{ color: "#05ce80", fontWeight: "bold" }}>
+                    <span style={{color: "#05ce80", fontWeight: "bold"}}>
             {totalElement} waiting-approved
           </span>{" "}
                     bookings!
                 </Typography>
                 <Box>
-                    <FormControl sx={{ minWidth: "200px" }} variant="outlined">
+                    <FormControl sx={{minWidth: "200px"}} variant="outlined">
                         <TextField
                             select
                             id="sort-select"
@@ -191,7 +191,7 @@ const MyRentals = () => {
                             <MenuItem value="priceLow">Price: Low to High</MenuItem>
                         </TextField>
                     </FormControl>
-                    <FormControl sx={{ minWidth: "200px", ml: 2 }} variant="outlined">
+                    <FormControl sx={{minWidth: "200px", ml: 2}} variant="outlined">
                         <TextField
                             select
                             id="status-filter"
@@ -244,7 +244,7 @@ const MyRentals = () => {
                         >
                             <Grid container spacing={4} alignItems="stretch">
                                 <Grid item xs={9}>
-                                    <BookingCard BookingData={booking} />
+                                    <BookingCard BookingData={booking}/>
                                 </Grid>
                                 <Grid
                                     item
@@ -267,7 +267,7 @@ const MyRentals = () => {
                                         sx={{
                                             backgroundColor: "#1976d2",
                                             color: "white",
-                                            "&:hover": { backgroundColor: "#1565c0" },
+                                            "&:hover": {backgroundColor: "#1565c0"},
                                             width: "100%",
                                             paddingY: 1.2,
                                             paddingX: 2,
@@ -286,16 +286,17 @@ const MyRentals = () => {
                                                 sx={{
                                                     backgroundColor: "#05ce80",
                                                     color: "white",
-                                                    "&:hover": { backgroundColor: "#04b16d" },
+                                                    "&:hover": {backgroundColor: "#04b16d"},
                                                     width: "100%",
                                                     paddingY: 1.2,
                                                     paddingX: 2,
                                                     height: "auto",
                                                 }}
-                                                onClick={() => handleConfirm(booking.bookingNumber)}
+                                                // onClick={() => handleConfirm(booking.bookingNumber)}
+                                                onClick={() => setOpenConfirm(true)}
                                             >
                                                 {loading ? (
-                                                    <CircularProgress size={20} color="inherit" />
+                                                    <CircularProgress size={20} color="inherit"/>
                                                 ) : (
                                                     "Approve Request"
                                                 )}
@@ -306,7 +307,7 @@ const MyRentals = () => {
                                                 sx={{
                                                     backgroundColor: "red",
                                                     color: "white",
-                                                    "&:hover": { backgroundColor: "#04b16d" },
+                                                    "&:hover": {backgroundColor: "#04b16d"},
                                                     width: "100%",
                                                     paddingY: 1.2,
                                                     paddingX: 2,
@@ -343,7 +344,7 @@ const MyRentals = () => {
                                             >
                                                 Reject Request
                                                 {loading && (
-                                                    <CircularProgress size={20} color="inherit" />
+                                                    <CircularProgress size={20} color="inherit"/>
                                                 )}
                                             </Button>
                                         </>
@@ -356,7 +357,7 @@ const MyRentals = () => {
                                                 sx={{
                                                     backgroundColor: "#05ce80",
                                                     color: "white",
-                                                    "&:hover": { backgroundColor: "#04b16d" },
+                                                    "&:hover": {backgroundColor: "#04b16d"},
                                                     width: "100%",
                                                     paddingY: 1.2,
                                                     paddingX: 2,
@@ -387,7 +388,7 @@ const MyRentals = () => {
                                                 }}
                                             >
                                                 {loading ? (
-                                                    <CircularProgress size={20} color="inherit" />
+                                                    <CircularProgress size={20} color="inherit"/>
                                                 ) : (
                                                     "Approve Return Early"
                                                 )}
@@ -398,7 +399,7 @@ const MyRentals = () => {
                                                 sx={{
                                                     backgroundColor: "red",
                                                     color: "white",
-                                                    "&:hover": { backgroundColor: "#04b16d" },
+                                                    "&:hover": {backgroundColor: "#04b16d"},
                                                     width: "100%",
                                                     paddingY: 1.2,
                                                     paddingX: 2,
@@ -434,7 +435,7 @@ const MyRentals = () => {
                                             >
                                                 Reject Return Early
                                                 {loading && (
-                                                    <CircularProgress size={20} color="inherit" />
+                                                    <CircularProgress size={20} color="inherit"/>
                                                 )}
                                             </Button>
                                         </>
@@ -442,17 +443,18 @@ const MyRentals = () => {
                                     <ConfirmationDialog
                                         open={openConfirm}
                                         onClose={() => setOpenConfirm(false)}
-                                        onConfirm={confirmAction}
+                                        // onConfirm={confirmAction}
+                                        onConfirm={() => handleConfirm(booking?.bookingNumber)}
                                         title="Confirm Action"
                                         content="Are you sure you want to confirm this booking request?"
                                     />
                                     <NotificationSnackbar
                                         alert={alert}
-                                        onClose={() => setAlert({ ...alert, open: false })}
+                                        onClose={() => setAlert({...alert, open: false})}
                                     />
                                 </Grid>
                             </Grid>
-                            <Divider sx={{ mt: 2 }} />
+                            <Divider sx={{mt: 2}}/>
                         </Grid>
                     ))
                 ) : (
@@ -464,7 +466,7 @@ const MyRentals = () => {
                             alignItems: "center",
                         }}
                     >
-                        <Typography variant="h6" sx={{ color: "gray" }}>
+                        <Typography variant="h6" sx={{color: "gray"}}>
                             You have no rentals
                         </Typography>
                     </Box>
