@@ -14,6 +14,8 @@ import { getBookingDetail, getWallet, cancelBooking, confirmPickup, returnCar, p
 import Swal from "sweetalert2";
 import NoFeedbackMessage from "../components/Feedback/NoDataMessage";
 import LoadingComponent from "../components/common/LoadingComponent";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 const MyBooking = () => {
   const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
