@@ -1,7 +1,7 @@
 import React from 'react';
 import { Route, Navigate } from 'react-router-dom';
 
-const PrivateRoute = ({ element, allowedRoles = [], ...rest }) => {
+const PrivateRoute = ({children, element, allowedRoles = [], ...rest }) => {
     // If user is not login, redirect to login-page
     const userRole = localStorage.getItem("role");
     if (!userRole) {
@@ -15,7 +15,9 @@ const PrivateRoute = ({ element, allowedRoles = [], ...rest }) => {
     }
 
     // If user role is valid, render component
-    return element;
+    // return element;
+    return children;
 };
+
 
 export default PrivateRoute;

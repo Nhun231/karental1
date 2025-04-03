@@ -43,10 +43,10 @@ export default function ConfirmationDialog({
                     alignItems: "flex-start",
                     marginBottom: 1,
                 }}>
-                    <Button variant="contained" onClick={onClose} color="secondary" sx={{width: "150px"}}>
+                    <Button variant="contained" onClick={onClose} color="inherit" sx={{width: "150px"}}>
                         Cancel
                     </Button>
-                    <Button onClick={onConfirm} color="primary" variant="contained" disabled={loading} sx={{width: "150px"}}>
+                    <Button onClick={onConfirm} variant="contained" disabled={loading} sx={{width: "150px", backgroundColor: "#05ce80"}}>
                         {loading ? "Processing..." : "Confirm"}
                     </Button>
                 </Stack>
