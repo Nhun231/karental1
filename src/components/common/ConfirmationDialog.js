@@ -47,7 +47,7 @@ export default function ConfirmationDialog({
               Cancel
             </Button>
             <Button onClick={onConfirm} variant="contained" disabled={loading} sx={{width: "150px", backgroundColor: "#05ce80"}}>
-              {loading ? "Processing..." : "Confirm"}
+              {loading ? "Loading..." : "Confirm"}
             </Button>
           </Stack>
         </DialogActions>
