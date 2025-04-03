@@ -119,7 +119,7 @@ export const updateUserProfile = async (formData) => {
 };
 export const updateUserPassword = async (formData) => {
   try {
-    const response = await axios.put(`${BASE_URL}/edit-password`, formData, {
+    const response = await axios.put(`${BASE_URL}/user/edit-password`, formData, {
       headers: {
         "Content-Type": "application/json",
       },
