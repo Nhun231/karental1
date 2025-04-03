@@ -29,8 +29,8 @@ const MyRentals = () => {
   const [statusFilter, setStatusFilter] = useState(
     searchParams.get("status") || "ALL"
   );
-  const [openConfirm, setOpenConfirm] = useState(false);
-    // const [confirmAction, setConfirmAction] = useState(null);
+    const [openConfirm, setOpenConfirm] = useState(null);
+    const [confirmAction, setConfirmAction] = useState(null);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -102,29 +102,20 @@ const MyRentals = () => {
     fetchMyBookings();
   }, [page, pageSize, sortOption, statusFilter]);
 
-    const handleConfirm = async (id) => {
-        // setConfirmAction(() => async () => {
+    const handleConfirm = (id) => {
+        setOpenConfirm(id);
+        setConfirmAction(() => async () => {
             try {
                 setLoading(true);
                 await confirmBooking(id);
-                await setAlert({
-                    open: true,
-                    message: "Booking confirmed successfully!",
-                    severity: "success",
-                });
-                await fetchMyBookings();
+                setAlert({ open: true, message: "Booking confirmed successfully!", severity: "success" });
+                fetchMyBookings();
             } catch (error) {
-                await setAlert({
-                    open: true,
-                    message: error.response?.data?.message || "Failed to confirm booking",
-                    severity: "error",
-                });
-            } finally {
-                setLoading(false);
-            setOpenConfirm(false);
+                setAlert({ open: true, message: error.response?.data?.message || "Failed to confirm booking", severity: "error" });
             }
-        // });
-        // setOpenConfirm(true);
+                setLoading(false);
+            setOpenConfirm(null);
+        });
     };
     useEffect(() => {
         document.title = 'My Rentals';
@@ -225,7 +216,7 @@ const MyRentals = () => {
                                                 paddingX: 2,
                                                 height: "auto",
                                             }}
-                                            onClick={() => setOpenConfirm(true)}
+                                                onClick={() => handleConfirm(booking.bookingNumber)}
                                         >
                                                 {loading ? (
                                                     <CircularProgress size={20} color="inherit" />
@@ -372,18 +363,20 @@ const MyRentals = () => {
                                             </Button>
                                         </>
                                     )}
-                                    <ConfirmationDialog
-                                        open={openConfirm}
-                                        onClose={() => setOpenConfirm(false)}
-                                        onConfirm={()=>handleConfirm(booking.bookingNumber)}
-                                        title="Confirm Action"
-                                        content="Are you sure you want to confirm this booking request?"
-                                    />
-                                    <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
+
                                 </Grid>
                             </Grid>
                             <Divider sx={{ mt: 2 }} />
-                        </Grid>
+                                    <ConfirmationDialog
+                                open={openConfirm === booking.bookingNumber}
+                                        onClose={() => setOpenConfirm(false)}
+                                onConfirm={confirmAction}
+                                        title="Confirm Action"
+                                        content="Are you sure you want to confirm this booking request?"
+                                loading={loading}
+                                    />
+                                    <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
+                                </Grid>
                     ))
                 ) : (
                     <NoFeedbackMessage message="You have no rentals with this status."></NoFeedbackMessage>

@@ -27,9 +27,10 @@ const SearchCar = () => {
     const handleRentalTimeChange = (newPickUpTime, newDropOffTime) => {
         const pickUpTime = dayjs(newPickUpTime);
         const dropOffTime = dayjs(newDropOffTime);
+        localStorage.setItem("pickUpTime", pickUpTime);
+        localStorage.setItem("dropOffTime", dropOffTime);
         dispatch(setRentalTime({ pickUpTime, dropOffTime }));
     };
-
     const validateField = (name, value) => {
         if (!value || !value.trim()) {
             if (name === "cityProvince") return "Please select a city/province";
@@ -71,6 +72,8 @@ const SearchCar = () => {
             size: 10,
             sort: "productionYear,desc",
         }).toString();
+        localStorage.setItem("pickUpTime", pickUpTime);
+        localStorage.setItem("dropOffTime", dropOffTime);
         console.log(queryParams)
         navigate(`/search-result?${queryParams}`);
     };

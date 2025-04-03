@@ -35,10 +35,11 @@ export const BookingDescript = () => {
     error,
   } = useSelector((state) => state.carFetch);
 
-  const { pickUpTime = "", dropOffTime = "" } = useSelector(
-    (state) => state.rental
-  );
-
+  // const { pickUpTime = "", dropOffTime = "" } = useSelector(
+  //   (state) => state.rental
+  // );
+    localStorage.setItem("pickUpTime", pickUpTime);
+    localStorage.setItem("dropOffTime", dropOffTime);
   const pickUpDate = new Date(pickUpTime);
   const dropOffDate = new Date(dropOffTime);
   const diffInMs = dropOffDate - pickUpDate;
@@ -415,7 +416,7 @@ export const BookingDescript = () => {
                   fontWeight="bold"
                   sx={{ flex: "1" }}
                 >
-                  Drop of Time:
+                  Drop-off Time:
                 </Typography>
 
                 <Typography sx={{ flex: "1", fontWeight: "bold" }}>
