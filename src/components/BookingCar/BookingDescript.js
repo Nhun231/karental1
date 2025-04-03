@@ -38,8 +38,8 @@ export const BookingDescript = () => {
   // const { pickUpTime = "", dropOffTime = "" } = useSelector(
   //   (state) => state.rental
   // );
-    localStorage.setItem("pickUpTime", pickUpTime);
-    localStorage.setItem("dropOffTime", dropOffTime);
+    const pickUpTime = localStorage.getItem("pickUpTime");
+    const dropOffTime = localStorage.getItem("dropOffTime");
   const pickUpDate = new Date(pickUpTime);
   const dropOffDate = new Date(dropOffTime);
   const diffInMs = dropOffDate - pickUpDate;
