@@ -3,10 +3,11 @@ import { useMediaQuery } from "@mui/material";
 import { Card, CardContent, Typography, Box, MenuItem, Select } from "@mui/material";
 import { Star, StarBorder, StarHalf } from "@mui/icons-material";
 import Sliders from "../common/Sliders";
+import LoadingComponent from "./LoadingComponent";
 
 const CarCard = ({ carData, large, isEditPage, onStatusChange }) => {
   const isSmallScreen = useMediaQuery("(max-width:600px)");
-  if (!carData) return <Typography>Loading...</Typography>;
+  if (!carData) return <LoadingComponent/>;
 
   const formattedPrice = new Intl.NumberFormat("vi-VN").format(carData.basePrice) + "đ/day";
   const ratingStars = Array.from({ length: 5 }).map((_, i) => {
