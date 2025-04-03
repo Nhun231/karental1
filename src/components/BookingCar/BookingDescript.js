@@ -41,10 +41,6 @@ export const BookingDescript = () => {
 
   const pickUpDate = new Date(pickUpTime);
   const dropOffDate = new Date(dropOffTime);
-    console.log("pickUpTime", pickUpTime);
-    console.log("pickUpDate", pickUpDate);
-    console.log("dropOffTime", dropOffTime);
-    console.log("dropOffDate", dropOffDate);
   const diffInMs = dropOffDate - pickUpDate;
   const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
   const days = Math.ceil(diffInDays);
@@ -405,7 +401,7 @@ export const BookingDescript = () => {
                 </Typography>
 
                 <Typography sx={{ flex: "1", fontWeight: "bold" }}>
-                  {dayjs(pickUpTime).format("DD/MM/YYYY - hh:mm A")}
+                  {dayjs.utc(pickUpTime).format("DD/MM/YYYY HH:mm A")}
                 </Typography>
               </Box>
 
@@ -423,7 +419,7 @@ export const BookingDescript = () => {
                 </Typography>
 
                 <Typography sx={{ flex: "1", fontWeight: "bold" }}>
-                  {dayjs(dropOffTime).format("DD/MM/YYYY - hh:mm A")}
+                  {dayjs.utc(dropOffTime).format("DD/MM/YYYY HH:mm A")}
                 </Typography>
               </Box>
             </Box>

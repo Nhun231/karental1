@@ -381,7 +381,8 @@ export default function EditBookingDescription() {
                       gap: 1,
                     }}
                 >
-                  {infor?.data?.status === "IN_PROGRESS" && (
+                                {infor?.data?.status === "IN_PROGRESS" &&
+                                    dayjs.utc(infor?.data?.dropOffTime) >= dayjs.utc() && (
                       <Button
                           variant="contained"
                           id="return-car-button"
@@ -400,7 +401,7 @@ export default function EditBookingDescription() {
                                     "en-US"
                                 ).format(
                                     infor?.data?.deposit - infor?.data?.totalPrice
-                                )} VND will be return to your wallet.The car owner must confirm your early return request. If declined, you must keep the car until the original return time.`,
+                                                        )} VND will be return to your wallet.`,
                                 icon: "warning",
                                 showCancelButton: true,
                                 confirmButtonText: "Yes",
@@ -438,6 +439,46 @@ export default function EditBookingDescription() {
                                 }
                               });
                             }
+                                            }}
+                                        >
+                                            {loading ? (
+                                                <CircularProgress size={20} color="inherit" />
+                                            ) : (
+                                                "Return Car"
+                                            )}
+                                        </Button>
+                                    )}
+
+                                {infor?.data?.status === "IN_PROGRESS" &&
+                                    dayjs.utc(infor?.data?.dropOffTime) < dayjs.utc() && (
+                                        <Button
+                                            variant="contained"
+                                            id="return-car-button"
+                                            disabled={loading}
+                                            sx={{
+                                                fontWeight: "bold",
+                                                minWidth: "100px",
+                                                fontSize: "12px",
+                                                backgroundColor: "#04b16d",
+                                            }}
+                                            onClick={(e) => {
+                                                Swal.fire({
+                                                    title: "Return car?",
+                                                    text: `Please confirm to return the car early. The car owner must confirm your early return request.`,
+                                                    icon: "warning",
+                                                    showCancelButton: true,
+                                                    confirmButtonText: "Yes",
+                                                    cancelButtonText: "No",
+                                                }).then((result) => {
+                                                    if (result.isConfirmed) {
+                                                        setLoading(true);
+                                                        dispatch(
+                                                            returnCar(infor?.data?.bookingNumber)
+                                                        ).finally(() => {
+                                                            setLoading(false);
+                                                        });
+                                                    }
+                                                });
                           }}
                       >
                         {loading ? (

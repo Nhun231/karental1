@@ -290,7 +290,8 @@ const MyBooking = () => {
                                 )}
 
                                 {/* Show Cancel if status is PENDING_DEPOSIT */}
-                                {booking.status === "PENDING_DEPOSIT" && (
+                  {booking.status === "PENDING_DEPOSIT" &&
+                    booking.paymentType === "WALLET" && (
                                     <>
                                     <Button
                                         variant="contained"
@@ -374,8 +375,57 @@ const MyBooking = () => {
                                     </Button>
                                     </>
                                 )}
+
+                  {booking.status === "PENDING_DEPOSIT" &&
+                    booking.paymentType !== "WALLET" && (
+                      <>
+                        <Button
+                          variant="contained"
+                          sx={{
+                            backgroundColor: "#d32f2f", // Red
+                            color: "white",
+                            "&:hover": { backgroundColor: "#b71c1c" },
+                            width: "100%",
+                            paddingY: 1.2,
+                            paddingX: 2,
+                            height: "auto",
+                          }}
+                          onClick={async () => {
+                            const result = await Swal.fire({
+                              title: "Cancel this booking?",
+                              text: "Do you really want to cancel this booking?",
+                              icon: "warning",
+                              showCancelButton: true,
+                              confirmButtonText: "Yes",
+                              cancelButtonText: "No",
+                            });
+
+                            if (result.isConfirmed) {
+                              try {
+                                setLoading(true);
+                                await dispatch(
+                                  cancelBooking(booking.bookingNumber)
+                                ).unwrap();
+                                fetchMyBookings();
+                              } catch (error) {
+                                console.log(error);
+                              } finally {
+                                setLoading(false);
+                              }
+                            }
+                          }}
+                        >
+                          {loading ? (
+                            <CircularProgress size={20} color="inherit" />
+                          ) : (
+                            "Cancel"
+                          )}
+                        </Button>
+                      </>
+                    )}
+
                                 {/* Show Return Cars if status is IN_PROGRESS */}
-                                {booking.status === "IN_PROGRESS" && (
+                  {booking.status === "IN_PROGRESS" &&  dayjs.utc(booking.dropOffTime) >= dayjs.utc() && (
                                     <Button
                                         variant="contained"
                                         sx={{
@@ -395,7 +445,7 @@ const MyBooking = () => {
                                                         "en-US"
                                                     ).format(
                                                         booking.deposit - booking.totalPrice
-                                                    )} VND will be return to your wallet.The car owner must confirm your early return request. If declined, you must keep the car until the original return time.`,
+                            )} VND will be return to your wallet.`,
                                                     icon: "warning",
                                                     showCancelButton: true,
                                                     confirmButtonText: "Yes",
@@ -444,7 +494,51 @@ const MyBooking = () => {
                                         )}
                                     </Button>
                                 )}
-                                {/* Show Complete Payment if status is PENDING_PAYMENT */}
+
+                  {booking.status === "IN_PROGRESS" && dayjs.utc(booking.dropOffTime) < (dayjs.utc()) && (
+                    <Button
+                      variant="contained"
+                      sx={{
+                        backgroundColor: "#05ce80", // Red
+                        color: "white",
+                        "&:hover": { backgroundColor: "#05ce55" },
+                        width: "100%",
+                        paddingY: 1.2,
+                        paddingX: 2,
+                        height: "auto",
+                      }}
+                      onClick={(e) => {
+                        if (booking.totalPrice <= booking.deposit) {
+                          Swal.fire({
+                            title: "Return car?",
+                            text: `Please confirm to return the car early. The car owner must confirm your early return request. If declined, you must keep the car until the original return time.`,
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonText: "Yes",
+                            cancelButtonText: "No",
+                          }).then((result) => {
+                            if (result.isConfirmed) {
+                              setLoading(true);
+                              dispatch(
+                                returnCar(booking.bookingNumber)
+                              ).finally(() => {
+                                setLoading(false);
+                                fetchMyBookings();
+                              });
+                            }
+                          });
+                        }
+                      }}
+                    >
+                      {loading ? (
+                        <CircularProgress size={20} color="inherit" />
+                      ) : (
+                        "Return Car"
+                      )}
+                    </Button>
+                  )}
+
+                  {/* Show Cancel if status is PENDING_PAYMENT */}
                                 {booking.status === "PENDING_PAYMENT" && (
                                     <Button
                                         variant="contained"
