@@ -92,8 +92,7 @@ const Header = () => {
           </ModalDialog>
         </Modal>
         {/* Notification Snackbar */}
-        <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} disablePortal={false} // Thử để false để snackbar render trong cùng DOM
-          sx={{ zIndex: 2000 }} />
+        <NotificationSnackbar alert={alert} onClose={() => setAlert({ ...alert, open: false })} />
       </Toolbar>
     </AppBar>
   );

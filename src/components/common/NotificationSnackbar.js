@@ -14,12 +14,7 @@ export default function NotificationSnackbar({ alert, onClose }) {
         vertical: "top",
         horizontal: "right",
       }}
-      sx={{
-        top: { xs: 64, sm: "70px" },
-        width: { xs: "90%", sm: "auto" },
-        zIndex: 1501,
-        position: "fixed"
-      }}
+
     >
       <Alert
         severity={alert.severity || "info"}
