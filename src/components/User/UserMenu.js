@@ -60,19 +60,18 @@ const UserMenu = () => {
         anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
         transformOrigin={{ vertical: "top", horizontal: "right" }}
       >
-        <MenuItem onClick={() => navigate("/user/profile")}>
-          My Profile
-        </MenuItem>
         {localStorage.getItem("role") === "OPERATOR" && (
           <>
             <MenuItem onClick={() => navigate("/booking-list")}>
               Booking List
             </MenuItem>
-            <MenuItem onClick={() => navigate("/my-cars")}>My Cars</MenuItem>
           </>
         )}
         {localStorage.getItem("role") === "CAR_OWNER" && (
           <>
+            <MenuItem onClick={() => navigate("/user/profile")}>
+              My Profile
+            </MenuItem>
             <MenuItem onClick={() => navigate("/my-cars")}>My Cars</MenuItem>
             <MenuItem onClick={() => navigate("/my-rentals")}>
               My Rentals
@@ -87,6 +86,9 @@ const UserMenu = () => {
         )}
         {localStorage.getItem("role") === "CUSTOMER" && (
           <>
+            <MenuItem onClick={() => navigate("/user/profile")}>
+              My Profile
+            </MenuItem>
             <MenuItem onClick={() => navigate("/my-bookings")}>
               My Booking
             </MenuItem>

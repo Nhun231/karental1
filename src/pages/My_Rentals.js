@@ -9,7 +9,6 @@ import { getMyRentals, confirmBooking } from "../services/BookingServices";
 import Pagination from "../components/common/Pagination";
 import ConfirmationDialog from "../components/common/ConfirmationDialog";
 import NotificationSnackbar from "../components/common/NotificationSnackbar";
-import Filters from "../components/common/Filter"
 import {
   confirmEarlyReturn,
   rejectEarlyReturn,
@@ -29,7 +28,7 @@ const MyRentals = () => {
     searchParams.get("status") || "ALL"
   );
   const [openConfirm, setOpenConfirm] = useState(false);
-  const [confirmAction, setConfirmAction] = useState(null);
+    // const [confirmAction, setConfirmAction] = useState(null);
   const [alert, setAlert] = useState({
     open: false,
     message: "",
@@ -79,7 +78,6 @@ const MyRentals = () => {
       priceHigh: "basePrice,DESC",
       priceLow: "basePrice,ASC",
     }[option] || "updatedAt,DESC");
-
   const fetchMyBookings = async () => {
     try {
       const params = {
@@ -102,18 +100,29 @@ const MyRentals = () => {
     fetchMyBookings();
   }, [page, pageSize, sortOption, statusFilter]);
 
-    const handleConfirm = (id) => {
-        setConfirmAction(() => async () => {
+    const handleConfirm = async (id) => {
+        // setConfirmAction(() => async () => {
             try {
+                setLoading(true);
                 await confirmBooking(id);
-                setAlert({ open: true, message: "Booking confirmed successfully!", severity: "success" });
-                fetchMyBookings();
+                await setAlert({
+                    open: true,
+                    message: "Booking confirmed successfully!",
+                    severity: "success",
+                });
+                await fetchMyBookings();
             } catch (error) {
-                setAlert({ open: true, message: error.response?.data?.message || "Failed to confirm booking", severity: "error" });
-            }
+                await setAlert({
+                    open: true,
+                    message: error.response?.data?.message || "Failed to confirm booking",
+                    severity: "error",
+                });
+            } finally {
+                setLoading(false);
             setOpenConfirm(false);
-        });
-        setOpenConfirm(true);
+            }
+        // });
+        // setOpenConfirm(true);
     };
     useEffect(() => {
         document.title = 'My Rentals';
@@ -214,7 +223,7 @@ const MyRentals = () => {
                                                 paddingX: 2,
                                                 height: "auto",
                                             }}
-                                            onClick={() => handleConfirm(booking.bookingNumber)}
+                                            onClick={() => setOpenConfirm(true)}
                                         >
                                                 {loading ? (
                                                     <CircularProgress size={20} color="inherit" />
@@ -364,7 +373,7 @@ const MyRentals = () => {
                                     <ConfirmationDialog
                                         open={openConfirm}
                                         onClose={() => setOpenConfirm(false)}
-                                        onConfirm={confirmAction}
+                                        onConfirm={()=>handleConfirm(booking.bookingNumber)}
                                         title="Confirm Action"
                                         content="Are you sure you want to confirm this booking request?"
                                     />
