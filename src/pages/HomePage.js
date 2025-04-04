@@ -31,7 +31,7 @@ const HomePage = () => {
           `${BASE_URL}/user/verify-email?t=${token}`
         );
         console.log(res);
-        alert(res.response.message); // Show success message from backend
+        alert(res.data.message); // Show success message from backend
         setTimeout(() => {
           nav("/", { replace: true });
         }, 1000);

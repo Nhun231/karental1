@@ -54,7 +54,11 @@ export const SearchResult = () => {
                 };
                 // console.log(params.pickUpTime)
                 const response = await getSearchResult(params);
-                setCars(response.data.content || []);
+                const updatedCars = response.data.content.map(car => ({
+                    ...car,
+                    status: 'AVAILABLE',
+                }));
+                setCars(updatedCars || []);
                 setTotalPages(response.data.totalPages || 1);
                 setTotalElement(response.data.totalElements || 0);
             } catch (error) {

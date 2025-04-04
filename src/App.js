@@ -31,6 +31,7 @@ import {BookingList} from "./pages/BookingList";
 import MyFeedback from "./pages/MyFeedback";
 import ViewListAllCar from "./pages/ViewListAllCar";
 import AboutUs from "./pages/AboutKarental";
+import ScrollToTop from "./Helper/ScrollToTopHelper";
 
 function App() {
     const RedirectToHash = () => {
@@ -45,10 +46,13 @@ function App() {
 
         return null;
     };
+
     return (
         <>
             <ToastContainer/>
+            <ScrollToTop/>
             <RedirectToHash/>
+
             <AuthProvider>
                 <Routes>
                     <Route index element={<HomePage/>}/>

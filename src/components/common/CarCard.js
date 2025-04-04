@@ -36,7 +36,7 @@ const CarCard = ({ carData, large, isEditPage, onStatusChange }) => {
             </Select>
           </Box>
         ) : (
-          <Typography variant="body1" sx={{ color: carData.status === "STOPPED" ? "red" : "green", fontWeight: "bold" }}>Status: {carData.status === "VERIFIED" ? "AVAILABLE" : "NOT AVAILABLE"}</Typography>
+          <Typography variant="body1" sx={{ color: carData.status === "STOPPED" ? "red" : "green", fontWeight: "bold" }}>Status: {carData.status}</Typography>
         )}
       </CardContent>
     </Card>
