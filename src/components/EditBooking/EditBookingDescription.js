@@ -44,6 +44,7 @@ import ConfirmationNumberIcon from "@mui/icons-material/ConfirmationNumber";
 import InfoIcon from "@mui/icons-material/Info";
 import { useParams } from "react-router-dom";
 import GiveRating from "../Feedback/GiveRating";
+import ViewFeedback from "../Feedback/ViewFeedback"
 import { getFeedbackByBookingId } from "../../services/FeedbackServices";
 import utc from "dayjs/plugin/utc";
 dayjs.extend(utc);
@@ -57,6 +58,7 @@ export default function EditBookingDescription() {
   const [open, setOpen] = useState(false);
   // State to track whether the user has submitted a feedback
   const [hasReviewed, setHasReviewed] = useState(false);
+  const [feedback, setFeedback] = useState(null);
   const {
     carData = {},
     status,
@@ -142,7 +144,12 @@ export default function EditBookingDescription() {
     const getFeedbackStatus = async () => {
       try {
         const result = await getFeedbackByBookingId(bookedId);
-        setHasReviewed(result.data.length > 0);
+        if (result.data && Object.keys(result.data).length > 0) {
+          setFeedback(result.data)
+          setHasReviewed(true);
+        } else {
+          setHasReviewed(false);
+        }
       } catch (error) {
         console.error("Error fetching feedback:", error);
       } finally {
@@ -151,7 +158,7 @@ export default function EditBookingDescription() {
     };
 
     getFeedbackStatus();
-  }, [bookedId]);
+  }, [bookedId, hasReviewed]);
 
   // If feedback has sent, disable modal
   const handleGivefeedback = (data) => {
@@ -651,10 +658,9 @@ export default function EditBookingDescription() {
                             )}
                           </Button>
                       )}
-
                   {/* User can feedback after booking completed */}
-                  {infor?.data?.status === "COMPLETED" && (
-                      <div>
+                {infor?.data?.status === "COMPLETED" && <div>
+                  {hasReviewed && <>
                         <Button
                             variant="contained"
                             id="feedback-button"
@@ -666,6 +672,25 @@ export default function EditBookingDescription() {
                               flex: "0.25",
                               minWidth: "100px",
                               fontSize: "12px",
+                      }}
+                      onClick={() => setOpen(true)}
+                    >
+                      View Feedback
+                    </Button>
+                    <ViewFeedback feedback={feedback} open={open}
+                      onClose={() => setOpen(false)}></ViewFeedback>
+                  </>}
+                  {!hasReviewed && <><Button
+                    variant="contained"
+                    id="feedback-button"
+                    sx={{
+                      backgroundColor: "#555",
+                      color: "white",
+                      "&:hover": { backgroundColor: "#444" },
+                      fontWeight: "bold",
+                      flex: "0.25",
+                      minWidth: "100px",
+                      fontSize: "12px",
                             }}
                             onClick={() => setOpen(true)}
                             disabled={hasReviewed} // User can feedback only one time, after send feedback, button will be disable
@@ -679,9 +704,8 @@ export default function EditBookingDescription() {
                             bookingDate={infor?.data?.dropOffTime}
                             hasReviewed={hasReviewed}
                             bookingId={bookedId}
-                        />
-                      </div>
-                  )}
+                    /></>}
+                </div>}
                 </Box>
               </CardContent>
             </Card>

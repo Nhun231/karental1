@@ -135,7 +135,8 @@ const Register = ({ isCarOwner, onRegisterSucess, setAlert }) => {
     try {
       const response = await registerUser(formData);
       setAlert({ open: true, message: response.message, severity: "success" });
-      onRegisterSucess();
+      //onRegisterSucess();
+
       // Handle email confirmation prompt if (response) {
       //   if (window.confirm(`${response.message}. Do you want us to resend the email?`)) {
       //     // Call resend email function here

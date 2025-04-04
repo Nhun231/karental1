@@ -30,6 +30,7 @@ import NotFound from "./components/common/NotFound";
 import {BookingList} from "./pages/BookingList";
 import MyFeedback from "./pages/MyFeedback";
 import ViewListAllCar from "./pages/ViewListAllCar";
+import AboutUs from "./pages/AboutKarental";
 
 function App() {
     const RedirectToHash = () => {
@@ -54,6 +55,7 @@ function App() {
                     <Route path="/user/verify-email" element={<HomePage/>}/>
                     <Route path="/auth/forgot-password/verify" element={<SetNewPassword/>}/>
                     <Route path={"/not-found"} element={<NotFound/>}/>
+                    <Route path={"/aboutus"} element={<AboutUs/>}/>
                     <Route element={
                         <PrivateRouter allowedRoles={["OPERATOR"]}>
                             <Outlet/>

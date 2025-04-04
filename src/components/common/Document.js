@@ -7,9 +7,9 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
  */
 const Documents = ({ CarData }) => {
     const documents = [
-        { no: 1, name: "Registration Paper", uri: CarData.registrationPaperUrl, isVerified: CarData.registrationPaperUriIsVerified },
-        { no: 2, name: "Certificate of Inspection", uri: CarData.certificateOfInspectionUrl, isVerified: CarData.certificateOfInspectionUriIsVerified },
-        { no: 3, name: "Insurance", uri: CarData.insuranceUrl, isVerified: CarData.insuranceUriIsVerified },
+        { no: 1, name: "Registration Paper", uri: CarData.registrationPaperUrl, isVerified: CarData.registrationPaperUriIsVerified || CarData.registrationPaperIsVerified },
+        { no: 2, name: "Certificate of Inspection", uri: CarData.certificateOfInspectionUrl, isVerified: CarData.certificateOfInspectionUriIsVerified || CarData.certificateOfInspectionIsVerified },
+        { no: 3, name: "Insurance", uri: CarData.insuranceUrl, isVerified: CarData.insuranceUriIsVerified || CarData.insuranceIsVerified },
     ];
     return (
         <TableContainer component={Paper} sx={{ mt: 2, width: "100%", p: 1 }}>

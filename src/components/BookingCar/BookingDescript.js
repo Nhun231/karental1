@@ -25,6 +25,10 @@ import { getWallet } from "../../reducers/rentCarReducer";
 import { useParams } from "react-router-dom";
 import dayjs from "dayjs";
 import utc from "dayjs/plugin/utc";
+import EditIcon from "@mui/icons-material/Edit";
+import RentalDatePicker from "../common/RentalDateTimePicker";
+import { setRentalTime, setAddress } from "../../reducers/RentalTimeReducer";
+import { borderRadius } from "@mui/system";
 dayjs.extend(utc);
 
 export const BookingDescript = () => {
@@ -35,11 +39,20 @@ export const BookingDescript = () => {
     error,
   } = useSelector((state) => state.carFetch);
 
-  // const { pickUpTime = "", dropOffTime = "" } = useSelector(
-  //   (state) => state.rental
-  // );
-    const pickUpTime = localStorage.getItem("pickUpTime");
-    const dropOffTime = localStorage.getItem("dropOffTime");
+  const { pickUpTime = "", dropOffTime = "" } = useSelector(
+    (state) => state.rental
+  );
+
+  // const pickUpTime = localStorage.getItem("pickUpTime");
+  // const dropOffTime = localStorage.getItem("dropOffTime");
+  const handleRentalTimeChange = (newPickUpTime, newDropOffTime) => {
+    const pickUpTime = dayjs(newPickUpTime);
+    const dropOffTime = dayjs(newDropOffTime);
+    localStorage.setItem("pickUpTime", pickUpTime);
+    localStorage.setItem("dropOffTime", dropOffTime);
+    dispatch(setRentalTime({ pickUpTime, dropOffTime }));
+  };
+
   const pickUpDate = new Date(pickUpTime);
   const dropOffDate = new Date(dropOffTime);
   const diffInMs = dropOffDate - pickUpDate;
@@ -254,13 +267,41 @@ export const BookingDescript = () => {
               variant="h6"
               sx={{
                 position: "sticky",
-                top: "150px",
+                top: "130px",
                 zIndex: 1000,
                 fontWeight: "bold",
               }}
             >
               Booking Summary
             </Typography>
+            <Typography
+              variant="outlined"
+              color="primary"
+              startIcon={<EditIcon />}
+              sx={{
+                borderRadius: 2,
+                fontWeight: "bold",
+                textTransform: "none",
+                position: "sticky",
+                top: "160px",
+                zIndex: 1000,
+              }}
+            >
+              Change Details
+            </Typography>
+            <Box sx={{
+                my: 2,
+                backgroundColor: "white",
+                border: "1px solid #ddd",
+                borderRadius: 2,
+                boxShadow: 1,
+                position: "sticky",
+                top: "200px",
+                zIndex: 1000,
+              }}>
+              <RentalDatePicker style={{ borderRadius: "8px" }} onRentalTimeChange={handleRentalTimeChange} />
+            </Box>
+
             <Box
               sx={{
                 my: 2,
@@ -270,7 +311,7 @@ export const BookingDescript = () => {
                 boxShadow: 1,
                 p: 2,
                 position: "sticky",
-                top: "200px",
+                top: "280px",
                 zIndex: 1000,
               }}
             >
@@ -323,7 +364,7 @@ export const BookingDescript = () => {
               sx={{
                 my: 2,
                 position: "sticky",
-                top: "300px",
+                top: "380px",
                 zIndex: 1000,
               }}
             />
@@ -335,7 +376,7 @@ export const BookingDescript = () => {
                 boxShadow: 1,
                 p: 2,
                 position: "sticky",
-                top: "320px",
+                top: "400px",
                 zIndex: 1000,
               }}
             >
