@@ -57,12 +57,11 @@ const CarDetail = () => {
             try {
                 setLoading(true);
                 const response = await getCarDetail(formData);
-                const updatedCars = response.data.map(car => ({
-                    ...car,
+                const updatedCarData = {
+                    ...response.data,
                     status: 'AVAILABLE',
-                }));
-                setCarData(updatedCars || []);
-                //setCarData(response.data);
+                };
+                setCarData(updatedCarData);
             } catch (error) {
                 console.error("Failed to fetch car data:", error);
             } finally {
