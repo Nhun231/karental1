@@ -138,20 +138,20 @@ export default function EditBookingDescription() {
   }, [bookedId]);
 
   // Get feedback status
-  // useEffect(() => {
-  //   const getFeedbackStatus = async () => {
-  //     try {
-  //       const result = await getFeedbackByBookingId(bookedId);
-  //       setHasReviewed(result.data.length > 0);
-  //     } catch (error) {
-  //       console.error("Error fetching feedback:", error);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
+  useEffect(() => {
+    const getFeedbackStatus = async () => {
+      try {
+        const result = await getFeedbackByBookingId(bookedId);
+        setHasReviewed(result.data.length > 0);
+      } catch (error) {
+        console.error("Error fetching feedback:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  //   getFeedbackStatus();
-  // }, [bookedId]);
+    getFeedbackStatus();
+  }, [bookedId]);
 
   // If feedback has sent, disable modal
   const handleGivefeedback = (data) => {

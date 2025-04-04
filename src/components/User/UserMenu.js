@@ -65,6 +65,9 @@ const UserMenu = () => {
             <MenuItem onClick={() => navigate("/booking-list")}>
               Booking List
             </MenuItem>
+            <MenuItem onClick={() => navigate("/operator-car-list")}>
+              Cars List
+            </MenuItem>
           </>
         )}
         {localStorage.getItem("role") === "CAR_OWNER" && (

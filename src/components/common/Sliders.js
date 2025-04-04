@@ -42,14 +42,40 @@ const Sliders = ({ images, isSmallScreen }) => {
     };
 
     return (
-        <Box sx={{ width: { xs: "100%", sm: "55%" }, display: "flex", justifyContent: "center", overflow: "hidden", maxHeight: { xs: "200px", md: "300px" }, padding: "10px 20px" }}>
-            <Slider {...settings} style={{ width: !isSmallScreen && "90%", maxWidth: "100%" }}>
+        <Box sx={{
+            width: { xs: "100%", sm: "55%" },
+            position: "relative",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            overflow: "hidden",
+            padding: "10px 20px"
+        }}>
+            <Slider {...settings} style={{ width: "100%", maxWidth: "100%" }}>
                 {images.filter(Boolean).map((img, index) => (
-                    <img key={index} src={img} alt={`Booking ${index + 1}`} style={{ minHeight: "250px", maxHeight: "250px", borderRadius: 8 }} />
-                ))}
+                    <Box key={index} sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: "300px",
+                        overflow: "hidden"
+                    }}>
+                        <img
+                            src={img}
+                            loading="lazy"
+                            alt={`Booking ${index + 1}`}
+                            style={{
+                                height: "100%",
+                                width: "100%",
+                                objectFit: "cover",
+                                borderRadius: 8
+                            }}
+                        />
+                    </Box>
+                ))
+                }
             </Slider>
         </Box>
     );
 };
-
 export default Sliders;

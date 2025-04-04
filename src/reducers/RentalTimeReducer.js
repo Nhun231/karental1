@@ -3,7 +3,7 @@ import dayjs from "dayjs";
 
 const today = dayjs().startOf("day");
 
-const MIN_PICKUP_HOUR = 8, MAX_PICKUP_HOUR = 22, MIN_DROPOFF_HOUR = 6, MAX_DROPOFF_HOUR = 22;
+const MIN_PICKUP_HOUR = 6, MAX_PICKUP_HOUR = 22, MIN_DROPOFF_HOUR = 6, MAX_DROPOFF_HOUR = 22;
 
 const getMinPickUpTime = () => {
     const now = dayjs();

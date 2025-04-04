@@ -131,7 +131,7 @@ const ViewListAllCar = () => {
         );
     }
     return (
-        <>
+        <Layout>
             <Box sx={{ maxWidth: "1200px", mx: "auto", mt: 2 }}>
                 {/* Page title */}
                 <Typography variant="h4" fontWeight="bold" sx={{ textAlign: "center", p: 2 }}>List All Cars</Typography>
@@ -235,7 +235,7 @@ const ViewListAllCar = () => {
                 </Grid>
                 <DocumentsModal open={openModal} onClose={() => setOpenModal(false)} carData={documents} />
             </Box >
-        </>
+        </Layout>
     )
 }
 const DocumentsModal = ({ open, onClose, carData }) => {

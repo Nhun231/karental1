@@ -32,7 +32,7 @@ export const sendFeedback = async ({ bookingId, rating, comment }) => {
         return response.data;
     } catch (error) {
         console.error("Error submitting feedback:", error);
-        alert(error.response?.data?.message || "Failed to submit feedback");
+      //  alert(error.response?.data?.message || "Failed to submit feedback");
         throw error;
     }
 };

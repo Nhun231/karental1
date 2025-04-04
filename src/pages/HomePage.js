@@ -6,7 +6,7 @@ import SearchCar from '../components/SearchCar/SearchCar';
 import HomePageCarOwner from './HomePageCarOwner';
 import HomePageGuest from './HomePageGuest';
 import HomePageCustomer from './HomePageCustomer';
-import DashBoardOperator from './DashBoardOperator';
+import ViewListAllCar from "./ViewListAllCar";
 
 const HomePage = () => {
   const [searchParams] = useSearchParams();
@@ -30,7 +30,8 @@ const HomePage = () => {
         const res = await axios.get(
           `${BASE_URL}/user/verify-email?t=${token}`
         );
-        alert(res.message); // Show success message from backend
+        console.log(res);
+        alert(res.response.message); // Show success message from backend
         setTimeout(() => {
           nav("/", { replace: true });
         }, 1000);
@@ -55,7 +56,7 @@ const HomePage = () => {
           {roleToUse === "CUSTOMER" && <HomePageCustomer />}
         </Layout>
       )}
-      {roleToUse === "OPERATOR" && <DashBoardOperator />}
+      {roleToUse === "OPERATOR" && <ViewListAllCar />}
     </>
   );
 

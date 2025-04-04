@@ -43,7 +43,7 @@ export default function EditDetails({ selectedCarId }) {
   } = useSelector((state) => state.carFetch);
 
   const [images, setImages] = useState([]);
-  const [value, setValue] = useState(0); // Mặc định 3 sao
+  const [value, setValue] = useState(0); // Mặc định 0 sao
 
   //function get data car detail
   useEffect(() => {
@@ -239,7 +239,7 @@ export default function EditDetails({ selectedCarId }) {
                 <Box sx={{ flex: 2 }}>
                   <Rating
                     name="star-rating"
-                    value={value}
+                    value={carData?.data?.averageRatingByCar || 0}
                     icon={
                       <StarIcon
                         sx={{ fontSize: 20, stroke: "gold", strokeWidth: 1.5 }}
@@ -255,8 +255,6 @@ export default function EditDetails({ selectedCarId }) {
                         }}
                       />
                     }
-                    onChange={(event, newValue) => setValue(newValue)}
-                    precision={0.5}
                   />
                 </Box>
               </Box>
@@ -273,7 +271,7 @@ export default function EditDetails({ selectedCarId }) {
                     No. of rides:
                   </Typography>
                 </Box>
-                <Box sx={{ flex: 2, fontWeight: "bold" }}>0</Box>
+                <Box sx={{ flex: 2, fontWeight: "bold" }}>{carData?.data?.noOfRides || 0}</Box>
               </Box>
 
               <Box
