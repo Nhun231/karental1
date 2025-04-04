@@ -298,7 +298,7 @@ const MyBooking = () => {
                                                 backgroundColor: "#d32f2f", // Red
                                                 color: "white",
                                                 "&:hover": { backgroundColor: "#b71c1c" },
-                                                width: "100%",
+                                                width: "50%",
                                                 paddingY: 1.2,
                                                 paddingX: 2,
                                                 height: "auto",
