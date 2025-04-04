@@ -289,7 +289,53 @@ const MyBooking = () => {
                                         </Button>
                                     </>
                                 )}
+                                {booking.status === "WAITING_CONFIRMED" && (
+                                    <>
 
+                                        <Button
+                                            variant="contained"
+                                            sx={{
+                                                backgroundColor: "#d32f2f", // Red
+                                                color: "white",
+                                                "&:hover": { backgroundColor: "#b71c1c" },
+                                                width: "100%",
+                                                paddingY: 1.2,
+                                                paddingX: 2,
+                                                height: "auto",
+                                            }}
+                                            onClick={async () => {
+                                                const result = await Swal.fire({
+                                                    title: "Cancel this booking?",
+                                                    text: "Do you really want to cancel this booking?",
+                                                    icon: "warning",
+                                                    showCancelButton: true,
+                                                    confirmButtonText: "Yes",
+                                                    cancelButtonText: "No",
+                                                });
+
+                                                if (result.isConfirmed) {
+                                                    try {
+                                                        setLoading(true);
+                                                        await dispatch(
+                                                            cancelBooking(booking.bookingNumber)
+                                                        ).unwrap();
+                                                        fetchMyBookings();
+                                                    } catch (error) {
+                                                        console.log(error);
+                                                    } finally {
+                                                        setLoading(false);
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            {loading ? (
+                                                <CircularProgress size={20} color="inherit" />
+                                            ) : (
+                                                "Cancel"
+                                            )}
+                                        </Button>
+                                    </>
+                                )}
                                 {/* Show Cancel if status is PENDING_DEPOSIT */}
                   {booking.status === "PENDING_DEPOSIT" &&
                     booking.paymentType === "WALLET" && (
