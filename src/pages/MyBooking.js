@@ -4,8 +4,8 @@ import { useSearchParams } from "react-router-dom";
 import BookingCard from "../components/common/BookingCard";
 import { useEffect, useState } from "react";
 import { getMyBookings } from "../services/BookingServices";
-import { Breadcrumbs, Link, Typography, Box, CircularProgress } from "@mui/material";
-import { Grid, Divider, Button } from "@mui/joy";
+import { Breadcrumbs, Link, Typography, Box, CircularProgress,Grid} from "@mui/material";
+import {  Divider, Button } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 import Filters from "../components/common/Filter";
 import Pagination from "../components/common/Pagination"
@@ -178,11 +178,10 @@ const MyBooking = () => {
                                 direction="column"
                                 spacing={2}
                                 gap={2}
-                                alignItems="flex-start"
+                                alignItems="center"
                                 sx={{
                                     height: "100%",
                                     justifyContent: "space-between",
-                                    marginTop: "40px",
                                 }}
                             >
                                 <Button
@@ -192,7 +191,7 @@ const MyBooking = () => {
                                         backgroundColor: "#1976d2",
                                         color: "white",
                                         "&:hover": { backgroundColor: "#1565c0" },
-                                        width: "100%",
+                                        width: "50%",
                                         paddingY: 0.5,
                                         paddingX: 2,
                                         height: "auto",
@@ -210,7 +209,7 @@ const MyBooking = () => {
                                                 backgroundColor: "#555", // Dark Gray
                                                 color: "white",
                                                 "&:hover": { backgroundColor: "#444" },
-                                                width: "100%",
+                                                width: "50%",
                                                 paddingY: 1.2,
                                                 paddingX: 2,
                                                 height: "auto",
@@ -252,7 +251,7 @@ const MyBooking = () => {
                                                 backgroundColor: "#d32f2f", // Red
                                                 color: "white",
                                                 "&:hover": { backgroundColor: "#b71c1c" },
-                                                width: "100%",
+                                                width: "50%",
                                                 paddingY: 1.2,
                                                 paddingX: 2,
                                                 height: "auto",
@@ -301,7 +300,7 @@ const MyBooking = () => {
                                             backgroundColor: "#d32f2f", // Red
                                             color: "white",
                                             "&:hover": { backgroundColor: "#b71c1c" },
-                                            width: "100%",
+                                            width: "50%",
                                             paddingY: 1.2,
                                             paddingX: 2,
                                             height: "auto",
@@ -344,7 +343,7 @@ const MyBooking = () => {
                                                 backgroundColor: "gray", // Red
                                                 color: "white",
                                                 "&:hover": { backgroundColor: "#05ce80" },
-                                                width: "100%",
+                                                width: "50%",
                                                 paddingY: 1.2,
                                                 paddingX: 2,
                                                 height: "auto",
@@ -387,7 +386,7 @@ const MyBooking = () => {
                             backgroundColor: "#d32f2f", // Red
                             color: "white",
                             "&:hover": { backgroundColor: "#b71c1c" },
-                            width: "100%",
+                            width: "50%",
                             paddingY: 1.2,
                             paddingX: 2,
                             height: "auto",
@@ -434,7 +433,7 @@ const MyBooking = () => {
                                             backgroundColor: "#05ce80", // Red
                                             color: "white",
                                             "&:hover": { backgroundColor: "#05ce55" },
-                                            width: "100%",
+                                            width: "50%",
                                             paddingY: 1.2,
                                             paddingX: 2,
                                             height: "auto",
@@ -504,7 +503,7 @@ const MyBooking = () => {
                         backgroundColor: "#05ce80", // Red
                         color: "white",
                         "&:hover": { backgroundColor: "#05ce55" },
-                        width: "100%",
+                        width: "50%",
                         paddingY: 1.2,
                         paddingX: 2,
                         height: "auto",
@@ -548,7 +547,7 @@ const MyBooking = () => {
                                             backgroundColor: "green", // Red
                                             color: "white",
                                             "&:hover": { backgroundColor: "#05ce10" },
-                                            width: "100%",
+                                            width: "50%",
                                             paddingY: 1.2,
                                             paddingX: 2,
                                             height: "auto",
